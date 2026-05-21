@@ -134,7 +134,10 @@ class Doctor:
         except json.JSONDecodeError as exc:
             self.check("config", "mcp_config", "FAIL", "blocking", f"Invalid .mcp.json: {exc}")
             return
-        servers = payload.get("mcp_servers", {})
+        if "mcp_servers" in payload:
+            self.check("config", "mcp_schema", "FAIL", "blocking", "Use camelCase 'mcpServers', not legacy 'mcp_servers'")
+            return
+        servers = payload.get("mcpServers", {})
         if not servers:
             self.check("config", "mcp_config", "FAIL", "blocking", "No bundled MCP server declared")
             return

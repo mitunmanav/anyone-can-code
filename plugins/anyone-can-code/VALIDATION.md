@@ -11,7 +11,7 @@
 - [ ] `name`, `version`, `description`, `skills`, `hooks`, and `mcpServers` are present.
 - [ ] `defaultPrompt` has at most 3 entries and each entry is at most 128 chars.
 - [ ] `hooks/hooks.json` exists in the plugin bundle.
-- [ ] `.mcp.json` is valid JSON and declares one bundled stdio memory server.
+- [ ] `.mcp.json` is valid JSON and declares one bundled stdio memory server under `mcpServers`.
 
 ## Hook strategy
 
