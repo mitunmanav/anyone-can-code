@@ -1,0 +1,4 @@
+interface:
+  display_name: "Status"
+  short_description: "Summarize route, phase, next step, and blockers."
+  default_prompt: "Use $status to see where the workflow currently stands."

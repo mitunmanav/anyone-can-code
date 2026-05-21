@@ -1,0 +1,20 @@
+---
+name: govern
+description: "Controls meaningful scope changes by comparing the draft change against the current local plan, verification state, and active workflow route."
+---
+
+# Govern
+
+Use `$govern` when a proposed change could materially alter the accepted scope.
+
+## Inputs
+
+- `.codex/anyone-can-code/artifacts/SPEC-DRAFT.md`
+- `.codex/anyone-can-code/artifacts/PLAN.md`
+- `.codex/anyone-can-code/state/task-queue.md`
+
+## Rules
+
+- Surface consequences before changing direction.
+- Require explicit user confirmation for meaningful scope changes.
+- Keep a timestamped change record in local artifacts.

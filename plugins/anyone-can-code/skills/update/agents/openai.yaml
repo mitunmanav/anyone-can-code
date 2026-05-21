@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update"
+  short_description: "Upgrades the plugin to latest version with backup and restore."
+  default_prompt: "Run $update to upgrade the plugin."

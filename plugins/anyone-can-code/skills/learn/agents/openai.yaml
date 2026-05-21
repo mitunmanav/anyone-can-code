@@ -1,0 +1,4 @@
+interface:
+  display_name: "Learn"
+  short_description: "Structured local learning from verified outcomes, user preferences, and project conventions"
+  default_prompt: "Use $learn after verified work or explicit user feedback to record durable learnings."

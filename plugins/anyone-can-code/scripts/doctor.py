@@ -1,0 +1,297 @@
+#!/usr/bin/env python3
+"""
+Small doctor for Anyone Can Code.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import runtime_info
+
+
+def plugin_root() -> Path:
+    root = os.environ.get("PLUGIN_ROOT")
+    if root:
+        return Path(root)
+    return Path(__file__).resolve().parent.parent
+
+
+PLUGIN_ROOT = plugin_root()
+PROJECT_ROOT = Path(os.environ.get("ACC_PROJECT_ROOT", Path.cwd()))
+PROJECT_NAMESPACE = "anyone-can-code"
+
+
+class Doctor:
+    def __init__(self, json_mode: bool = False) -> None:
+        self.json_mode = json_mode
+        self.results: list[dict] = []
+
+    def check(self, category: str, name: str, status: str, severity: str, evidence: str) -> None:
+        entry = {
+            "category": category,
+            "check": name,
+            "status": status,
+            "severity": severity,
+            "evidence": evidence,
+        }
+        self.results.append(entry)
+        if not self.json_mode:
+            print(f"[{status}] {category}/{name}")
+            if evidence:
+                print(f"  {evidence}")
+
+    def syntax_ok(self, path: Path) -> tuple[bool, str]:
+        try:
+            source = path.read_text(encoding="utf-8")
+            compile(source, str(path), "exec")
+            return True, ""
+        except SyntaxError as exc:
+            line = exc.lineno or "?"
+            return False, f"{path.name}:{line}: {exc.msg}"
+        except OSError as exc:
+            return False, str(exc)
+
+    def run_python(self) -> None:
+        if sys.version_info >= (3, 8):
+            self.check("capability", "python_version", "PASS", "info", sys.version.split()[0])
+        else:
+            self.check("capability", "python_version", "FAIL", "blocking", f"Python 3.8+ required, found {sys.version}")
+
+    def run_manifest(self) -> None:
+        path = PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        if not path.exists():
+            self.check("config", "manifest_present", "FAIL", "blocking", "plugin.json not found")
+            return
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            self.check("config", "manifest_present", "FAIL", "blocking", f"Invalid JSON: {exc}")
+            return
+        for key in ["name", "version", "description", "skills", "hooks", "mcpServers"]:
+            if key not in data:
+                self.check("config", f"manifest_{key}", "FAIL", "blocking", f"Missing '{key}'")
+                return
+        self.check("config", "manifest_present", "PASS", "info", f"{data['name']} v{data['version']}")
+
+    def run_hooks_bundle(self) -> None:
+        hooks_json = PLUGIN_ROOT / "hooks" / "hooks.json"
+        if hooks_json.exists():
+            self.check("capability", "bundled_hooks", "PASS", "info", "hooks/hooks.json present")
+        else:
+            self.check("capability", "bundled_hooks", "FAIL", "blocking", "hooks/hooks.json missing")
+
+    def run_hook_scripts(self) -> None:
+        scripts_dir = PLUGIN_ROOT / "hooks" / "scripts"
+        expected = ["state.py", "guard.py", "audit.py", "load_session.py", "save_session.py"]
+        missing = [name for name in expected if not (scripts_dir / name).exists()]
+        if missing:
+            self.check("capability", "hook_scripts", "FAIL", "blocking", f"Missing hook scripts: {missing}")
+            return
+        failures = []
+        for name in expected:
+            ok, evidence = self.syntax_ok(scripts_dir / name)
+            if not ok:
+                failures.append(evidence or name)
+        if failures:
+            self.check("capability", "hook_scripts", "FAIL", "blocking", f"Syntax failures: {failures}")
+        else:
+            self.check("capability", "hook_scripts", "PASS", "info", f"{len(expected)} hook scripts parse")
+
+    def run_skills(self) -> None:
+        skills_dir = PLUGIN_ROOT / "skills"
+        if not skills_dir.exists():
+            self.check("config", "skills_dir", "FAIL", "blocking", "skills directory missing")
+            return
+        skill_dirs = [item for item in skills_dir.iterdir() if item.is_dir()]
+        total_desc_chars = 0
+        for skill_dir in skill_dirs:
+            skill_file = skill_dir / "SKILL.md"
+            if not skill_file.exists():
+                self.check("config", f"skill_{skill_dir.name}", "WARN", "warning", "Missing SKILL.md")
+                continue
+            for line in skill_file.read_text(encoding="utf-8").splitlines():
+                if line.startswith("description:"):
+                    total_desc_chars += len(line)
+                    break
+        self.check("capability", "skills_count", "PASS", "info", f"{len(skill_dirs)} skill folders")
+        status = "WARN" if total_desc_chars > 7000 else "PASS"
+        severity = "warning" if total_desc_chars > 7000 else "info"
+        self.check("config", "skills_description_budget", status, severity, f"Approx {total_desc_chars} description chars")
+
+    def run_mcp(self) -> None:
+        path = PLUGIN_ROOT / ".mcp.json"
+        if not path.exists():
+            self.check("config", "mcp_config", "WARN", "warning", "No .mcp.json present")
+            return
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            self.check("config", "mcp_config", "FAIL", "blocking", f"Invalid .mcp.json: {exc}")
+            return
+        servers = payload.get("mcp_servers", {})
+        if not servers:
+            self.check("config", "mcp_config", "FAIL", "blocking", "No bundled MCP server declared")
+            return
+        scripts = []
+        for server_name, server in servers.items():
+            command = str(server.get("command", "")).strip()
+            args = server.get("args", []) or []
+            if not command:
+                self.check("config", f"mcp_{server_name}", "FAIL", "blocking", "MCP command missing")
+                return
+            if command.lower() == "python" and args:
+                script_rel = str(args[0])
+                script_path = (PLUGIN_ROOT / script_rel).resolve()
+                scripts.append(script_path)
+                if not script_path.exists():
+                    self.check("config", f"mcp_{server_name}", "FAIL", "blocking", f"Missing MCP script: {script_rel}")
+                    return
+                ok, evidence = self.syntax_ok(script_path)
+                if not ok:
+                    self.check("config", f"mcp_{server_name}", "FAIL", "blocking", f"MCP script syntax failed: {evidence or script_rel}")
+                    return
+        self.check("capability", "mcp_config", "PASS", "info", f"{len(servers)} bundled MCP server(s) ready")
+
+    def run_project_layout(self) -> None:
+        namespace_root = PROJECT_ROOT / ".codex" / PROJECT_NAMESPACE
+        if namespace_root.exists():
+            self.check("recovery", "project_layout", "PASS", "info", str(namespace_root))
+        else:
+            self.check("recovery", "project_layout", "WARN", "warning", "Project bootstrap has not created .codex/anyone-can-code yet")
+
+    def run_project_config(self) -> None:
+        config_path = PROJECT_ROOT / ".codex" / "config.toml"
+        if not config_path.exists():
+            self.check("config", "project_config", "WARN", "warning", "No project .codex/config.toml found")
+            return
+        text = config_path.read_text(encoding="utf-8")
+        hook_off = "plugin_hooks = false" in text or "hooks = false" in text
+        if hook_off:
+            self.check("config", "project_hooks_mode", "PASS", "info", "Project config can keep hooks quiet here")
+        else:
+            self.check("config", "project_hooks_mode", "WARN", "warning", "Project config does not disable hooks here")
+
+    def run_default_prompts(self) -> None:
+        path = PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            self.check("config", "default_prompt_limit", "WARN", "warning", "Could not validate default prompts")
+            return
+        prompts = payload.get("interface", {}).get("defaultPrompt", [])
+        if len(prompts) > 3:
+            self.check("config", "default_prompt_limit", "FAIL", "blocking", f"{len(prompts)} prompts found")
+            return
+        too_long = [prompt for prompt in prompts if len(prompt) > 128]
+        if too_long:
+            self.check("config", "default_prompt_limit", "FAIL", "blocking", "At least one default prompt exceeds 128 chars")
+        else:
+            self.check("config", "default_prompt_limit", "PASS", "info", f"{len(prompts)} prompts within docs limits")
+
+    def run_usage_script(self) -> None:
+        script_path = PLUGIN_ROOT / "scripts" / "codeburn.py"
+        if not script_path.exists():
+            self.check("verification", "usage_script", "WARN", "warning", "codeburn.py not found")
+            return
+        ok, evidence = self.syntax_ok(script_path)
+        if ok:
+            self.check("verification", "usage_script", "PASS", "info", "codeburn.py parses")
+        else:
+            self.check("verification", "usage_script", "FAIL", "blocking", evidence[:240])
+
+    def run_runtime_truth(self) -> None:
+        info = runtime_info.build_runtime_info(PROJECT_ROOT, PLUGIN_ROOT)
+        source_root = info.get("plugin_source_root")
+        runtime_root = info.get("installed_plugin_root")
+        source_version = info.get("plugin_source_version")
+        runtime_version = info.get("installed_runtime_version")
+
+        if source_root:
+            self.check("runtime", "source_root", "PASS", "info", source_root)
+        else:
+            self.check("runtime", "source_root", "WARN", "warning", "No source plugin root found from marketplace")
+
+        if info.get("marketplace_root"):
+            self.check("runtime", "marketplace_root", "PASS", "info", str(info["marketplace_root"]))
+        else:
+            self.check("runtime", "marketplace_root", "WARN", "warning", "No marketplace root found")
+
+        if info.get("marketplace_name"):
+            if info.get("managed_marketplace_configured"):
+                mode = info.get("marketplace_upgrade_mode")
+                source = info.get("managed_marketplace_source") or "unknown source"
+                if mode == "git":
+                    evidence = f"{info['marketplace_name']} tracked as Git marketplace: {source}"
+                else:
+                    evidence = f"{info['marketplace_name']} tracked as local marketplace: {source}"
+                self.check("runtime", "managed_marketplace", "PASS", "info", evidence)
+            else:
+                command = f"codex plugin marketplace add \"{info.get('marketplace_root')}\""
+                self.check("runtime", "managed_marketplace", "WARN", "warning", f"Not in Codex managed marketplace list. Add: {command}")
+
+        if runtime_root:
+            self.check("runtime", "installed_root", "PASS", "info", runtime_root)
+        else:
+            self.check("runtime", "installed_root", "WARN", "warning", "No installed runtime found in Codex cache")
+
+        if source_version and runtime_version:
+            if runtime_info.compare_versions(source_version, runtime_version) == 0:
+                self.check("runtime", "source_runtime_match", "PASS", "info", f"{source_version} == {runtime_version}")
+            else:
+                self.check("runtime", "source_runtime_match", "WARN", "warning", f"source {source_version}, runtime {runtime_version}")
+
+        if info.get("wrong_root_hint"):
+            self.check("runtime", "project_root_hint", "WARN", "warning", f"Maybe wrong root. Try: {info['wrong_root_hint']}")
+        elif PROJECT_ROOT.name.lower() == "codex":
+            self.check("runtime", "project_root_hint", "WARN", "warning", "Looks like umbrella root, not plugin-dev repo")
+        else:
+            self.check("runtime", "project_root_hint", "PASS", "info", str(PROJECT_ROOT))
+
+    def summary(self) -> dict:
+        summary = {"pass": 0, "warn": 0, "fail": 0}
+        for item in self.results:
+            if item["status"] == "PASS":
+                summary["pass"] += 1
+            elif item["status"] == "WARN":
+                summary["warn"] += 1
+            elif item["status"] == "FAIL":
+                summary["fail"] += 1
+        return summary
+
+    def run_all(self) -> dict:
+        self.run_python()
+        self.run_manifest()
+        self.run_hooks_bundle()
+        self.run_hook_scripts()
+        self.run_skills()
+        self.run_mcp()
+        self.run_project_layout()
+        self.run_project_config()
+        self.run_default_prompts()
+        self.run_usage_script()
+        self.run_runtime_truth()
+        return {"results": self.results, "summary": self.summary()}
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Anyone Can Code doctor")
+    parser.add_argument("--json", action="store_true", help="Output JSON")
+    args = parser.parse_args()
+
+    doctor = Doctor(json_mode=args.json)
+    report = doctor.run_all()
+    if args.json:
+        print(json.dumps(report, indent=2))
+        return
+    summary = report["summary"]
+    print(f"Doctor: {summary['pass']} PASS, {summary['warn']} WARN, {summary['fail']} FAIL")
+
+
+if __name__ == "__main__":
+    main()

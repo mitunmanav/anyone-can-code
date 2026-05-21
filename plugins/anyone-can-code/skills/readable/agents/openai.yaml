@@ -1,0 +1,4 @@
+interface:
+  display_name: "Readable"
+  short_description: "Code quality — WHY comments, 40-line limit, NOT a git hook"
+  default_prompt: "Use $readable to check code meets quality standards before commit."

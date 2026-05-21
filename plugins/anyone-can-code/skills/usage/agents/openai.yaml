@@ -1,0 +1,4 @@
+interface:
+  display_name: "Usage"
+  short_description: "Live token dashboard — http://localhost:8765, auto-refresh 3s"
+  default_prompt: "Use $usage to start the live token dashboard in your browser."

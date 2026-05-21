@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clarify"
+  short_description: "Structured intake — up to 5 questions, creates SPEC-DRAFT"
+  default_prompt: "Use $clarify to describe your app idea and get a structured spec."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Setup"
+  short_description: "Onboarding pipeline — verifies, configures, activates plugin"
+  default_prompt: "Use $setup to initialize and verify the plugin after installation."

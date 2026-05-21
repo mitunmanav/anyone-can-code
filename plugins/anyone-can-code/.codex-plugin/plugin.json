@@ -1,0 +1,42 @@
+{
+  "name": "anyone-can-code",
+  "version": "2.0.1",
+  "description": "Docs-native Codex Windows build workflow from any starting point to a verified result.",
+  "author": {
+    "name": "Mitun",
+    "email": "mitunmanav933@gmail.com",
+    "url": "https://github.com/mitunmanav"
+  },
+  "homepage": "https://github.com/mitunmanav/anyone-can-code",
+  "repository": "https://github.com/mitunmanav/anyone-can-code",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "windows",
+    "workflow",
+    "verification",
+    "plugin"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Anyone Can Code",
+    "shortDescription": "One front door for idea, repo, bug, polish, and ship workflows.",
+    "longDescription": "Anyone Can Code is a Windows-first Codex plugin that routes vague ideas, existing repos, features, bugs, reviews, and ship requests into the right workflow. It now uses a bundled MCP memory server for reinforced learning, keeps local project state thin, uses bundled hooks when enabled, supports optional project bootstrap, tracks resumable state, enforces evidence-first verification, and keeps visible communication configurable with normal or caveman modes.",
+    "developerName": "Mitun",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "I want to build something, but I may be starting from an idea, a repo, or a bug.",
+      "Resume my last workflow and tell me the next best step.",
+      "Verify what changed and tell me what is still uncertain."
+    ],
+    "brandColor": "#10A37F",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/logo.svg"
+  }
+}

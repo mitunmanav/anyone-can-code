@@ -1,0 +1,4 @@
+interface:
+  display_name: "Onboard"
+  short_description: "Project initializer — new projects or existing codebases"
+  default_prompt: "Use $onboard to prepare your project for the Anyone Can Code pipeline."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify"
+  short_description: "Read-only review — /review, 3-cycle cap, routes to fix"
+  default_prompt: "Use $verify to check the built code before marking a task done."

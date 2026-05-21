@@ -1,0 +1,75 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\load_session.py\"",
+            "statusMessage": "ACC loading context..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\guard.py\"",
+            "statusMessage": "ACC checking request..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\guard.py\"",
+            "statusMessage": "ACC checking action..."
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\audit.py\"",
+            "statusMessage": "ACC checking permission..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\audit.py\"",
+            "statusMessage": "ACC recording signals..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\save_session.py\"",
+            "timeout": 30,
+            "statusMessage": "ACC saving state..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Anyone Can Code"
+  short_description: "Front door router for idea, repo, bug, review, and ship workflows."
+  default_prompt: "Tell me what you want to build, fix, review, or ship."

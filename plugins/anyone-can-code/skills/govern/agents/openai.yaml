@@ -1,0 +1,4 @@
+interface:
+  display_name: "Govern"
+  short_description: "SPEC authority — impact analysis, atomic promotion, version history"
+  default_prompt: "Use $govern to promote a new spec draft after reviewing its impact."

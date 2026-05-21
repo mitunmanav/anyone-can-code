@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan"
+  short_description: "SPEC decomposition into ordered tasks with dependencies"
+  default_prompt: "Use $plan to break down the clarified spec into build tasks."

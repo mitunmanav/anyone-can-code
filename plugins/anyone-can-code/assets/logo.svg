@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512">
+  <rect width="1024" height="512" fill="#0d1117"/>
+  <rect x="50" y="80" width="924" height="352" rx="30" fill="#10A37F"/>
+  <text x="512" y="300" text-anchor="middle" font-family="Arial,sans-serif" font-size="80" font-weight="bold" fill="white">Anyone Can Code</text>
+  <text x="512" y="370" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" fill="rgba(255,255,255,0.8)">Plugin for Codex</text>
+</svg>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fix"
+  short_description: "Error recovery — own-diff revert, halt on user overlap"
+  default_prompt: "Use $fix after 3 failed verify cycles to recover from build errors."

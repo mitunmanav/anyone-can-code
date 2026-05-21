@@ -1,0 +1,11 @@
+[features]
+hooks = false
+plugin_hooks = false
+memories = false
+
+[agents]
+max_threads = 2
+max_depth = 1
+
+[windows]
+sandbox = "unelevated"

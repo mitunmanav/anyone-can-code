@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resume"
+  short_description: "Recover from intact, stale, or broken workflow state."
+  default_prompt: "Use $resume when the workflow needs to continue or recover."

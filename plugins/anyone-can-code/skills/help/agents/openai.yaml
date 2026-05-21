@@ -1,0 +1,4 @@
+interface:
+  display_name: "Help"
+  short_description: "Plain-English status — where are we, what's next"
+  default_prompt: "Use $help anytime you need to know where the project stands."

@@ -1,0 +1,7 @@
+/.codex/
+/plugins/anyone-can-code/.codex/
+/plugins/anyone-can-code/.opencode/
+**/__pycache__/
+*.pyc
+.run-logs/
+.runtime/
