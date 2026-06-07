@@ -6,7 +6,7 @@ It is built by Mitun for people who may not think of themselves as technical, bu
 
 ## Project Status
 
-Anyone Can Code is preparing for its first public release. The public version starts at `1.0.0`, with earlier internal test tags removed from the public branch.
+Anyone Can Code is at its first public release candidate. The initial public version is `1.0.0`.
 
 ## Current Release
 
