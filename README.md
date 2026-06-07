@@ -2,7 +2,7 @@
 
 Anyone Can Code is a Windows-first Codex plugin marketplace for builders who want a clearer path from idea to verified result.
 
-It is started by Mitun, a builder focused on making software creation more approachable for people with ideas, taste, and persistence, even if they do not yet have deep engineering experience.
+It is started by Mitun, a builder using AI-assisted development to make software creation more approachable for people with ideas, taste, and persistence, even if they do not yet have deep engineering experience.
 
 ## Project Status
 
@@ -24,7 +24,9 @@ Anyone Can Code is at its first public release candidate. The initial public ver
 
 ## Creator and Contributor Model
 
-Mitun is the creator, product owner, and day-to-day maintainer of the project. The project needs technical contributors who can help with:
+Mitun is the creator, product owner, and day-to-day maintainer of the project. This GitHub repository is set up as the public home for the plugin: issues for bugs and ideas, pull requests for improvements, validation checks for quality, and releases for packaged versions.
+
+The project needs technical contributors who can help with:
 
 - Codex plugin architecture and marketplace packaging
 - Python scripts, MCP memory behavior, and local state handling

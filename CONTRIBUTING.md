@@ -6,7 +6,9 @@ This project is meant to stay practical, Windows-friendly, and evidence-first. C
 
 ## Project Model
 
-Mitun is the creator and product owner. He is building a practical Codex workflow tool and wants technical contributors to help make the engineering solid.
+Mitun is the creator and product owner. He is building a practical Codex workflow tool with AI-assisted development and wants technical contributors to help make the engineering solid.
+
+This repository is set up for public collaboration: issues for bugs and ideas, pull requests for improvements, validation checks for quality, and releases for packaged versions.
 
 That means contributions are especially welcome in:
 
