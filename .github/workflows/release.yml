@@ -22,10 +22,27 @@ jobs:
         run: |
           set -euo pipefail
           TAG="${GITHUB_REF_NAME}"
+          PLUGIN_MANIFEST="plugins/anyone-can-code/.codex-plugin/plugin.json"
+          if [[ ! -f "${PLUGIN_MANIFEST}" ]]; then
+            echo "Missing plugin manifest at ${PLUGIN_MANIFEST}."
+            exit 1
+          fi
           VERSION="$(python - <<'PY'
           import json
-          with open("plugins/anyone-can-code/.codex-plugin/plugin.json", "r", encoding="utf-8") as f:
-              print(json.load(f)["version"])
+          import os
+          import sys
+          manifest = os.environ.get("PLUGIN_MANIFEST", "plugins/anyone-can-code/.codex-plugin/plugin.json")
+          try:
+              with open(manifest, "r", encoding="utf-8") as f:
+                  data = json.load(f)
+          except json.JSONDecodeError as exc:
+              print(f"Invalid plugin manifest JSON in {manifest}: {exc}")
+              sys.exit(1)
+          version = data.get("version")
+          if not version:
+              print(f"Missing 'version' in plugin manifest {manifest}.")
+              sys.exit(1)
+          print(version)
           PY
           )"
           if [[ "v${VERSION}" != "${TAG}" ]]; then
