@@ -8,9 +8,9 @@ This project is built for a **non-technical builder** who wants to create a high
 
 Core product goals:
 
-- near-zero learning curve for first-time users
-- self-learning plugin behavior through memory and workflow feedback
-- clear, guided flow from idea to verified result
+- Near-zero learning curve for first-time users
+- Self-learning plugin behavior through memory and workflow feedback
+- Clear, guided flow from idea to verified result
 
 ## Repository layout
 
