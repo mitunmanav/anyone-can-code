@@ -31,7 +31,10 @@ jobs:
           import json
           import os
           import sys
-          manifest = os.environ.get("PLUGIN_MANIFEST", "plugins/anyone-can-code/.codex-plugin/plugin.json")
+          manifest = os.environ.get("PLUGIN_MANIFEST")
+          if not manifest:
+              print("PLUGIN_MANIFEST is not set.")
+              sys.exit(1)
           try:
               with open(manifest, "r", encoding="utf-8") as f:
                   data = json.load(f)

@@ -19,6 +19,8 @@ Core product goals:
 
 ## Downloads
 
+These badges track this repository (`mitunmanav/anyone-can-code`). If you fork or rename it, replace the `owner/repo` segment in both badge URLs.
+
 ![Total Downloads](https://img.shields.io/github/downloads/mitunmanav/anyone-can-code/total?style=for-the-badge&label=Total%20Downloads)
 ![Latest Release Downloads](https://img.shields.io/github/downloads/mitunmanav/anyone-can-code/latest/total?style=for-the-badge&label=Latest%20Release%20Downloads)
 
