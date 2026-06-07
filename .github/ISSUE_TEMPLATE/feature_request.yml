@@ -19,6 +19,11 @@ body:
     validations:
       required: true
   - type: textarea
+    id: nontechnical
+    attributes:
+      label: Non-technical user value
+      description: How would this help someone who is not deeply technical?
+  - type: textarea
     id: alternatives
     attributes:
       label: Alternatives considered

@@ -4,6 +4,22 @@ Thanks for helping improve Anyone Can Code.
 
 This project is meant to stay practical, Windows-friendly, and evidence-first. Contributions should make the plugin easier to install, understand, use, recover, or verify.
 
+## Project Model
+
+Mitun is the creator and product owner. He is a non-technical builder using AI to build a useful Codex workflow tool, and he wants technical contributors to help make the engineering solid.
+
+That means contributions are especially welcome in:
+
+- plugin architecture
+- Python quality and maintainability
+- MCP memory behavior
+- Windows setup and update flows
+- AI workflow design and prompt quality
+- testing, validation, and release process
+- documentation for non-technical users
+
+Please explain technical choices plainly. A good contribution should improve the project and help the maintainer understand what changed.
+
 ## Ground Rules
 
 - Keep changes focused and easy to review.
@@ -30,6 +46,7 @@ Good pull requests include:
 
 - A short description of the user-facing change.
 - The reason the change is needed.
+- A plain-language explanation of technical tradeoffs.
 - The checks you ran.
 - Any known limitations or follow-up work.
 
