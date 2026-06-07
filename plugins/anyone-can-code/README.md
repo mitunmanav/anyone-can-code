@@ -32,16 +32,16 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
 6. If you want bundled plugin hooks, enable Codex `plugin_hooks` and trust the hook bundle.
 7. If you want repo-local hook files in addition to bundled hooks, run `$setup --project-hooks`.
 
-For plugin development from this repo:
+For plugin development from a local checkout of this repo:
 
 ```powershell
-codex plugin marketplace add "C:\Users\Mitun Manav G Y\Desktop\codex\anyone can code"
+codex plugin marketplace add "<path-to-this-repo>"
 ```
 
 For the app's "upgrade all marketplaces" path, publish this marketplace repo to Git and add the Git source instead:
 
 ```powershell
-codex plugin marketplace add owner/repo --ref main
+codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
 Official Codex docs say `codex plugin marketplace upgrade` refreshes configured Git marketplaces. Local marketplace sources are tracked by Codex for development, but source edits still need restart or reinstall.
@@ -136,7 +136,7 @@ If source is newer than runtime, refresh plugin first. Do not migrate yet.
 
 ## Troubleshooting
 
-- if a skill path still shows `...\\2.0.0\\...`, old runtime still active
+- if a skill path still shows an older version folder, old runtime still active
 - if project name shows parent `codex` folder, wrong root open
 - if source is newer than runtime, refresh plugin first
 - if hooks still run in plugin-dev repo, check project trust, `.codex/config.toml`, and `plugin_hooks`

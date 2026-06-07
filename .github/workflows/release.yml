@@ -1,0 +1,64 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PLUGIN_MANIFEST: plugins/anyone-can-code/.codex-plugin/plugin.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate tag matches plugin version
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          version="$(python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          manifest = Path(os.environ["PLUGIN_MANIFEST"])
+          data = json.loads(manifest.read_text(encoding="utf-8"))
+          print(data["version"])
+          PY
+          )"
+          if [[ "v${version}" != "${tag}" ]]; then
+            echo "Tag ${tag} does not match plugin version v${version}."
+            exit 1
+          fi
+          echo "TAG=${tag}" >> "$GITHUB_ENV"
+          echo "ARCHIVE=anyone-can-code-${tag}.zip" >> "$GITHUB_ENV"
+          echo "CHECKSUM=anyone-can-code-${tag}.zip.sha256" >> "$GITHUB_ENV"
+
+      - name: Package plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd plugins
+          zip -r "../${ARCHIVE}" anyone-can-code \
+            -x "*/__pycache__/*" "*.pyc"
+          cd ..
+          sha256sum "${ARCHIVE}" > "${CHECKSUM}"
+
+      - name: Publish release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" "${ARCHIVE}" "${CHECKSUM}" --clobber
+          else
+            gh release create "${TAG}" "${ARCHIVE}" "${CHECKSUM}" \
+              --title "Anyone Can Code ${TAG}" \
+              --notes "First public release of Anyone Can Code."
+          fi
