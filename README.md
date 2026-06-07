@@ -4,6 +4,10 @@ Anyone Can Code is a Windows-first Codex plugin marketplace for builders who wan
 
 It is built by Mitun for people who may not think of themselves as technical, but still want to direct serious software work with structure, momentum, and evidence.
 
+## Project Status
+
+Anyone Can Code is preparing for its first public release. The public version starts at `1.0.0`, with earlier internal test tags removed from the public branch.
+
 ## Current Release
 
 - Version: `1.0.0`
@@ -32,6 +36,12 @@ Then install **Anyone Can Code** from the Codex plugin browser, restart Codex, o
 $setup
 ```
 
+## Requirements
+
+- Codex Desktop with plugin marketplaces enabled
+- Windows-first runtime environment
+- Python available as `python` for bundled scripts and the MCP memory server
+
 ## Main Skills
 
 - `$orchestrator` routes the request.
@@ -47,12 +57,20 @@ $setup
 - `/.agents/plugins/marketplace.json` - marketplace definition
 - `/plugins/anyone-can-code` - plugin source bundle
 - `/.github/workflows/release.yml` - release packaging workflow
+- `/CHANGELOG.md` - release history
+- `/CONTRIBUTING.md` - contribution guide
 
 ## Star History
 
 Star history will be available after the repository is public:
 
 https://www.star-history.com/#mitunmanav/anyone-can-code&Date
+
+## Support
+
+- Open an issue for reproducible bugs or feature requests.
+- For security issues, follow `SECURITY.md`.
+- For contribution expectations, follow `CONTRIBUTING.md`.
 
 ## Releasing
 
@@ -69,6 +87,7 @@ For plugin behavior and implementation details, see:
 
 - `./plugins/anyone-can-code/README.md`
 - `./plugins/anyone-can-code/IMPLEMENTATION-SOURCE-OF-TRUTH.md`
+- `./plugins/anyone-can-code/VALIDATION.md`
 
 ## License
 
