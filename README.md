@@ -2,10 +2,25 @@
 
 This repository contains the **Anyone Can Code** Codex plugin marketplace and plugin source.
 
+## About this project
+
+This project is built for a **non-technical builder** who wants to create a highly efficient Codex desktop plugin experience.
+
+Core product goals:
+
+- near-zero learning curve for first-time users
+- self-learning plugin behavior through memory and workflow feedback
+- clear, guided flow from idea to verified result
+
 ## Repository layout
 
 - `/.agents/plugins/marketplace.json` - marketplace definition
 - `/plugins/anyone-can-code` - plugin source bundle
+
+## Downloads
+
+![Total Downloads](https://img.shields.io/github/downloads/mitunmanav/anyone-can-code/total?style=for-the-badge&label=Total%20Downloads)
+![Latest Release Downloads](https://img.shields.io/github/downloads/mitunmanav/anyone-can-code/latest/total?style=for-the-badge&label=Latest%20Release%20Downloads)
 
 ## Releasing
 
