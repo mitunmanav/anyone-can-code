@@ -5,3 +5,4 @@
 *.pyc
 .run-logs/
 .runtime/
+.worktrees/
