@@ -23,27 +23,38 @@ anyone-can-code/
 
 ## Normal Flow
 
-1. Select or create one Linear issue.
-2. Link it to one Flow-Next spec.
-3. Develop in a `dev-*` worktree.
-4. Run focused tests and commit locally.
-5. Update `test-candidate` from the committed development branch.
-6. Run full local validation in the testing worktree.
-7. Fix failures in the development worktree, then test a new candidate.
-8. Push the verified development branch to GitHub.
-9. Open a pull request into `main`.
-10. Merge only after checks and review pass.
-11. Publish or release from stable `main`.
-12. Mark the Linear issue done after verified merge/release evidence exists.
+1. Search Linear project `Anyone Can Code` for the request.
+2. Update the matching issue when it already exists; do not create a duplicate.
+3. Create one Linear issue when no matching request exists.
+4. Capture the full product request, decisions, additions, and corrections in that issue.
+5. Link it to exactly one Flow-Next spec.
+6. Treat Linear as continuity memory when chat/thread context is lost.
+7. Edit product intent in Linear; reconcile it into Flow before more implementation.
+8. Develop in a `dev-*` worktree.
+9. Run focused tests and commit locally.
+10. Update `test-candidate` from the committed development branch.
+11. Run full local validation in the testing worktree.
+12. Fix failures in the development worktree, then test a new candidate.
+13. Push the verified development branch to GitHub for off-machine safety.
+14. Open a pull request into `main`.
+15. Merge only after checks and review pass.
+16. Publish or release from stable `main`.
+17. Mark the Linear issue done after verified merge/release evidence exists.
 
 ## Rules
 
 - Never build features directly on `main`.
 - Never publish from a development or testing worktree.
 - Never edit product code in `test-candidate`.
+- Never start implementation before searching Linear for an existing request.
+- Never create a second Linear issue or Flow spec for the same product request.
+- One Linear issue maps to one Flow spec; Flow tasks remain local.
+- Product changes made in chat must also be written to the linked Linear issue.
+- Product changes made in Linear must be reconciled before implementation resumes.
 - Never push secrets, local runtime state, or generated user data.
 - A local commit is a checkpoint, not a release.
-- A GitHub branch is a review candidate, not stable code.
+- A pushed GitHub development branch is off-machine backup plus review candidate, not stable code.
+- Testing branch stays local; do not push `test-candidate`.
 - `main` is stable and release-ready.
 - "Done" requires test evidence. "Published" requires GitHub merge/release evidence.
 
