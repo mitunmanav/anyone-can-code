@@ -21,6 +21,16 @@
 ## Current Goal
 - Define the next verified build outcome here.
 
+## Project Delivery Model
+- Linear is product tracker and human-readable progress mirror.
+- Flow-Next is local source of truth for specs, engineering tasks, dependencies, and evidence.
+- Development happens only in `.worktrees/dev-*`.
+- Candidate validation happens in `.worktrees/test-candidate`; no feature implementation there.
+- Root `main` checkout is stable publishing workspace.
+- Push only locally verified candidates to GitHub.
+- Merge through pull requests; publish/release only from `main`.
+- Follow `DEVELOPMENT-WORKFLOW.md`.
+
 <!-- BEGIN FLOW-NEXT -->
 ## Flow-Next
 

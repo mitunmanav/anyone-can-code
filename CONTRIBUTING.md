@@ -26,9 +26,14 @@ Please explain technical choices plainly. A good contribution should improve the
 
 - Keep changes focused and easy to review.
 - Prefer clear docs and small fixes over broad rewrites.
+- Develop on a feature branch or development worktree, never directly on `main`.
+- Test committed candidates in the testing worktree before pushing them to GitHub.
+- Publish and release only from stable `main`.
 - Do not commit local runtime state, user memory, logs, or generated project data.
 - Keep public docs free of private machine paths, personal tokens, and private screenshots.
 - Validate claims before marking work complete.
+
+See `DEVELOPMENT-WORKFLOW.md` for tracker, worktree, pull request, and release roles.
 
 ## Local Checks
 

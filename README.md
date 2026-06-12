@@ -99,6 +99,16 @@ Releases are automated with GitHub Actions.
 
 ## Development
 
+Project workflow:
+
+- Linear tracks product work and priorities.
+- Flow-Next stores local implementation specs and verification evidence.
+- Development and testing happen in separate local Git worktrees.
+- Verified branches are pushed to GitHub and merged through pull requests.
+- Publishing and releases happen only from stable `main`.
+
+See `DEVELOPMENT-WORKFLOW.md` for the exact folder roles and promotion flow.
+
 For plugin behavior and implementation details, see:
 
 - `./plugins/anyone-can-code/README.md`
