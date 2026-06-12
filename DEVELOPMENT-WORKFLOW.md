@@ -52,9 +52,11 @@ anyone-can-code/
 From the main checkout, refresh the testing branch from a committed development branch:
 
 ```powershell
-git -C ".worktrees\test-candidate" merge --ff-only dev-fn-1-define-project-direction-2
+git -C ".worktrees\test-candidate" merge --no-edit dev-fn-1-define-project-direction-2
 ```
 
-Then run project checks inside `.worktrees\test-candidate`.
+Then run project checks inside `.worktrees\test-candidate`. Testing branch may
+contain candidate merge commits; it is never published.
 
-If fast-forward is impossible, stop. Do not force, reset, or hide divergence.
+If Git reports a conflict, stop. Resolve candidate history in development first.
+Do not force, reset, or hide divergence.
