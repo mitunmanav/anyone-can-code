@@ -23,11 +23,16 @@
 
 ## Project Delivery Model
 - Linear is product tracker and human-readable progress mirror.
+- Linear project `Anyone Can Code` stores every product request, addition, correction, bug, and release request.
+- Search Linear before creating work. Update existing issue instead of duplicating it.
+- One Linear issue maps to exactly one Flow-Next spec.
+- Chat requirement changes must be written to Linear; Linear edits must reconcile into Flow before implementation resumes.
 - Flow-Next is local source of truth for specs, engineering tasks, dependencies, and evidence.
 - Development happens only in `.worktrees/dev-*`.
 - Candidate validation happens in `.worktrees/test-candidate`; no feature implementation there.
 - Root `main` checkout is stable publishing workspace.
-- Push only locally verified candidates to GitHub.
+- Push locally verified development branches to GitHub for off-machine backup and review.
+- Keep `test-candidate` local-only.
 - Merge through pull requests; publish/release only from `main`.
 - Follow `DEVELOPMENT-WORKFLOW.md`.
 

@@ -24,7 +24,7 @@ Anyone Can Code is at its first public release candidate. The initial public ver
 
 ## Creator and Contributor Model
 
-Mitun is the creator, product owner, and day-to-day maintainer of the project. This GitHub repository is set up as the public home for the plugin: issues for bugs and ideas, pull requests for improvements, validation checks for quality, and releases for packaged versions.
+Mitun is the creator, product owner, and day-to-day maintainer of the project. This GitHub repository is the public code and release home: GitHub Issues accept external bug reports and ideas, pull requests carry reviewed improvements, validation checks protect quality, and releases publish packaged versions. Internal product requests and priorities live in Linear.
 
 The project needs technical contributors who can help with:
 
@@ -83,7 +83,8 @@ https://www.star-history.com/#mitunmanav/anyone-can-code&Date
 
 ## Support
 
-- Open an issue for reproducible bugs or feature requests.
+- External users may open a GitHub Issue for reproducible bugs or feature requests.
+- Internal product requests and additions are tracked in Linear project `Anyone Can Code`.
 - Open a technical help issue if you want to improve architecture, AI behavior, testing, or release quality.
 - For security issues, follow `SECURITY.md`.
 - For contribution expectations, follow `CONTRIBUTING.md`.
@@ -101,10 +102,11 @@ Releases are automated with GitHub Actions.
 
 Project workflow:
 
-- Linear tracks product work and priorities.
+- Linear project `Anyone Can Code` permanently tracks every request, addition, correction, bug, and release.
 - Flow-Next stores local implementation specs and verification evidence.
 - Development and testing happen in separate local Git worktrees.
-- Verified branches are pushed to GitHub and merged through pull requests.
+- Verified development branches are pushed to GitHub for off-machine backup and pull-request review.
+- Testing branch remains local-only.
 - Publishing and releases happen only from stable `main`.
 
 See `DEVELOPMENT-WORKFLOW.md` for the exact folder roles and promotion flow.
