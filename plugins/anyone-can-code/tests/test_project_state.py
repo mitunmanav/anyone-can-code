@@ -18,8 +18,18 @@ def load_script(name: str):
     return module
 
 
+def load_hook_script(name: str):
+    path = PLUGIN_ROOT / "hooks" / "scripts" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(f"acc_hook_{name}", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 setup = load_script("setup")
 doctor = load_script("doctor")
+save_session = load_hook_script("save_session")
 
 
 class ProjectStateTests(unittest.TestCase):
@@ -92,6 +102,28 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(workflow["persona_mode"], "builder")
         self.assertEqual(workflow["repo_mode"], "unknown")
         self.assertEqual(workflow["setup_state"], "ready")
+
+    def test_save_session_does_not_overwrite_project_agents_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            agents_path = target / "AGENTS.md"
+            agents_path.write_text("project rules stay\n", encoding="utf-8")
+
+            save_session.write_session_snapshot(
+                target,
+                "session summary",
+                {
+                    "phase": "idle",
+                    "route": "status",
+                    "last_task": "check",
+                    "next_step": "next",
+                    "memory_mode": "mcp-first",
+                },
+            )
+
+            snapshot_path = target / ".codex" / "anyone-can-code" / "state" / "session-snapshot.md"
+            self.assertEqual(agents_path.read_text(encoding="utf-8"), "project rules stay\n")
+            self.assertTrue(snapshot_path.exists())
 
 
 if __name__ == "__main__":

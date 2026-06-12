@@ -17,10 +17,11 @@
 
 - [ ] Bundled hook mode works only when Codex `plugin_hooks` is enabled.
 - [ ] Project bootstrap hook mode is optional, not required for core plugin function.
-- [ ] Hook commands resolve through `PLUGIN_ROOT` in bundled mode.
+- [ ] Hook commands resolve through `PLUGIN_ROOT`/`CLAUDE_PLUGIN_ROOT` in bundled mode and fall back to repo-local plugin source during development.
 - [ ] Repo-local hook commands resolve through `.codex/hooks/scripts/` in project mode.
 - [ ] Hook scripts emit valid JSON only.
 - [ ] Hook logic stays signal-first. No heavy learning write in hooks.
+- [ ] Stop hook writes session snapshots under `.codex/anyone-can-code/state/` and never overwrites root `AGENTS.md`.
 
 ## Windows-first runtime
 

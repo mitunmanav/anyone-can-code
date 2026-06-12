@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\load_session.py\"",
+            "command": "$r=$env:PLUGIN_ROOT; if (-not $r) { $r=$env:CLAUDE_PLUGIN_ROOT }; if (-not $r) { $r=Join-Path (git rev-parse --show-toplevel) 'plugins\\anyone-can-code' }; python (Join-Path $r 'hooks\\scripts\\load_session.py')",
             "statusMessage": "ACC loading context..."
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\guard.py\"",
+            "command": "$r=$env:PLUGIN_ROOT; if (-not $r) { $r=$env:CLAUDE_PLUGIN_ROOT }; if (-not $r) { $r=Join-Path (git rev-parse --show-toplevel) 'plugins\\anyone-can-code' }; python (Join-Path $r 'hooks\\scripts\\guard.py')",
             "statusMessage": "ACC checking request..."
           }
         ]
@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\guard.py\"",
+            "command": "$r=$env:PLUGIN_ROOT; if (-not $r) { $r=$env:CLAUDE_PLUGIN_ROOT }; if (-not $r) { $r=Join-Path (git rev-parse --show-toplevel) 'plugins\\anyone-can-code' }; python (Join-Path $r 'hooks\\scripts\\guard.py')",
             "statusMessage": "ACC checking action..."
           }
         ]
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\audit.py\"",
+            "command": "$r=$env:PLUGIN_ROOT; if (-not $r) { $r=$env:CLAUDE_PLUGIN_ROOT }; if (-not $r) { $r=Join-Path (git rev-parse --show-toplevel) 'plugins\\anyone-can-code' }; python (Join-Path $r 'hooks\\scripts\\audit.py')",
             "statusMessage": "ACC checking permission..."
           }
         ]
@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\audit.py\"",
+            "command": "$r=$env:PLUGIN_ROOT; if (-not $r) { $r=$env:CLAUDE_PLUGIN_ROOT }; if (-not $r) { $r=Join-Path (git rev-parse --show-toplevel) 'plugins\\anyone-can-code' }; python (Join-Path $r 'hooks\\scripts\\audit.py')",
             "statusMessage": "ACC recording signals..."
           }
         ]
@@ -64,7 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$env:PLUGIN_ROOT\\hooks\\scripts\\save_session.py\"",
+            "command": "$r=$env:PLUGIN_ROOT; if (-not $r) { $r=$env:CLAUDE_PLUGIN_ROOT }; if (-not $r) { $r=Join-Path (git rev-parse --show-toplevel) 'plugins\\anyone-can-code' }; python (Join-Path $r 'hooks\\scripts\\save_session.py')",
             "timeout": 30,
             "statusMessage": "ACC saving state..."
           }

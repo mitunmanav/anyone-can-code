@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
 
 
-AGENTS_MD_MAX_BYTES = 28672
+SESSION_SNAPSHOT_MAX_BYTES = 28672
 
 
 def find_repo_root() -> Path | None:
@@ -37,9 +37,9 @@ def session_summary(payload: dict) -> str:
     return text[:280] + ("..." if len(text) > 280 else "")
 
 
-def write_agents_md(repo_root: Path, summary: str, workflow: dict) -> None:
+def write_session_snapshot(repo_root: Path, summary: str, workflow: dict) -> None:
     content = [
-        "# Anyone Can Code - Project Context",
+        "# Anyone Can Code - Session Snapshot",
         "",
         "## Workflow Snapshot",
         f"- Phase: {workflow.get('phase', 'idle')}",
@@ -58,10 +58,11 @@ def write_agents_md(repo_root: Path, summary: str, workflow: dict) -> None:
     ]
     text = "\n".join(content) + "\n"
     encoded = text.encode("utf-8")
-    if len(encoded) > AGENTS_MD_MAX_BYTES:
-        text = encoded[:AGENTS_MD_MAX_BYTES].decode("utf-8", errors="ignore")
+    if len(encoded) > SESSION_SNAPSHOT_MAX_BYTES:
+        text = encoded[:SESSION_SNAPSHOT_MAX_BYTES].decode("utf-8", errors="ignore")
         text = text[: text.rfind("\n")] + "\n"
-    (repo_root / "AGENTS.md").write_text(text, encoding="utf-8")
+    layout = state.ensure_project_layout(repo_root)
+    (layout["state"] / "session-snapshot.md").write_text(text, encoding="utf-8")
 
 
 def infer_next_step(summary: str) -> str:
@@ -242,7 +243,7 @@ def main() -> None:
         "memory_mode": "mcp-first",
     }
     workflow = state.write_state(repo_root, updates)
-    write_agents_md(repo_root, f"{summary}\n\n{signal_line}", workflow)
+    write_session_snapshot(repo_root, f"{summary}\n\n{signal_line}", workflow)
     write_resume_artifacts(repo_root, payload, summary, workflow)
     write_mistake_ledger(repo_root, signals)
     durable_memory_writes(repo_root, signals, summary)
