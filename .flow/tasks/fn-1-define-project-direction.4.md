@@ -11,6 +11,7 @@ Add exact observability states and verification wording so ACC never collapses i
 - `plugins/anyone-can-code/skills/verify/SKILL.md`
 - `plugins/anyone-can-code/skills/execute/SKILL.md`
 - `plugins/anyone-can-code/scripts/doctor.py`
+- `plugins/anyone-can-code/scripts/product_intake.py`
 - `plugins/anyone-can-code/VALIDATION.md`
 - `.codex/anyone-can-code/state/workflow.json` (generated state)
 
@@ -28,12 +29,16 @@ Add exact observability states and verification wording so ACC never collapses i
 - `plugins/anyone-can-code/skills/execute/SKILL.md` - task execution state updates.
 - `plugins/anyone-can-code/scripts/setup.py:132` - workflow state defaults.
 <!-- Updated by plan-sync: fn-1-define-project-direction.1 moved workflow defaults into `workflow_defaults` during persona setup repair -->
+- `plugins/anyone-can-code/scripts/product_intake.py` - task `.2` introduced `ALLOWED_STATES` and checklist item states; decide whether to reuse or move shared state vocabulary.
+<!-- Updated by plan-sync: fn-1-define-project-direction.2 added checklist item states and product intake doctor smoke. -->
 
 **Optional** (reference as needed):
 - `plugins/anyone-can-code/README.md` - evidence-first rule.
 
 ## Key context
 The state vocabulary is closed: in scope, designed, approved, implemented, verified, blocked, deferred. New synonyms should not leak into status output.
+
+Task `.2` currently keeps the same state vocabulary in `product_intake.ALLOWED_STATES`; `.4` should make the reusable source explicit for status/verify/execute.
 
 ## Acceptance
 - [ ] Status output uses only allowed states and reports failures, silent failures, and unverified work.

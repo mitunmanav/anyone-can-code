@@ -11,6 +11,7 @@ Wire the orchestrator so ACC starts from one front door, detects the request sha
 - `plugins/anyone-can-code/skills/bridge/SKILL.md`
 - `plugins/anyone-can-code/skills/onboard/SKILL.md`
 - `plugins/anyone-can-code/skills/help/SKILL.md`
+- `plugins/anyone-can-code/scripts/product_intake.py`
 - `plugins/anyone-can-code/skills/*/agents/openai.yaml`
 - `plugins/anyone-can-code/README.md`
 
@@ -26,7 +27,9 @@ Wire the orchestrator so ACC starts from one front door, detects the request sha
 - `plugins/anyone-can-code/skills/orchestrator/SKILL.md:17` - current entry modes.
 - `plugins/anyone-can-code/skills/orchestrator/SKILL.md:36` - mode banner contract.
 - `plugins/anyone-can-code/skills/bridge/SKILL.md:12` - bridge scan behavior.
+- `plugins/anyone-can-code/scripts/product_intake.py` - deterministic intake/checklist/plan-line contract from task `.2`.
 - `plugins/anyone-can-code/.codex-plugin/plugin.json:33` - default prompts.
+<!-- Updated by plan-sync: fn-1-define-project-direction.2 added `scripts/product_intake.py` as the request-to-plan helper and updated orchestrator guidance. -->
 
 **Optional** (reference as needed):
 - `plugins/anyone-can-code/skills/help/SKILL.md` - user help surface.
@@ -34,6 +37,8 @@ Wire the orchestrator so ACC starts from one front door, detects the request sha
 
 ## Key context
 Bridge detection is approximate. The UX should say what was detected and routed, but not claim unavailable tools exist.
+
+The vague-idea route should now reuse `product_intake.py` behavior instead of inventing a second intake/classifier path.
 
 ## Acceptance
 - [ ] Orchestrator accepts vague idea, existing repo, feature, bug, polish, ship, and verify starting points.

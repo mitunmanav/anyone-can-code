@@ -11,8 +11,14 @@ Use `$clarify` when the request is still too vague to plan or build safely.
 
 - Ask only what materially changes the build.
 - Never silently assume architecture, platform, security, or behavior details.
-- Prefer one question at a time.
+- Ask no more than five blocking intake questions:
+  - what should it do?
+  - who will use it?
+  - what must be included on day one?
+  - new repo, existing repo, or production repo?
+  - any deadline?
 - If the user already gave enough information, skip unnecessary intake.
+- Use `scripts/product_intake.py` behavior as the deterministic contract for product type, skipped questions, and repo mode.
 
 ## Output
 
@@ -28,6 +34,7 @@ Include:
 - top day-one features
 - constraints
 - known unknowns
+- product type: website, app, game, API, script, automation, plugin, data tool, dashboard, native app, existing repo, production repo, or unknown
 
 ## Escalation
 

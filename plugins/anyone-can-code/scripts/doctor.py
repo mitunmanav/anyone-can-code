@@ -13,6 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import runtime_info
+import product_intake
 
 
 def plugin_root() -> Path:
@@ -263,6 +264,13 @@ class Doctor:
         else:
             self.check("verification", "usage_script", "FAIL", "blocking", evidence[:240])
 
+    def run_product_intake(self) -> None:
+        ok, evidence = product_intake.smoke_check()
+        if ok:
+            self.check("verification", "product_intake_smoke", "PASS", "info", evidence)
+        else:
+            self.check("verification", "product_intake_smoke", "FAIL", "blocking", evidence)
+
     def run_runtime_truth(self) -> None:
         info = runtime_info.build_runtime_info(PROJECT_ROOT, PLUGIN_ROOT)
         source_root = info.get("plugin_source_root")
@@ -334,6 +342,7 @@ class Doctor:
         self.run_project_config()
         self.run_default_prompts()
         self.run_usage_script()
+        self.run_product_intake()
         self.run_runtime_truth()
         return {"results": self.results, "summary": self.summary()}
 

@@ -12,6 +12,7 @@ This is the front door.
 - detect entry mode
 - show a mode banner
 - choose fast path or full path
+- run product intake for vague product requests before deeper planning
 - route into onboard, clarify, plan, execute, verify, resume, learn, settings, usage, or update
 
 ## Entry modes
@@ -32,6 +33,7 @@ This is the front door.
 - Low-impact safe inference: proceed and mark inference.
 - Always separate built from verified.
 - Keep the route visible so the user can correct it immediately.
+- For plain requests like "I want to build a website", classify product type, ask only missing blocking questions, generate the adaptive checklist, then show one concise plan line.
 
 ## Mode banner format
 
@@ -42,3 +44,11 @@ Use a short banner such as:
 Then follow with:
 
 `Route: fast path -> plan -> execute -> verify`
+
+For product-intake starts, use:
+
+`Detected: idea + website`
+
+Then:
+
+`Route: intake -> checklist -> plan`

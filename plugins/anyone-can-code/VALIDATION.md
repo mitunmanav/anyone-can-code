@@ -42,6 +42,9 @@
 - [ ] Helper skills exist for `status`, `resume`, `settings`, `usage`, and `update`.
 - [ ] `onboard`, `clarify`, `plan`, `execute`, `verify`, and `learn` point to local workflow files.
 - [ ] Fast path and full path are both represented in the skill guidance.
+- [ ] Request-to-plan smoke: `python plugins/anyone-can-code/scripts/product_intake.py` prints `Plan: website + auth + deploy. Payments later.`
+- [ ] Product intake asks at most five blocking questions and skips known answers.
+- [ ] Adaptive checklist covers relevant engineering and UX areas with `include`, `defer`, `skip`, or `unknown`.
 
 ## Anti-hallucination rules
 
@@ -75,7 +78,9 @@
 - [ ] `python -m py_compile scripts/setup.py`
 - [ ] `python -m py_compile scripts/update.py`
 - [ ] `python -m py_compile scripts/doctor.py`
+- [ ] `python -m py_compile scripts/product_intake.py`
 - [ ] `python -m py_compile scripts/codeburn.py`
 - [ ] `python scripts/doctor.py --json` returns a structured report.
+- [ ] `doctor.py` reports `product_intake_smoke` as `PASS`.
 - [ ] `doctor.py` reports source root, runtime root, and source/runtime version match or mismatch.
 - [ ] `doctor.py` warns when the parent umbrella root looks open instead of the plugin-dev repo.
