@@ -25,6 +25,8 @@ def plugin_root() -> Path:
 PLUGIN_ROOT = plugin_root()
 PROJECT_ROOT = Path(os.environ.get("ACC_PROJECT_ROOT", Path.cwd()))
 PROJECT_NAMESPACE = "anyone-can-code"
+ALLOWED_PERSONA_MODES = {"builder", "developer", "mixed"}
+ALLOWED_REPO_MODES = {"new", "existing", "production", "unknown"}
 
 
 class Doctor:
@@ -168,6 +170,59 @@ class Doctor:
         else:
             self.check("recovery", "project_layout", "WARN", "warning", "Project bootstrap has not created .codex/anyone-can-code yet")
 
+    def read_project_json(self, path: Path) -> tuple[dict | None, str]:
+        try:
+            return json.loads(path.read_text(encoding="utf-8")), ""
+        except FileNotFoundError:
+            return None, f"Missing {path}"
+        except json.JSONDecodeError as exc:
+            return None, f"Invalid JSON: {exc}"
+        except OSError as exc:
+            return None, str(exc)
+
+    def run_project_state(self) -> None:
+        namespace_root = PROJECT_ROOT / ".codex" / PROJECT_NAMESPACE
+        preferences_path = namespace_root / "settings" / "preferences.json"
+        workflow_path = namespace_root / "state" / "workflow.json"
+
+        preferences, pref_error = self.read_project_json(preferences_path)
+        workflow, workflow_error = self.read_project_json(workflow_path)
+
+        if preferences is None:
+            self.check("recovery", "persona_settings", "WARN", "warning", pref_error)
+        else:
+            persona_mode = preferences.get("persona_mode")
+            allowed_modes = preferences.get("persona_allowed_modes")
+            communication_mode = preferences.get("communication_mode")
+            if (
+                persona_mode in ALLOWED_PERSONA_MODES
+                and allowed_modes == ["builder", "developer", "mixed"]
+                and communication_mode == "caveman-strict"
+            ):
+                self.check("recovery", "persona_settings", "PASS", "info", f"{persona_mode}, {communication_mode}")
+            else:
+                self.check("recovery", "persona_settings", "WARN", "warning", "Persona defaults missing or invalid")
+
+        if workflow is None:
+            self.check("recovery", "workflow_state", "WARN", "warning", workflow_error)
+        else:
+            setup_state = workflow.get("setup_state")
+            workflow_persona = workflow.get("persona_mode")
+            if setup_state == "ready" and workflow_persona in ALLOWED_PERSONA_MODES:
+                self.check("recovery", "workflow_state", "PASS", "info", f"{setup_state}, {workflow_persona}")
+            else:
+                self.check("recovery", "workflow_state", "WARN", "warning", "Workflow setup state missing or invalid")
+
+        repo_mode = None
+        if isinstance(preferences, dict):
+            repo_mode = preferences.get("repo_mode")
+        if repo_mode is None and isinstance(workflow, dict):
+            repo_mode = workflow.get("repo_mode")
+        if repo_mode in ALLOWED_REPO_MODES:
+            self.check("recovery", "repo_mode", "PASS", "info", repo_mode)
+        else:
+            self.check("recovery", "repo_mode", "WARN", "warning", "Repo mode missing or invalid")
+
     def run_project_config(self) -> None:
         config_path = PROJECT_ROOT / ".codex" / "config.toml"
         if not config_path.exists():
@@ -275,6 +330,7 @@ class Doctor:
         self.run_skills()
         self.run_mcp()
         self.run_project_layout()
+        self.run_project_state()
         self.run_project_config()
         self.run_default_prompts()
         self.run_usage_script()

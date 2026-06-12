@@ -1,0 +1,62 @@
+{
+  "land": {
+    "automatedReviewers": "",
+    "ciFixBudget": 3,
+    "patienceMinutes": 30,
+    "release": true,
+    "reviewSignal": "silence",
+    "reviewTrigger": ""
+  },
+  "memory": {
+    "enabled": true
+  },
+  "planSync": {
+    "crossSpec": true,
+    "enabled": true
+  },
+  "review": {
+    "backend": "codex"
+  },
+  "scouts": {
+    "github": false
+  },
+  "tracker": {
+    "conflictTiebreak": "always-ask",
+    "enabled": false,
+    "perEvent": {
+      "capture": "off",
+      "completionReview": "off",
+      "interview": "off",
+      "land": {
+        "merged": "off"
+      },
+      "makePr": "off",
+      "plan": "off",
+      "qa": "off",
+      "resolvePr": "off",
+      "work": {
+        "done": "off",
+        "firstClaim": "off"
+      }
+    },
+    "perTracker": {
+      "labelMap": {},
+      "priorityMap": {},
+      "projectId": null,
+      "teamId": null
+    },
+    "provenance": null,
+    "readyState": null,
+    "staleAfterHours": 24,
+    "type": null,
+    "version": 1
+  },
+  "work": {
+    "delegate": false,
+    "delegateConsent": false,
+    "delegateDecision": "auto",
+    "delegateEffort": "medium",
+    "delegateModel": "gpt-5.5",
+    "delegateSandbox": "yolo"
+  }
+}

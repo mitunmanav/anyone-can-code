@@ -15,7 +15,8 @@ Reply rule:
 ## What it does
 
 - Creates `.codex/anyone-can-code/` for state, artifacts, learning, logs, backups, and migrations.
-- Creates default preferences with `caveman-strict` communication mode, aggressive automation, and trigger-auto learning.
+- Creates default preferences with builder persona, `caveman-strict` communication mode, assisted automation, local-first research, automatic plugin routing, and trigger-auto learning.
+- Stores persona once as `builder`, `developer`, or `mixed`; future ACC flow auto-configures tone, depth, approvals, and routing from that setting.
 - Writes an install record that tracks plugin version, hook mode, and MCP-first memory mode.
 - Keeps plugin-dev repo quiet by default: hooks off, plugin_hooks off, memories off.
 - Refreshes `AGENTS.md` from the project template if needed.

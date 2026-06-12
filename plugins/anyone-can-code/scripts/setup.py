@@ -33,11 +33,19 @@ PROJECT_NAMESPACE = "anyone-can-code"
 
 DEFAULT_PREFERENCES = {
     "schema_version": 2,
+    "persona_mode": "builder",
+    "persona_allowed_modes": ["builder", "developer", "mixed"],
+    "verbosity": "simple",
+    "automation_level": "assisted",
     "communication_mode": "caveman-strict",
     "automation_preference": "aggressive",
     "learning_preference": "enabled",
+    "research_preference": "local-first",
+    "approval_preference": "ask-for-secrets-paid-login-destructive-product",
+    "plugin_routing": "automatic",
     "browser_preference": "ask",
     "learn_mode": "trigger-auto",
+    "repo_mode": "unknown",
 }
 
 
@@ -79,6 +87,25 @@ def write_json_if_missing(path: Path, payload: dict, force: bool = False) -> Non
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+def merge_json_defaults(path: Path, defaults: dict, force: bool = False) -> None:
+    if force or not path.exists():
+        write_json_if_missing(path, defaults, force=True)
+        return
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return
+    if not isinstance(payload, dict):
+        return
+    changed = False
+    for key, value in defaults.items():
+        if key not in payload:
+            payload[key] = value
+            changed = True
+    if changed:
+        path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
 def write_text_if_missing(path: Path, text: str, force: bool = False) -> None:
     if path.exists() and not force:
         return
@@ -102,23 +129,27 @@ def copy_project_hooks(target: Path, force: bool = False) -> None:
 def bootstrap_project(target: Path, force: bool = False, install_project_hooks: bool = False) -> None:
     paths = ensure_project_layout(target)
     version = plugin_version()
-    write_json_if_missing(paths["settings"] / "preferences.json", DEFAULT_PREFERENCES, force=force)
-    write_json_if_missing(
+    workflow_defaults = {
+        "schema_version": 2,
+        "phase": "idle",
+        "route": "",
+        "entry_mode": "",
+        "active_goal": "",
+        "active_spec": "",
+        "last_task": "",
+        "next_step": "",
+        "last_verification": "",
+        "persona_mode": DEFAULT_PREFERENCES["persona_mode"],
+        "repo_mode": DEFAULT_PREFERENCES["repo_mode"],
+        "setup_state": "ready",
+        "communication_mode": DEFAULT_PREFERENCES["communication_mode"],
+        "memory_mode": "mcp-first",
+        "updated_at": "",
+    }
+    merge_json_defaults(paths["settings"] / "preferences.json", DEFAULT_PREFERENCES, force=force)
+    merge_json_defaults(
         paths["state"] / "workflow.json",
-        {
-            "schema_version": 2,
-            "phase": "idle",
-            "route": "",
-            "entry_mode": "",
-            "active_goal": "",
-            "active_spec": "",
-            "last_task": "",
-            "next_step": "",
-            "last_verification": "",
-            "communication_mode": DEFAULT_PREFERENCES["communication_mode"],
-            "memory_mode": "mcp-first",
-            "updated_at": "",
-        },
+        workflow_defaults,
         force=force,
     )
     write_json_if_missing(
