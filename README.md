@@ -24,7 +24,7 @@ Anyone Can Code is at its first public release candidate. The initial public ver
 
 ## Creator and Contributor Model
 
-Mitun is the creator, product owner, and day-to-day maintainer of the project. This GitHub repository is the public code and release home: GitHub Issues accept external bug reports and ideas, pull requests carry reviewed improvements, validation checks protect quality, and releases publish packaged versions. Internal product requests and priorities live in Linear.
+Mitun is the creator, product owner, and day-to-day maintainer of the project. This GitHub repository is the public code and release home: GitHub Issues accept external bug reports and ideas, pull requests carry reviewed improvements, validation checks protect quality, and releases publish packaged versions. Internal product memory, requests, decisions, and history live in the maintainer's Obsidian project vault.
 
 The project needs technical contributors who can help with:
 
@@ -84,7 +84,7 @@ https://www.star-history.com/#mitunmanav/anyone-can-code&Date
 ## Support
 
 - External users may open a GitHub Issue for reproducible bugs or feature requests.
-- Internal product requests and additions are tracked in Linear project `Anyone Can Code`.
+- Internal product requests and additions are tracked in the maintainer Obsidian project vault.
 - Open a technical help issue if you want to improve architecture, AI behavior, testing, or release quality.
 - For security issues, follow `SECURITY.md`.
 - For contribution expectations, follow `CONTRIBUTING.md`.
@@ -102,12 +102,12 @@ Releases are automated with GitHub Actions.
 
 Project workflow:
 
-- Linear project `Anyone Can Code` permanently tracks every request, addition, correction, bug, and release.
-- Flow-Next stores local implementation specs and verification evidence.
-- Development and testing happen in separate local Git worktrees.
-- Verified development branches are pushed to GitHub for off-machine backup and pull-request review.
-- Testing branch remains local-only.
-- Publishing and releases happen only from stable `main`.
+- Obsidian is the complete project brain and history for the maintainer.
+- Flow-Next stores technical implementation specs, task state, and verification evidence.
+- Development happens in a local development worktree.
+- Candidate verification happens in a local testing worktree.
+- Local `main` is approved clean code.
+- Online GitHub `main` is an exact copy of local `main` only after an explicit push command.
 
 See `DEVELOPMENT-WORKFLOW.md` for the exact folder roles and promotion flow.
 

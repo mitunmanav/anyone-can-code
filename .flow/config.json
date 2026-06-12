@@ -21,35 +21,9 @@
     "github": false
   },
   "tracker": {
-    "conflictTiebreak": "always-ask",
-    "enabled": true,
-    "perEvent": {
-      "capture": "reconcile",
-      "completionReview": "reconcile",
-      "interview": "reconcile",
-      "land": {
-        "merged": "off"
-      },
-      "makePr": "comment",
-      "plan": "reconcile",
-      "qa": "off",
-      "resolvePr": "comment",
-      "work": {
-        "done": "comment",
-        "firstClaim": "push"
-      }
-    },
-    "perTracker": {
-      "labelMap": {},
-      "priorityMap": {},
-      "projectId": "675d13af-8419-4fa6-a7d1-883e47981a9b",
-      "teamId": "edbcb87e-3643-4a4b-9afd-86483a999000"
-    },
-    "provenance": "discovery ceremony 2026-06-12; confirmed by user; signals: Linear MCP",
-    "readyState": "Todo",
-    "staleAfterHours": 24,
-    "type": "linear",
-    "version": 1
+    "enabled": false,
+    "type": "none",
+    "provenance": "Disabled 2026-06-12 after project memory moved to Obsidian. Flow tracks technical tasks only."
   },
   "work": {
     "delegate": false,

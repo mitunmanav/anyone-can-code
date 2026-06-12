@@ -8,7 +8,7 @@ This project is meant to stay practical, Windows-friendly, and evidence-first. C
 
 Mitun is the creator and product owner. He is building a practical Codex workflow tool with AI-assisted development and wants technical contributors to help make the engineering solid.
 
-This repository is set up for public collaboration: GitHub Issues receive external bugs and ideas, pull requests carry improvements, validation checks protect quality, and releases publish packaged versions. Internal product work is tracked in Linear project `Anyone Can Code`.
+This repository is set up for public collaboration: GitHub Issues receive external bugs and ideas, pull requests carry improvements, validation checks protect quality, and releases publish packaged versions. Internal product work is tracked in the maintainer's Obsidian project vault.
 
 That means contributions are especially welcome in:
 
@@ -33,7 +33,7 @@ Please explain technical choices plainly. A good contribution should improve the
 - Keep public docs free of private machine paths, personal tokens, and private screenshots.
 - Validate claims before marking work complete.
 
-See `DEVELOPMENT-WORKFLOW.md` for tracker, worktree, pull request, and release roles.
+See `DEVELOPMENT-WORKFLOW.md` for Obsidian, Flow, worktree, pull request, and release roles.
 
 ## Local Checks
 

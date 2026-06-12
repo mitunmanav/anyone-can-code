@@ -17,23 +17,29 @@
 - High-impact uncertainty should pause and ask.
 - Verification happens before completion claims.
 - Local state lives under `.codex/anyone-can-code/`.
+- While developing ACC itself, use Obsidian MCP first for project/docs memory. Read `official-codex-docs/index` in the vault before relying on web docs. If those docs are stale, missing, or contradict current behavior, verify with web search and record the reason.
+- Inspiration repos are allowed for ACC plugin architecture and AI-agent workflow ideas. Clone them under `C:\Users\Mitun Manav G Y\Desktop\Plugin development\inspiration`.
+- Use codegraph MCP to index and read inspiration/codebase structure efficiently. For files not covered by codegraph, read only targeted files with `rg`/direct file reads.
+- Do not dump whole repos, whole docs folders, or large raw files into context. Summarize findings, cite paths, and pull only the slices needed for the current task.
+- When anything changes, automatically update every affected repo doc, Flow record, and Obsidian note required to keep truth current.
+- Record agent actions, decisions, what happened, what did not happen, evidence, warnings, and next state into Obsidian immediately during the work, not later.
 
 ## Current Goal
 - Define the next verified build outcome here.
 
 ## Project Delivery Model
-- Linear is product tracker and human-readable progress mirror.
-- Linear project `Anyone Can Code` stores every product request, addition, correction, bug, and release request.
-- Search Linear before creating work. Update existing issue instead of duplicating it.
-- One Linear issue maps to exactly one Flow-Next spec.
-- Chat requirement changes must be written to Linear; Linear edits must reconcile into Flow before implementation resumes.
-- Flow-Next is local source of truth for specs, engineering tasks, dependencies, and evidence.
+- Obsidian is the complete project brain and history: requests, decisions, explanations, evidence, reversals, and continuity.
+- Obsidian vault home: `I:\Obsidian vaults\Projects\Anyone Can Code\00 ACC Home.md`.
+- Flow-Next is local source of truth for technical specs, engineering tasks, dependencies, and task evidence.
+- Chat requirement changes must be captured in Obsidian first, then reconciled into Flow when they affect technical work.
+- Linear is not the active product tracker unless the user explicitly re-enables it.
 - Development happens only in `.worktrees/dev-*`.
 - Candidate validation happens in `.worktrees/test-candidate`; no feature implementation there.
-- Root `main` checkout is stable publishing workspace.
-- Push locally verified development branches to GitHub for off-machine backup and review.
+- Root `main` checkout is approved clean code.
+- Online GitHub `main` must be an exact copy of local `main`, updated only after the user explicitly commands a push.
+- Do not push development branches unless the user explicitly commands that exact action.
 - Keep `test-candidate` local-only.
-- Merge through pull requests; publish/release only from `main`.
+- Publish/release only from approved local `main`.
 - Follow `DEVELOPMENT-WORKFLOW.md`.
 
 <!-- BEGIN FLOW-NEXT -->

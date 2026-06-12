@@ -1,115 +1,48 @@
 {
   "report": {
-    "title": "Verifier Agent — Final Cross-Validation Report",
-    "timestamp": "2026-05-14T00:00:00Z",
-    "overall": "PASS",
-    "overall_reason": "All 5 fixes confirmed applied. All compilations pass. All 5 spot-check claims verified against source. Official spec cross-reference confirms marketplace source format is correct. Zero regressions detected.",
-
-    "verification_results": [
+    "title": "ACC Setup Drift Verification",
+    "timestamp": "2026-06-12T00:00:00+05:30",
+    "overall": "PASS_WITH_WARNINGS",
+    "overall_reason": "Current local verification passes, with plugin runtime installation still intentionally not refreshed.",
+    "current_results": [
       {
-        "check": "VALIDATION.md:179 says '15 skills'",
+        "check": "skills_count",
         "passed": true,
-        "evidence": "Line 179: 'Total description characters across all 15 skills < 8000'"
+        "evidence": "doctor.py --json reports 19 skill folders"
       },
       {
-        "check": "VALIDATION.md:191 says 'codeburn.py'",
+        "check": "doctor",
         "passed": true,
-        "evidence": "Line 191: 'All scripts/codeburn.py pass python -m py_compile' (actual line: 191, not 190 due to unchanged preceding lines)"
+        "evidence": "18 PASS, 1 WARN, 0 FAIL"
       },
       {
-        "check": "README.md:29 says '15 skills'",
+        "check": "tests",
         "passed": true,
-        "evidence": "Line 29: '├── skills/                           ← 15 skills'"
+        "evidence": "python -m unittest discover ran 3 tests; OK"
       },
       {
-        "check": "README.md:31 mentions 'codeburn'",
+        "check": "python_compile",
         "passed": true,
-        "evidence": "Line 31: '├── scripts/                          ← Doctor + codeburn token usage analyzer'"
+        "evidence": "mcp, scripts, and hook scripts compile"
       },
       {
-        "check": "hooks.json has PermissionRequest matcher",
+        "check": "flow_validation",
         "passed": true,
-        "evidence": "PermissionRequest entry at line 38 with matcher 'Bash|apply_patch|Edit|Write'"
+        "evidence": "flowctl.py validate --spec fn-1-define-project-direction --json returned valid true with 5 tasks"
       },
       {
-        "check": "codeburn.py compiles",
+        "check": "marketplace_source",
         "passed": true,
-        "evidence": "python -m py_compile scripts/codeburn.py → PASS"
-      },
-      {
-        "check": "skills/ contains exactly 15 skills",
-        "passed": true,
-        "evidence": "ls skills/ | wc -l → 15 (bridge, capture, clarify, execute, fix, govern, help, learn, onboard, plan, readable, setup, update, usage, verify)"
-      },
-      {
-        "check": "All hook scripts compile",
-        "passed": true,
-        "evidence": "All 5 scripts pass py_compile: audit.py, guard.py, load_session.py, save_session.py, state.py"
-      },
-      {
-        "check": "guard.py INJECTION_PATTERNS = 7 patterns",
-        "passed": true,
-        "evidence": "7 patterns at lines 36-42: ignore previous instructions, ignore all previous, you are now, new system prompt, pretend you are, system override, forget everything"
-      },
-      {
-        "check": "save_session.py checks stop_hook_active first",
-        "passed": true,
-        "evidence": "Line 151: 'if payload.get(\"stop_hook_active\"):' — first conditional after check_initialized, guards against infinite Stop loop"
-      },
-      {
-        "check": "guard.py uses .lower() for case-insensitive matching",
-        "passed": true,
-        "evidence": "Line 76: 'lower = text.lower()' and line 91: 'command_lower = command.lower().strip()'"
-      },
-      {
-        "check": "codeburn.py reads SCAN_INTERVAL from env var",
-        "passed": true,
-        "evidence": "Line 438: 'SCAN_INTERVAL = int(os.environ.get(\"CODEBURN_SCAN_INTERVAL\", 10))' — env var with fallback to 10, not hardcoded"
-      },
-      {
-        "check": "marketplace.json uses 'source':'local' format",
-        "passed": true,
-        "evidence": "Nested object: 'source': { 'source': 'local', 'path': './plugins/anyone-can-code' }"
-      },
-      {
-        "check": "Official spec confirms 'source':'local' is correct (not 'type':'local')",
-        "passed": true,
-        "evidence": "https://developers.openai.com/codex/plugins/build shows exact same format: 'source': { 'source': 'local', 'path': './plugins/my-plugin' }. Spec also notes source can be a plain string path as shorthand. Our marketplace matches the full object format exactly."
+        "evidence": "personal marketplace points to the local ACC plugin source path"
       }
     ],
-
-    "fixes_confirmed": [
-      {
-        "fix": "VALIDATION.md:179 — 14 → 15 skills",
-        "confirmed": true,
-        "location": "VALIDATION.md:179"
-      },
-      {
-        "fix": "VALIDATION.md:190 — added codeburn.py check",
-        "confirmed": true,
-        "location": "VALIDATION.md:191 (off-by-1 due to unchanged line count)"
-      },
-      {
-        "fix": "README.md:29 — 14 → 15 skills",
-        "confirmed": true,
-        "location": "README.md:29"
-      },
-      {
-        "fix": "README.md:31 — updated script description with codeburn",
-        "confirmed": true,
-        "location": "README.md:31"
-      },
-      {
-        "fix": "hooks.json — added PermissionRequest matcher",
-        "confirmed": true,
-        "location": "hooks.json:38-49"
-      }
+    "warnings": [
+      "No installed ACC runtime was found in the Codex cache.",
+      "pytest is not installed for the active Python 3.14 runtime; current tests use unittest."
     ],
-
     "notes": [
-      "VALIDATION.md codeburn entry landed at line 191 (not 190) — one line preceding it was unchanged, causing the expected line number to be off by 1. Content is correct.",
-      "All 10 previously-identified false positives remain absent (confirmed clean).",
-      "Official OpenAI spec at developers.openai.com/codex/plugins/build uses exactly the same marketplace 'source' object format with nested 'source'/'path' keys."
+      "This file replaces a stale historical verifier report with old skill-count evidence.",
+      "No plugin reinstall or runtime refresh was performed."
     ]
   }
 }
