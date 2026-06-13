@@ -78,6 +78,18 @@ class PromotionScopeGuardTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn("PASS", result.stdout)
 
+    def test_reliability_policy_allows_flow_usage_docs(self):
+        candidate = self.commit_candidate(
+            {
+                ".flow/usage.md": "windows flowctl note\n",
+            }
+        )
+
+        result = self.run_guard(candidate)
+
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("PASS", result.stdout)
+
     def test_reliability_policy_blocks_plugin_product_files(self):
         candidate = self.commit_candidate(
             {

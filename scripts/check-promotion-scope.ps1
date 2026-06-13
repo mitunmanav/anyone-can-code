@@ -20,6 +20,7 @@ function Get-AllowedPatterns {
             return @(
                 '^\.flow/specs/fn-2-harden-acc-development-system\.(json|md)$',
                 '^\.flow/tasks/fn-2-harden-acc-development-system\.[0-9]+\.(json|md)$',
+                '^\.flow/usage\.md$',
                 '^AGENTS\.md$',
                 '^DEVELOPMENT-WORKFLOW\.md$'
             )
@@ -33,6 +34,7 @@ function Get-AllowedPatterns {
                 '^CHANGELOG\.md$',
                 '^SECURITY\.md$',
                 '^SUPPORT\.md$',
+                '^\.flow/usage\.md$',
                 '^\.flow/(specs|tasks)/.*\.(md|json)$'
             )
         }

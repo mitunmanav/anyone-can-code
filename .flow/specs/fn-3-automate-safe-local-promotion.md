@@ -12,9 +12,9 @@ Add one lightweight PowerShell guard script under `scripts/check-promotion-scope
 
 Policy data is hardcoded in the script for now to keep the system small:
 
-- `reliability`: allows Flow reliability files and workflow docs only.
+- `reliability`: allows Flow reliability files, `.flow/usage.md`, and workflow docs only.
 - `development-system`: allows this guard script, its tests, `fn-3` Flow files, and workflow docs only.
-- `docs-only`: allows repo documentation and Flow documentation only.
+- `docs-only`: allows repo documentation and Flow documentation only, including `.flow/usage.md`.
 - `plugin-product`: allows plugin product files, but is intentionally explicit and never used for reliability promotion.
 
 ## API Contracts
@@ -38,7 +38,7 @@ The script must be cheap and local-only. It must not call GitHub or web APIs. It
 
 - **R1:** A local command exists that checks promotion scope before `main` receives candidate changes.
 - **R2:** `reliability` policy fails when candidate diff includes `plugins/anyone-can-code/**`.
-- **R3:** `reliability` policy passes when candidate diff includes only `fn-2` Flow reliability files plus `AGENTS.md` and `DEVELOPMENT-WORKFLOW.md`.
+- **R3:** `reliability` policy passes when candidate diff includes only `fn-2` Flow reliability files, `.flow/usage.md`, `AGENTS.md`, and `DEVELOPMENT-WORKFLOW.md`.
 - **R4:** The guard is covered by tests that create temporary Git repos and verify pass/fail behavior.
 - **R5:** Workflow docs require the guard before promoting candidate work into local `main`.
 - **R6:** Flow and Obsidian record that this is a small guard, not a broad automation system.
@@ -53,4 +53,3 @@ Out of scope: automatic merging, pushing, PR updates, releases, background agent
 <!-- scope: both -->
 
 The earlier mistake happened because a whole development branch was merged into local `main` when only reliability files should have moved. A large promotion robot would add new failure paths. The safer first step is a tiny deterministic guard that makes the dangerous action visible and blocks it with a clear local failure.
-
