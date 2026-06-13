@@ -1,11 +1,11 @@
 # Anyone Can Code - Project Context
 
 ## Workflow Snapshot
-- Phase: idle
-- Route: unknown
-- Entry mode: unknown
-- Last task: N/A
-- Next step: Use front door or `$status`.
+- Phase: build
+- Route: Flow-Next local development
+- Entry mode: existing project
+- Last task: `fn-2-harden-acc-development-system` spec created
+- Next task: `fn-2-harden-acc-development-system.1` define change-impact matrix
 - Communication mode: caveman-strict
 - Memory mode: mcp-first
 
@@ -25,7 +25,8 @@
 - Record agent actions, decisions, what happened, what did not happen, evidence, warnings, and next state into Obsidian immediately during the work, not later.
 
 ## Current Goal
-- Define the next verified build outcome here.
+- Harden the ACC development system around Flow-Next before resuming plugin
+  product task `fn-1-define-project-direction.3`.
 
 ## Project Delivery Model
 - Obsidian is the complete project brain and history: requests, decisions, explanations, evidence, reversals, and continuity.
@@ -41,6 +42,11 @@
 - Keep `test-candidate` local-only.
 - Publish/release only from approved local `main`.
 - Follow `DEVELOPMENT-WORKFLOW.md`.
+- Before plugin-product work resumes, complete the development reliability gate
+  in `fn-2-harden-acc-development-system`.
+- Use `Projects\Anyone Can Code\02 Current Status.md` for status overview.
+- Use `Projects\Anyone Can Code\03 Timeline.md` for reconstructed past work.
+- Linear is legacy only. Do not read, write, sync, or create Linear items.
 
 <!-- BEGIN FLOW-NEXT -->
 ## Flow-Next

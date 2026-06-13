@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-13T04:23:41.518605Z",
+  "depends_on": [
+    "fn-2-harden-acc-development-system.1"
+  ],
+  "id": "fn-2-harden-acc-development-system.2",
+  "priority": null,
+  "spec": "fn-2-harden-acc-development-system",
+  "spec_path": ".flow/tasks/fn-2-harden-acc-development-system.2.md",
+  "status": "todo",
+  "title": "Document pre-work and pre-done gates",
+  "updated_at": "2026-06-13T04:24:06.955399Z"
+}
