@@ -1,5 +1,9 @@
 # Flow-Next Usage Guide
 
+Windows PowerShell note: this checkout's `.flow/bin/flowctl` is a Bash wrapper.
+Use `python .flow\bin\flowctl.py ...` in PowerShell so commands do not hang or
+print empty output.
+
 Task tracking for AI agents. All state lives in `.flow/`.
 
 ## CLI

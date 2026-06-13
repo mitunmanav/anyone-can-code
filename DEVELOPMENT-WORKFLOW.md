@@ -92,7 +92,7 @@ Run this before editing:
 
 | Change type | Required updates | Required proof |
 |---|---|---|
-| Flow spec/task | Flow task/spec via `flowctl`; Obsidian status/evidence/task map if current state changes | `flowctl validate --all`; ready/task output |
+| Flow spec/task | Flow task/spec via `python .flow\bin\flowctl.py`; Obsidian status/evidence/task map if current state changes | `python .flow\bin\flowctl.py validate --all`; ready/task output |
 | Repo workflow docs | Obsidian decision/status/evidence if process meaning changes | doc diff; Obsidian link check |
 | Obsidian project brain | Related Obsidian notes; Flow only if technical requirements/tasks change | note count/link check; status consistency scan |
 | Plugin source or hook behavior | Tests, Doctor, runtime cache check, Flow evidence, Obsidian evidence, repo docs if workflow/setup changed | tests pass; Doctor pass; cache source/hash or behavior proof |
