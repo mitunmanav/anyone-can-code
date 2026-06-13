@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import importlib.util
+import os
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -124,6 +126,60 @@ class ProjectStateTests(unittest.TestCase):
             snapshot_path = target / ".codex" / "anyone-can-code" / "state" / "session-snapshot.md"
             self.assertEqual(agents_path.read_text(encoding="utf-8"), "project rules stay\n")
             self.assertTrue(snapshot_path.exists())
+
+    @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
+    def test_hook_commands_run_from_parent_workspace_without_plugin_env_under_cmd(self) -> None:
+        hooks = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
+        repo_root = PLUGIN_ROOT.parents[2]
+        workspace_root = repo_root.parent
+        env = os.environ.copy()
+        env.pop("PLUGIN_ROOT", None)
+        env.pop("CLAUDE_PLUGIN_ROOT", None)
+
+        cases = [
+            (
+                hooks["hooks"]["PreToolUse"][0]["hooks"][0]["command"],
+                {
+                    "hook_event_name": "PreToolUse",
+                    "tool_name": "Bash",
+                    "tool_input": {"command": "echo hi"},
+                    "cwd": str(workspace_root),
+                },
+            ),
+            (
+                hooks["hooks"]["PostToolUse"][0]["hooks"][0]["command"],
+                {
+                    "hook_event_name": "PostToolUse",
+                    "tool_name": "Bash",
+                    "tool_input": {"command": "echo hi"},
+                    "tool_response": {"exit_code": 0},
+                    "cwd": str(workspace_root),
+                },
+            ),
+            (
+                hooks["hooks"]["Stop"][0]["hooks"][0]["command"],
+                {
+                    "hook_event_name": "Stop",
+                    "turn_id": "test-turn",
+                    "stop_hook_active": False,
+                    "last_assistant_message": "test",
+                    "cwd": str(workspace_root),
+                },
+            ),
+        ]
+
+        for command, payload in cases:
+            with self.subTest(event=payload["hook_event_name"]):
+                result = subprocess.run(
+                    ["cmd.exe", "/c", command],
+                    input=json.dumps(payload),
+                    text=True,
+                    capture_output=True,
+                    cwd=workspace_root,
+                    env=env,
+                    timeout=20,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":
