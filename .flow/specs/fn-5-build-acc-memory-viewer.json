@@ -1,0 +1,25 @@
+{
+  "branch_name": "fn-5-build-acc-memory-viewer",
+  "created_at": "2026-06-13T07:51:03.795414Z",
+  "depends_on_epics": [
+    "fn-4-build-portable-markdown-memory"
+  ],
+  "id": "fn-5-build-acc-memory-viewer",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-5-build-acc-memory-viewer.md",
+  "status": "open",
+  "title": "Build ACC memory viewer",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-13T07:51:12.441169Z"
+}

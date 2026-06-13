@@ -11,6 +11,7 @@ Add exact observability states and verification wording so ACC never collapses i
 - `plugins/anyone-can-code/skills/verify/SKILL.md`
 - `plugins/anyone-can-code/skills/execute/SKILL.md`
 - `plugins/anyone-can-code/scripts/doctor.py`
+- `plugins/anyone-can-code/scripts/product_intake.py`
 - `plugins/anyone-can-code/VALIDATION.md`
 - `.codex/anyone-can-code/state/workflow.json` (generated state)
 
@@ -28,12 +29,16 @@ Add exact observability states and verification wording so ACC never collapses i
 - `plugins/anyone-can-code/skills/execute/SKILL.md` - task execution state updates.
 - `plugins/anyone-can-code/scripts/setup.py:132` - workflow state defaults.
 <!-- Updated by plan-sync: fn-1-define-project-direction.1 moved workflow defaults into `workflow_defaults` during persona setup repair -->
+- `plugins/anyone-can-code/scripts/product_intake.py` - task `.2` introduced `ALLOWED_STATES` and checklist item states; decide whether to reuse or move shared state vocabulary.
+<!-- Updated by plan-sync: fn-1-define-project-direction.2 added checklist item states and product intake doctor smoke. -->
 
 **Optional** (reference as needed):
 - `plugins/anyone-can-code/README.md` - evidence-first rule.
 
 ## Key context
 The state vocabulary is closed: in scope, designed, approved, implemented, verified, blocked, deferred. New synonyms should not leak into status output.
+
+Task `.2` currently keeps the same state vocabulary in `product_intake.ALLOWED_STATES`; `.4` should make the reusable source explicit for status/verify/execute.
 
 ## Acceptance
 - [ ] Status output uses only allowed states and reports failures, silent failures, and unverified work.
@@ -43,9 +48,8 @@ The state vocabulary is closed: in scope, designed, approved, implemented, verif
 - [ ] Windows doctor/validation checks cover status vocabulary or generated state shape.
 
 ## Done summary
-TBD
-
+Added one closed workflow state vocabulary, evidence-first status rendering, verification records, generated state repair, Doctor checks, and status/verify/execute guidance. Built work stays implemented until proof marks it verified. Failures, silent failures, unverified work, uncertainty, route, and next step remain visible.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 571c07d
+- Tests: python -m unittest discover -s plugins\anyone-can-code\tests -p test_*.py: 29 OK in development and testing, python plugins\anyone-can-code\scripts\doctor.py --json: 24 PASS, 0 WARN, 0 FAIL after normal setup repair in testing, python -m py_compile status/setup/doctor/state scripts: PASS, python .flow\bin\flowctl.py validate --all --json: 3 specs, 12 tasks, 0 errors, 0 warnings, promotion guard 81eac35..571c07d plugin-product: PASS, 11 changed files, testing candidate 77badae: clean and verified
 - PRs:

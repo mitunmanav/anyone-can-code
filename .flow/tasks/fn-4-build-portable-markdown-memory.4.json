@@ -1,0 +1,20 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-13T07:32:49.098424Z",
+  "depends_on": [
+    "fn-4-build-portable-markdown-memory.2",
+    "fn-4-build-portable-markdown-memory.3"
+  ],
+  "id": "fn-4-build-portable-markdown-memory.4",
+  "impl": null,
+  "priority": null,
+  "review": null,
+  "spec": "fn-4-build-portable-markdown-memory",
+  "spec_path": ".flow/tasks/fn-4-build-portable-markdown-memory.4.md",
+  "status": "todo",
+  "sync": null,
+  "title": "Migrate JSONL memory and update prior ACC surfaces",
+  "updated_at": "2026-06-13T07:51:02.840364Z"
+}

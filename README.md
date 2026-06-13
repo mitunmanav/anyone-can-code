@@ -19,17 +19,18 @@ Anyone Can Code is at its first public release candidate. The initial public ver
 - Routes rough ideas, existing repos, bugs, polish work, and release tasks through one front door.
 - Uses focused skills for clarification, planning, implementation, verification, recovery, settings, and usage.
 - Keeps completion evidence-first, so "built" and "verified" do not get blurred together.
-- Stores durable workflow learnings locally through the bundled MCP memory server.
+- Stores durable workflow learnings as portable linked Markdown. The bundled
+  MCP server remains the access interface; legacy JSONL is migration input only.
 - Supports optional hooks for workflow signals when users explicitly enable them.
 
 ## Creator and Contributor Model
 
-Mitun is the creator, product owner, and day-to-day maintainer of the project. This GitHub repository is the public code and release home: GitHub Issues accept external bug reports and ideas, pull requests carry reviewed improvements, validation checks protect quality, and releases publish packaged versions. Internal product memory, requests, decisions, and history live in the maintainer's Obsidian project vault.
+Mitun is the creator, product owner, and day-to-day maintainer of the project. This GitHub repository is the public code and release home: GitHub Issues accept external bug reports and ideas, pull requests carry reviewed improvements, validation checks protect quality, and releases publish packaged versions. Internal product requests, decisions, and history live in the local Obsidian vault.
 
 The project needs technical contributors who can help with:
 
 - Codex plugin architecture and marketplace packaging
-- Python scripts, MCP memory behavior, and local state handling
+- Python scripts, portable Markdown memory behavior, and local state handling
 - Windows compatibility and setup reliability
 - AI workflow design, prompt quality, and verification patterns
 - Documentation that makes technical ideas usable for non-technical people
@@ -84,7 +85,8 @@ https://www.star-history.com/#mitunmanav/anyone-can-code&Date
 ## Support
 
 - External users may open a GitHub Issue for reproducible bugs or feature requests.
-- Internal product requests and additions are tracked in the maintainer Obsidian project vault.
+- Internal product requests, additions, decisions, and history are tracked in
+  Obsidian under `Projects/Anyone Can Code`.
 - Open a technical help issue if you want to improve architecture, AI behavior, testing, or release quality.
 - For security issues, follow `SECURITY.md`.
 - For contribution expectations, follow `CONTRIBUTING.md`.
@@ -102,14 +104,37 @@ Releases are automated with GitHub Actions.
 
 Project workflow:
 
-- Obsidian is the complete project brain and history for the maintainer.
-- Flow-Next stores technical implementation specs, task state, and verification evidence.
-- Development happens in a local development worktree.
-- Candidate verification happens in a local testing worktree.
-- Local `main` is approved clean code.
-- Online GitHub `main` is an exact copy of local `main` only after an explicit push command.
+- Obsidian permanently tracks requests, ideas, updates, deletions, decisions,
+  reasons, progress, test evidence, Git history, and releases.
+- Wiki-linked ACC notes connect direction, decisions, tasks, evidence, timeline,
+  workflow, and release history in graph view.
+- Flow-Next stores local implementation specs and verification evidence.
+- The Flow tracker bridge is disabled; Flow remains technical-only.
+- Development and testing happen in separate local Git worktrees.
+- Verified development branches promote into local `main` after user approval.
+- Development and testing branches stay local.
+- Only verified local `main` is intended for GitHub publication.
+- GitHub push, PR, merge, tag, publish, and release actions require explicit user commands.
+- Testing branch remains local-only.
+- Publishing and releases happen only from stable `main`.
 
 See `DEVELOPMENT-WORKFLOW.md` for the exact folder roles and promotion flow.
+
+Project operations:
+
+- Obsidian vault: `I:\Obsidian vaults`
+- ACC hub: `Projects\Anyone Can Code\00 ACC Home.md`
+- Current status: `Projects\Anyone Can Code\02 Current Status.md`
+- Timeline: `Projects\Anyone Can Code\03 Timeline.md`
+- Task map: `Projects\Anyone Can Code\06 Task Map.md`
+
+Local workspace:
+
+```text
+repository root                         stable local main
+.worktrees/dev-*                       development
+.worktrees/test-candidate              local candidate testing
+```
 
 For plugin behavior and implementation details, see:
 

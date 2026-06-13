@@ -16,6 +16,7 @@ Use `$onboard` when the plugin needs to understand the starting point before pla
 - `bug-fix`: bug or failure, route into repair and verification.
 - `polish-review`: optimization or review pass.
 - `ship-verify`: closing and verification path.
+- `requirement-change`: update plan/state, then resume from the last valid step.
 
 ## Output
 
@@ -26,3 +27,9 @@ Use `$onboard` when the plugin needs to understand the starting point before pla
 ## Rule
 
 Do not ask broad setup questions if the repo and the user request already answer them.
+Use `scripts/front_door.py` as the shared classifier. Do not create a second
+entry-mode classifier in this skill.
+
+Memory onboarding shows selected Markdown storage and optional viewer mode.
+Never inspect or import existing session files unless user selected exact paths,
+scope, and confirmation.

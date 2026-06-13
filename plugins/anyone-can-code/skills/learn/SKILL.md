@@ -1,6 +1,6 @@
 ---
 name: learn
-description: "Captures reinforced learnings through the bundled MCP memory server, with tiny local fallback ledgers only."
+description: "Captures reinforced learnings through portable Markdown memory, with tiny local fallback ledgers only."
 ---
 
 # Learn
@@ -15,7 +15,8 @@ Reply rule:
 
 ## Memory model
 
-Main durable memory lives in the bundled MCP server.
+Main durable memory lives in portable linked Markdown. Bundled MCP is the access
+interface.
 
 Memory scopes:
 
@@ -26,6 +27,14 @@ Memory scopes:
 Local project files stay tiny and are only fallback ledgers:
 
 - `.codex/anyone-can-code/learning/`
+
+Markdown memory lives under:
+
+- `.codex/anyone-can-code/memory/notes/`
+
+Rebuildable index lives under:
+
+- `.codex/anyone-can-code/memory/index/`
 
 Suggested tiny local files:
 
@@ -40,6 +49,7 @@ Suggested tiny local files:
 - return summaries only
 - no raw logs
 - no full chat dump
+- no hidden import of existing session files
 
 ## Rules
 
@@ -53,3 +63,7 @@ Suggested tiny local files:
 - Keep provenance, confidence, reinforcement count, and scope with each item.
 - Support downgrade and revocation.
 - Do not dump all learnings into context.
+- Existing session files need explicit selected source, backup or snapshot,
+  dedupe, provenance, scope label, and receipt before import.
+- Repeated import of same content must skip, not reinforce. Failed import must
+  roll back Markdown and retain source.

@@ -12,5 +12,13 @@ Read from:
 - `.codex/anyone-can-code/state/workflow.json`
 - `.codex/anyone-can-code/state/state-current.md`
 - `.codex/anyone-can-code/artifacts/resume-note.md`
+- `.codex/anyone-can-code/settings/preferences.json`
+
+Explain memory as portable Markdown. If migration/import failed, name rollback
+receipt and say original source remains. Never describe JSONL as current durable
+memory.
 
 Answer in plain language, not internal jargon.
+When explaining the active route, use the same entry-mode and route names from
+`scripts/front_door.py`. Never expose development-system audit or promotion
+terms as product workflow.

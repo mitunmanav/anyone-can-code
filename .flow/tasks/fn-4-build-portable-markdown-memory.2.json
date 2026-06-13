@@ -1,0 +1,19 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-13T07:32:48.176049Z",
+  "depends_on": [
+    "fn-4-build-portable-markdown-memory.1"
+  ],
+  "id": "fn-4-build-portable-markdown-memory.2",
+  "impl": null,
+  "priority": null,
+  "review": null,
+  "spec": "fn-4-build-portable-markdown-memory",
+  "spec_path": ".flow/tasks/fn-4-build-portable-markdown-memory.2.md",
+  "status": "todo",
+  "sync": null,
+  "title": "Build Markdown memory backend and rebuildable index",
+  "updated_at": "2026-06-13T07:51:02.821018Z"
+}

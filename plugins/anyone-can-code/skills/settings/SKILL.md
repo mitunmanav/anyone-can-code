@@ -19,6 +19,11 @@ Reply rule:
 - automation preference: conservative, balanced, or aggressive
 - browser preference: ask or prefer-when-helpful
 - learn mode: `trigger-auto`
+- memory path: default `.codex/anyone-can-code/memory/notes`, user-changeable
+- viewer mode: `none`, `obsidian`, or future `acc-viewer` unavailable
+- import sources: explicit selected paths only
+- import scope: `ask`, `project`, `user`, or `shared`
+- production-repo caution: enabled or disabled
 
 ## Storage
 

@@ -2,7 +2,7 @@
 """
 Anyone Can Code MCP memory server.
 
-One local stdio server. Durable memory stays here, not in project files.
+Portable linked-Markdown memory backend.
 """
 
 from __future__ import annotations
@@ -14,11 +14,17 @@ import re
 import sys
 import time
 import uuid
+import shutil
 from pathlib import Path
 
 
 SCOPES = {"project", "user", "shared"}
 KINDS = {
+    "archive",
+    "decision",
+    "evidence",
+    "failure",
+    "lesson",
     "preference",
     "mistake",
     "correction",
@@ -28,6 +34,12 @@ KINDS = {
 }
 STATUSES = {"active", "downgraded", "revoked"}
 DEFAULT_LIMIT = 5
+NOTE_SCHEMA_VERSION = 1
+SOURCE_TYPES = {"manual", "verified-work", "user-correction", "import", "hook", "unknown"}
+SECRET_PATTERNS = [
+    re.compile(r"(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*['\"]?([a-z0-9_\-]{12,})"),
+    re.compile(r"sk-[A-Za-z0-9_\-]{12,}"),
+]
 
 
 def utc_now() -> str:
@@ -40,19 +52,35 @@ def data_root() -> Path:
         return Path(override)
     codex_home = os.environ.get("CODEX_HOME")
     if codex_home:
-        return Path(codex_home) / "anyone-can-code" / "mcp-memory"
-    return Path.home() / ".codex" / "anyone-can-code" / "mcp-memory"
+        return Path(codex_home) / "anyone-can-code" / "memory"
+    return Path.home() / ".codex" / "anyone-can-code" / "memory"
 
 
 def ensure_data_root() -> Path:
     root = data_root()
     try:
-        root.mkdir(parents=True, exist_ok=True)
+        ensure_memory_layout(root)
         return root
     except OSError:
-        fallback = Path(__file__).resolve().parent.parent / ".runtime" / "mcp-memory"
-        fallback.mkdir(parents=True, exist_ok=True)
+        fallback = Path(__file__).resolve().parent.parent / ".runtime" / "memory"
+        ensure_memory_layout(fallback)
         return fallback
+
+
+def ensure_memory_layout(root: Path) -> None:
+    for relative in [
+        "notes/project",
+        "notes/user",
+        "notes/shared",
+        "notes/lessons",
+        "notes/failures",
+        "notes/decisions",
+        "notes/evidence",
+        "notes/archive",
+        "index",
+        "imports/snapshots",
+    ]:
+        (root / relative).mkdir(parents=True, exist_ok=True)
 
 
 def project_key(project_root: str) -> str:
@@ -60,39 +88,149 @@ def project_key(project_root: str) -> str:
     return hashlib.sha1(normalized.encode("utf-8")).hexdigest()[:16]
 
 
-def store_path(scope: str, project_root: str | None = None) -> Path:
-    root = ensure_data_root()
-    if scope == "project":
-        key = project_key(project_root or "unknown-project")
-        return root / "project" / f"{key}.jsonl"
-    return root / scope / "memory.jsonl"
+def notes_root() -> Path:
+    return ensure_data_root() / "notes"
 
 
-def append_jsonl(path: Path, payload: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(payload, ensure_ascii=True) + "\n")
+def scope_dir(scope: str) -> Path:
+    if scope not in SCOPES:
+        raise ValueError(f"Invalid scope: {scope}")
+    path = notes_root() / scope
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
-def load_records(path: Path) -> list[dict]:
-    if not path.exists():
-        return []
-    rows: list[dict] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
+def note_path(scope: str, record_id: str) -> Path:
+    return scope_dir(scope) / f"{safe_slug(record_id)}.md"
+
+
+def safe_slug(value: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9_.-]+", "-", value.strip()).strip("-")
+    return slug[:96] or str(uuid.uuid4())
+
+
+def redact_secrets(text: str) -> tuple[str, bool]:
+    redacted = text
+    changed = False
+    for pattern in SECRET_PATTERNS:
+        redacted, count = pattern.subn(lambda match: match.group(1) + ": [REDACTED]" if match.groups() else "[REDACTED]", redacted)
+        changed = changed or count > 0
+    return redacted, changed
+
+
+def yaml_scalar(value) -> str:
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, list):
+        return "[" + ", ".join(json.dumps(str(item)) for item in value) + "]"
+    return json.dumps(str(value))
+
+
+def render_frontmatter(record: dict) -> str:
+    fields = [
+        "id",
+        "schema_version",
+        "kind",
+        "scope",
+        "status",
+        "created_at",
+        "updated_at",
+        "source",
+        "provenance",
+        "confidence",
+        "reinforcement_count",
+        "project_key",
+        "content_hash",
+        "secret_redacted",
+        "source_receipt",
+        "related",
+        "supersedes",
+    ]
+    lines = ["---"]
+    for key in fields:
+        if key in record:
+            lines.append(f"{key}: {yaml_scalar(record[key])}")
+    lines.append("---")
+    return "\n".join(lines) + "\n"
+
+
+def parse_scalar(raw: str):
+    raw = raw.strip()
+    if raw.startswith("[") and raw.endswith("]"):
         try:
-            rows.append(json.loads(line))
+            return json.loads(raw)
         except json.JSONDecodeError:
+            return []
+    if raw in {"true", "false"}:
+        return raw == "true"
+    try:
+        if "." in raw:
+            return float(raw)
+        return int(raw)
+    except ValueError:
+        pass
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return raw.strip('"')
+
+
+def parse_markdown_note(path: Path) -> dict | None:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    if not text.startswith("---\n"):
+        return None
+    try:
+        _, frontmatter, body = text.split("---", 2)
+    except ValueError:
+        return None
+    record: dict = {}
+    for line in frontmatter.splitlines():
+        if not line.strip() or ":" not in line:
             continue
+        key, value = line.split(":", 1)
+        record[key.strip()] = parse_scalar(value)
+    summary_match = re.search(r"## Summary\s+(.+?)(?:\n## |\Z)", body, re.S)
+    evidence_match = re.search(r"## Evidence\s+(.+?)(?:\n## |\Z)", body, re.S)
+    record["summary"] = (summary_match.group(1).strip() if summary_match else "").strip()
+    record["evidence"] = (evidence_match.group(1).strip() if evidence_match else "").strip()
+    record["_path"] = str(path)
+    return record
+
+
+def render_markdown_note(record: dict) -> str:
+    title = record.get("title") or str(record.get("summary", "Memory")).splitlines()[0][:80]
+    return (
+        render_frontmatter(record)
+        + f"# {title}\n\n"
+        + "## Summary\n\n"
+        + f"{record.get('summary', '').strip()}\n\n"
+        + "## Evidence\n\n"
+        + f"{record.get('evidence', '').strip() or 'Stored by Anyone Can Code.'}\n\n"
+        + "## Links\n\n"
+        + "- Related: " + ", ".join(record.get("related", [])) + "\n\n"
+        + "## Receipt\n\n"
+        + f"- Source: {record.get('source', 'unknown')}\n"
+        + f"- Provenance: {record.get('provenance', 'unknown')}\n"
+    )
+
+
+def write_note(record: dict) -> Path:
+    path = note_path(record["scope"], record["id"])
+    path.write_text(render_markdown_note(record), encoding="utf-8")
+    return path
+
+
+def load_all_records() -> list[dict]:
+    root = notes_root()
+    rows: list[dict] = []
+    for path in root.rglob("*.md"):
+        row = parse_markdown_note(path)
+        if row:
+            rows.append(row)
     return rows
-
-
-def save_records(path: Path, rows: list[dict]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=True) + "\n")
 
 
 def tokenize(text: str) -> set[str]:
@@ -105,6 +243,7 @@ def score_record(query: str, record: dict) -> float:
             str(record.get("summary", "")),
             str(record.get("kind", "")),
             str(record.get("source", "")),
+            str(record.get("provenance", "")),
         ]
     )
     q_tokens = tokenize(query)
@@ -129,44 +268,62 @@ def normalize_record(arguments: dict) -> dict:
     summary = str(arguments.get("summary", "")).strip()
     if not summary:
         raise ValueError("summary required")
+    summary, secret_redacted = redact_secrets(summary)
     confidence = float(arguments.get("confidence", 0.35))
     confidence = max(0.0, min(1.0, confidence))
+    record_id = str(arguments.get("id") or str(uuid.uuid4()))
+    project_root_value = str(arguments.get("project_root", "")).strip()
+    source = str(arguments.get("source", "unknown")).strip() or "unknown"
+    source_type = source if source in SOURCE_TYPES else ("hook" if source.startswith("hook:") else "manual")
+    content_hash = hashlib.sha256(f"{scope}|{kind}|{summary.lower()}|{project_root_value}".encode("utf-8")).hexdigest()
     return {
-        "id": arguments.get("id") or str(uuid.uuid4()),
+        "id": record_id,
+        "schema_version": NOTE_SCHEMA_VERSION,
         "scope": scope,
         "kind": kind,
         "summary": summary,
         "confidence": confidence,
         "reinforcement_count": int(arguments.get("reinforcement_count", 1) or 1),
-        "last_seen_at": arguments.get("last_seen_at") or utc_now(),
-        "source": str(arguments.get("source", "unknown")).strip() or "unknown",
+        "created_at": arguments.get("created_at") or utc_now(),
+        "updated_at": arguments.get("updated_at") or arguments.get("last_seen_at") or utc_now(),
+        "source": source_type,
+        "provenance": source,
         "status": status,
+        "project_key": project_key(project_root_value) if scope == "project" else "",
+        "content_hash": content_hash,
+        "secret_redacted": secret_redacted,
+        "source_receipt": str(arguments.get("source_receipt", "")).strip(),
+        "related": arguments.get("related", []),
+        "supersedes": arguments.get("supersedes", []),
+        "evidence": str(arguments.get("evidence", "")).strip(),
     }
 
 
-def merge_or_append(path: Path, record: dict) -> dict:
-    rows = load_records(path)
-    for row in rows:
+def merge_or_append(record: dict) -> dict:
+    for row in load_all_records():
         if (
             row.get("scope") == record["scope"]
             and row.get("kind") == record["kind"]
-            and row.get("summary", "").strip().lower() == record["summary"].strip().lower()
+            and row.get("content_hash") == record["content_hash"]
         ):
             row["reinforcement_count"] = int(row.get("reinforcement_count", 1) or 1) + 1
             row["confidence"] = max(float(row.get("confidence", 0.2) or 0.2), record["confidence"])
-            row["last_seen_at"] = utc_now()
+            row["updated_at"] = utc_now()
             row["source"] = record["source"]
+            row["provenance"] = record["provenance"]
             if row.get("status") == "revoked":
                 row["status"] = "downgraded"
-            save_records(path, rows)
+            write_note(row)
             return row
-    rows.append(record)
-    save_records(path, rows)
+    write_note(record)
     return record
 
 
 def active_rows(scope: str, project_root_value: str | None = None) -> list[dict]:
-    rows = load_records(store_path(scope, project_root_value))
+    rows = [row for row in load_all_records() if row.get("scope") == scope]
+    if scope == "project":
+        expected_key = project_key(project_root_value or "unknown-project")
+        rows = [row for row in rows if row.get("project_key") == expected_key]
     return [row for row in rows if row.get("status", "active") != "revoked"]
 
 
@@ -211,7 +368,7 @@ def retrieve_context(arguments: dict) -> dict:
             break
 
     return {
-        "mode": "mcp-first",
+        "mode": "portable-markdown",
         "query": query,
         "count": len(items),
         "items": items,
@@ -219,11 +376,10 @@ def retrieve_context(arguments: dict) -> dict:
 
 
 def store_feedback(arguments: dict) -> dict:
-    project_root_value = str(arguments.get("project_root", "")).strip() or None
     record = normalize_record(arguments)
-    path = store_path(record["scope"], project_root_value if record["scope"] == "project" else None)
-    saved = merge_or_append(path, record)
-    return {"stored": True, "record": saved}
+    saved = merge_or_append(record)
+    rebuild_index({})
+    return {"stored": True, "mode": "portable-markdown", "record": saved, "path": str(note_path(saved["scope"], saved["id"]))}
 
 
 def promote_memory(arguments: dict) -> dict:
@@ -231,25 +387,15 @@ def promote_memory(arguments: dict) -> dict:
     if not record_id:
         raise ValueError("id required")
     for scope in ("project", "user", "shared"):
-        paths = []
-        if scope == "project":
-            paths = list((ensure_data_root() / "project").glob("*.jsonl"))
-        else:
-            paths = [store_path(scope)]
-        for path in paths:
-            rows = load_records(path)
-            changed = False
-            for row in rows:
-                if row.get("id") == record_id:
-                    row["reinforcement_count"] = int(row.get("reinforcement_count", 1) or 1) + 1
-                    row["confidence"] = min(1.0, float(row.get("confidence", 0.2) or 0.2) + 0.15)
-                    row["last_seen_at"] = utc_now()
-                    row["status"] = "active"
-                    changed = True
-                    save_records(path, rows)
-                    return {"promoted": True, "record": row}
-            if changed:
-                break
+        for row in active_rows(scope):
+            if row.get("id") == record_id:
+                row["reinforcement_count"] = int(row.get("reinforcement_count", 1) or 1) + 1
+                row["confidence"] = min(1.0, float(row.get("confidence", 0.2) or 0.2) + 0.15)
+                row["updated_at"] = utc_now()
+                row["status"] = "active"
+                write_note(row)
+                rebuild_index({})
+                return {"promoted": True, "record": row}
     raise ValueError(f"Unknown id: {record_id}")
 
 
@@ -261,19 +407,13 @@ def revoke_memory(arguments: dict) -> dict:
     if not record_id:
         raise ValueError("id required")
     for scope in ("project", "user", "shared"):
-        paths = []
-        if scope == "project":
-            paths = list((ensure_data_root() / "project").glob("*.jsonl"))
-        else:
-            paths = [store_path(scope)]
-        for path in paths:
-            rows = load_records(path)
-            for row in rows:
-                if row.get("id") == record_id:
-                    row["status"] = status
-                    row["last_seen_at"] = utc_now()
-                    save_records(path, rows)
-                    return {"updated": True, "record": row}
+        for row in active_rows(scope):
+            if row.get("id") == record_id:
+                row["status"] = status
+                row["updated_at"] = utc_now()
+                write_note(row)
+                rebuild_index({})
+                return {"updated": True, "record": row}
     raise ValueError(f"Unknown id: {record_id}")
 
 
@@ -299,6 +439,254 @@ def search_shared(arguments: dict) -> dict:
         for row in ranked[:limit]
     ]
     return {"query": query, "count": len(items), "items": items}
+
+
+def rebuild_index(arguments: dict) -> dict:
+    rows = load_all_records()
+    index_path = ensure_data_root() / "index" / "memory-index.json"
+    payload = {
+        "schema_version": 1,
+        "rebuilt_at": utc_now(),
+        "count": len(rows),
+        "items": [
+            {
+                "id": row.get("id"),
+                "scope": row.get("scope"),
+                "kind": row.get("kind"),
+                "status": row.get("status"),
+                "summary": row.get("summary"),
+                "path": row.get("_path"),
+                "project_key": row.get("project_key", ""),
+                "tokens": sorted(tokenize(str(row.get("summary", ""))))[:50],
+            }
+            for row in rows
+        ],
+    }
+    index_path.parent.mkdir(parents=True, exist_ok=True)
+    index_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return {"rebuilt": True, "path": str(index_path), "count": len(rows)}
+
+
+def iter_selected_files(paths: list[str]) -> list[Path]:
+    files: list[Path] = []
+    for raw in paths:
+        path = Path(str(raw)).expanduser()
+        if path.is_file():
+            files.append(path)
+        elif path.is_dir():
+            files.extend(sorted(path.rglob("*.jsonl")))
+            files.extend(sorted(path.rglob("*.md")))
+            files.extend(sorted(path.rglob("*.txt")))
+    return files
+
+
+def extract_session_summaries(path: Path, limit: int) -> list[str]:
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return []
+    summaries: list[str] = []
+    if path.suffix.lower() == ".jsonl":
+        for line in text.splitlines():
+            if len(summaries) >= limit:
+                break
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            candidate = row.get("summary") or row.get("text") or row.get("content")
+            if isinstance(candidate, str) and candidate.strip():
+                summaries.append(candidate.strip()[:1200])
+    else:
+        chunks = [chunk.strip() for chunk in re.split(r"\n{2,}", text) if chunk.strip()]
+        summaries.extend(chunk[:1200] for chunk in chunks[:limit])
+    return summaries[:limit]
+
+
+def write_import_receipt(receipt: dict, rollback: bool = False) -> Path:
+    receipt_dir = ensure_data_root() / "imports"
+    receipt_dir.mkdir(parents=True, exist_ok=True)
+    suffix = "-rollback" if rollback else ""
+    receipt_path = receipt_dir / f"{receipt['receipt_id']}{suffix}.json"
+    markdown_path = receipt_dir / f"{receipt['receipt_id']}{suffix}.md"
+    receipt_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    markdown_path.write_text(
+        "\n".join(
+            [
+                "# Anyone Can Code Memory Import Receipt",
+                "",
+                f"- Status: `{receipt['status']}`",
+                f"- Operation: `{receipt['operation']}`",
+                f"- Scope: `{receipt['scope']}`",
+                f"- Sources: {len(receipt['sources'])}",
+                f"- Snapshots or backups: {len(receipt.get('snapshots', [])) + len(receipt.get('backups', []))}",
+                f"- Imported: {receipt['imported_count']}",
+                f"- Skipped duplicate: {receipt['skipped_count']}",
+                f"- Source files deleted: no",
+                f"- Error: {receipt.get('error', '') or 'none'}",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    receipt["receipt_path"] = str(receipt_path)
+    receipt["receipt_markdown"] = str(markdown_path)
+    return receipt_path
+
+
+def restore_notes_from_snapshot(snapshot: Path, notes_path: Path, notes_existed: bool) -> None:
+    if notes_path.exists():
+        shutil.rmtree(notes_path)
+    if notes_existed:
+        shutil.copytree(snapshot, notes_path)
+    else:
+        notes_path.mkdir(parents=True, exist_ok=True)
+
+
+def import_selected_files(arguments: dict, operation: str) -> dict:
+    paths = arguments.get("paths") or arguments.get("sources") or []
+    if not isinstance(paths, list) or not paths:
+        raise ValueError("paths required")
+    scope = str(arguments.get("scope", "project")).strip()
+    if scope not in SCOPES:
+        raise ValueError(f"Invalid scope: {scope}")
+    project_root_value = str(arguments.get("project_root", "")).strip()
+    dry_run = bool(arguments.get("dry_run", False))
+    per_file_limit = max(1, min(int(arguments.get("per_file_limit", 5) or 5), 25))
+    files = iter_selected_files(paths)
+    receipt_id = f"import-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{uuid.uuid4().hex[:8]}"
+    imported: list[dict] = []
+    snapshots: list[str] = []
+    backups: list[str] = []
+    skipped: list[dict] = []
+    root = ensure_data_root()
+    notes_path = root / "notes"
+    rollback_root = root / "imports" / "transactions" / receipt_id
+    notes_snapshot = rollback_root / "notes-before"
+    notes_existed = notes_path.exists()
+    writes_started = False
+
+    receipt = {
+        "receipt_id": receipt_id,
+        "timestamp": utc_now(),
+        "operation": operation,
+        "status": "preview" if dry_run else "started",
+        "scope": scope,
+        "project_key": project_key(project_root_value) if scope == "project" else "",
+        "sources": [str(path) for path in files],
+        "snapshots": snapshots,
+        "backups": backups,
+        "dry_run": dry_run,
+        "imported_count": 0,
+        "skipped_count": 0,
+        "imported": imported,
+        "skipped": skipped,
+    }
+
+    if dry_run:
+        for source_file in files:
+            for summary in extract_session_summaries(source_file, per_file_limit):
+                record = normalize_record(
+                    {
+                        "scope": scope,
+                        "kind": "pattern",
+                        "summary": summary,
+                        "confidence": 0.35,
+                        "source": "import",
+                        "project_root": project_root_value,
+                    }
+                )
+                imported.append({"id": record["id"], "source": str(source_file), "dry_run": True})
+        receipt["imported_count"] = len(imported)
+        return receipt
+
+    try:
+        rollback_root.mkdir(parents=True, exist_ok=True)
+        if notes_existed:
+            shutil.copytree(notes_path, notes_snapshot)
+
+        source_folder = "backups" if operation == "legacy-jsonl" else "snapshots"
+        source_snapshot_dir = root / "imports" / source_folder / receipt_id
+        source_snapshot_dir.mkdir(parents=True, exist_ok=True)
+        for index, source_file in enumerate(files):
+            snapshot_path = source_snapshot_dir / f"{index:04d}-{safe_slug(source_file.name)}"
+            shutil.copy2(source_file, snapshot_path)
+            if operation == "legacy-jsonl":
+                backups.append(str(snapshot_path))
+            else:
+                snapshots.append(str(snapshot_path))
+
+        existing_hashes = {
+            str(row.get("content_hash"))
+            for row in load_all_records()
+            if row.get("content_hash")
+        }
+        for source_file in files:
+            for summary in extract_session_summaries(source_file, per_file_limit):
+                payload = {
+                    "scope": scope,
+                    "kind": "pattern",
+                    "summary": summary,
+                    "confidence": 0.35,
+                    "source": "import",
+                    "source_receipt": receipt_id,
+                    "evidence": f"Imported from {source_file}. Receipt: {receipt_id}.",
+                    "project_root": project_root_value,
+                }
+                record = normalize_record(payload)
+                record["provenance"] = str(source_file)
+                if record["content_hash"] in existing_hashes:
+                    skipped.append({"content_hash": record["content_hash"], "source": str(source_file)})
+                    continue
+                writes_started = True
+                saved = merge_or_append(record)
+                existing_hashes.add(record["content_hash"])
+                imported.append(
+                    {
+                        "id": saved.get("id"),
+                        "path": str(note_path(saved["scope"], saved["id"])),
+                        "source": str(source_file),
+                        "source_receipt": receipt_id,
+                    }
+                )
+
+        rebuild_index({})
+        verified = all(
+            (parsed := parse_markdown_note(Path(item["path"])))
+            and parsed.get("content_hash") in existing_hashes
+            and parsed.get("source_receipt") == receipt_id
+            for item in imported
+        )
+        if not verified:
+            raise RuntimeError("Markdown verification failed")
+        receipt["status"] = "verified"
+        receipt["imported_count"] = len(imported)
+        receipt["skipped_count"] = len(skipped)
+        write_import_receipt(receipt)
+        shutil.rmtree(rollback_root, ignore_errors=True)
+        return receipt
+    except Exception as exc:
+        if writes_started:
+            try:
+                restore_notes_from_snapshot(notes_snapshot, notes_path, notes_existed)
+                rebuild_index({})
+            except Exception as rollback_exc:
+                receipt["rollback_error"] = str(rollback_exc)
+        receipt["status"] = "rolled_back"
+        receipt["error"] = str(exc)
+        receipt["imported_count"] = 0
+        receipt["skipped_count"] = len(skipped)
+        rollback_path = write_import_receipt(receipt, rollback=True)
+        receipt["rollback_receipt_path"] = str(rollback_path)
+        return receipt
+
+
+def import_session_files(arguments: dict) -> dict:
+    return import_selected_files(arguments, "session-import")
+
+
+def migrate_legacy_jsonl(arguments: dict) -> dict:
+    return import_selected_files(arguments, "legacy-jsonl")
 
 
 TOOLS = {
@@ -363,6 +751,26 @@ TOOLS = {
             "required": ["query"],
         },
         "handler": search_shared,
+    },
+    "rebuild_index": {
+        "description": "Rebuild disposable search index from Markdown notes.",
+        "inputSchema": {"type": "object", "properties": {}},
+        "handler": rebuild_index,
+    },
+    "import_session_files": {
+        "description": "Import user-selected session files into scoped Markdown notes with receipt.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "paths": {"type": "array", "items": {"type": "string"}},
+                "scope": {"type": "string", "enum": sorted(SCOPES)},
+                "project_root": {"type": "string"},
+                "dry_run": {"type": "boolean"},
+                "per_file_limit": {"type": "integer", "minimum": 1, "maximum": 25},
+            },
+            "required": ["paths"],
+        },
+        "handler": import_session_files,
     },
 }
 

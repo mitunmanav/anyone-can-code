@@ -19,6 +19,10 @@ Reply rule:
 - Backs up project-owned state, artifacts, learning, settings, logs, and `AGENTS.md`.
 - Quarantines corrupt workflow files instead of overwriting them silently.
 - Re-runs setup in the previously chosen hook mode and restores MCP-first memory metadata.
+- Migrates only known ACC-owned legacy JSONL memory into linked Markdown.
+- Backs up legacy input first, skips duplicate content, verifies Markdown, and
+  keeps the legacy file after success.
+- Writes success or rollback receipts under `memory/imports/`.
 - Writes a migration journal under `.codex/anyone-can-code/migrations/`.
 - Runs `doctor.py` after migration.
 
@@ -26,6 +30,7 @@ Reply rule:
 
 - It does not refresh the plugin marketplace/source inside Codex.
 - It does not mutate the Codex plugin cache directly.
+- It does not scan or import arbitrary Codex/session files.
 - It does not replace `codex plugin marketplace add` or `codex plugin marketplace upgrade`.
 
 ## Root truth

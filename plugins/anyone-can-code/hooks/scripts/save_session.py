@@ -48,7 +48,7 @@ def write_session_snapshot(repo_root: Path, summary: str, workflow: dict) -> Non
         f"- Last task: {workflow.get('last_task', 'N/A')}",
         f"- Next step: {workflow.get('next_step', 'N/A')}",
         f"- Communication mode: {workflow.get('communication_mode', 'normal')}",
-        f"- Memory mode: {workflow.get('memory_mode', 'mcp-first')}",
+        f"- Memory mode: {workflow.get('memory_mode', 'portable-markdown')}",
         "",
         "## Last Session",
         summary or "No assistant summary was available.",
@@ -209,7 +209,7 @@ def write_resume_artifacts(repo_root: Path, payload: dict, summary: str, workflo
                 f"- Route: {workflow.get('route', 'unknown')}",
                 f"- Last task: {workflow.get('last_task', 'N/A')}",
                 f"- Next step: {workflow.get('next_step', 'N/A')}",
-                f"- Memory mode: {workflow.get('memory_mode', 'mcp-first')}",
+                f"- Memory mode: {workflow.get('memory_mode', 'portable-markdown')}",
                 f"- Updated: {workflow.get('updated_at', 'N/A')}",
             ]
         )
@@ -240,7 +240,7 @@ def main() -> None:
     updates = {
         "last_task": summary[:160] if summary else "",
         "next_step": infer_next_step(summary),
-        "memory_mode": "mcp-first",
+        "memory_mode": "portable-markdown",
     }
     workflow = state.write_state(repo_root, updates)
     write_session_snapshot(repo_root, f"{summary}\n\n{signal_line}", workflow)

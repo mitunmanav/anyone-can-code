@@ -8,11 +8,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import front_door
+import product_intake
 import runtime_info
+import status_model
 
 
 def plugin_root() -> Path:
@@ -205,6 +209,7 @@ class Doctor:
 
         if workflow is None:
             self.check("recovery", "workflow_state", "WARN", "warning", workflow_error)
+            self.check("recovery", "workflow_observability", "WARN", "warning", workflow_error)
         else:
             setup_state = workflow.get("setup_state")
             workflow_persona = workflow.get("persona_mode")
@@ -212,6 +217,35 @@ class Doctor:
                 self.check("recovery", "workflow_state", "PASS", "info", f"{setup_state}, {workflow_persona}")
             else:
                 self.check("recovery", "workflow_state", "WARN", "warning", "Workflow setup state missing or invalid")
+            try:
+                states = status_model.validate_states(workflow.get("states", {}))
+                expected_line = status_model.render_status_line(states)
+                list_fields = ("evidence", "failures", "silent_failures", "unverified", "uncertainty")
+                lists_valid = all(isinstance(workflow.get(field), list) for field in list_fields)
+                if workflow.get("status_line") == expected_line and lists_valid:
+                    self.check(
+                        "recovery",
+                        "workflow_observability",
+                        "PASS",
+                        "info",
+                        expected_line,
+                    )
+                else:
+                    self.check(
+                        "recovery",
+                        "workflow_observability",
+                        "WARN",
+                        "warning",
+                        "Workflow observability shape missing or inconsistent",
+                    )
+            except (TypeError, ValueError):
+                self.check(
+                    "recovery",
+                    "workflow_observability",
+                    "WARN",
+                    "warning",
+                    "Workflow states use invalid vocabulary",
+                )
 
         repo_mode = None
         if isinstance(preferences, dict):
@@ -222,6 +256,31 @@ class Doctor:
             self.check("recovery", "repo_mode", "PASS", "info", repo_mode)
         else:
             self.check("recovery", "repo_mode", "WARN", "warning", "Repo mode missing or invalid")
+
+        memory_mode = preferences.get("memory_mode") if isinstance(preferences, dict) else None
+        memory_path_value = preferences.get("memory_path") if isinstance(preferences, dict) else None
+        if memory_path_value:
+            memory_path = Path(str(memory_path_value))
+            if not memory_path.is_absolute():
+                memory_path = PROJECT_ROOT / memory_path
+        else:
+            memory_path = namespace_root / "memory" / "notes"
+        if memory_mode == "portable-markdown" and memory_path.exists():
+            self.check("memory", "memory_storage", "PASS", "info", f"portable Markdown: {memory_path}")
+        else:
+            self.check("memory", "memory_storage", "WARN", "warning", f"Markdown storage missing or unconfigured: {memory_path}")
+
+        viewer_mode = preferences.get("viewer_mode", "none") if isinstance(preferences, dict) else "none"
+        if viewer_mode == "none":
+            self.check("memory", "memory_viewer", "PASS", "info", "Optional viewer not selected")
+        elif viewer_mode == "obsidian":
+            detected = shutil.which("obsidian") or shutil.which("Obsidian.exe")
+            status = "PASS" if detected else "WARN"
+            severity = "info" if detected else "warning"
+            evidence = detected or "Obsidian selected but not detected; Markdown storage still works"
+            self.check("memory", "memory_viewer", status, severity, evidence)
+        else:
+            self.check("memory", "memory_viewer", "WARN", "warning", f"Unsupported viewer mode: {viewer_mode}")
 
     def run_project_config(self) -> None:
         config_path = PROJECT_ROOT / ".codex" / "config.toml"
@@ -262,6 +321,27 @@ class Doctor:
             self.check("verification", "usage_script", "PASS", "info", "codeburn.py parses")
         else:
             self.check("verification", "usage_script", "FAIL", "blocking", evidence[:240])
+
+    def run_product_intake(self) -> None:
+        ok, evidence = product_intake.smoke_check()
+        if ok:
+            self.check("verification", "product_intake_smoke", "PASS", "info", evidence)
+        else:
+            self.check("verification", "product_intake_smoke", "FAIL", "blocking", evidence)
+
+    def run_front_door(self) -> None:
+        ok, evidence = front_door.smoke_check()
+        if ok:
+            self.check("verification", "front_door_smoke", "PASS", "info", evidence)
+        else:
+            self.check("verification", "front_door_smoke", "FAIL", "blocking", evidence)
+
+    def run_status_model(self) -> None:
+        ok, evidence = status_model.smoke_check()
+        if ok:
+            self.check("verification", "status_model_smoke", "PASS", "info", evidence)
+        else:
+            self.check("verification", "status_model_smoke", "FAIL", "blocking", evidence)
 
     def run_runtime_truth(self) -> None:
         info = runtime_info.build_runtime_info(PROJECT_ROOT, PLUGIN_ROOT)
@@ -334,6 +414,9 @@ class Doctor:
         self.run_project_config()
         self.run_default_prompts()
         self.run_usage_script()
+        self.run_product_intake()
+        self.run_front_door()
+        self.run_status_model()
         self.run_runtime_truth()
         return {"results": self.results, "summary": self.summary()}
 

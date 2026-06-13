@@ -35,7 +35,36 @@
 - [ ] Project-owned data lives under `.codex/anyone-can-code/`.
 - [ ] State, artifacts, learning, settings, logs, backups, and migrations are separated.
 - [ ] Workflow state is reconstructable from local artifacts.
-- [ ] Durable learning is MCP-first and local files stay thin fallback only.
+- [ ] Durable learning uses linked Markdown as source of truth after migration.
+- [ ] Bundled MCP reads/writes Markdown and does not make JSONL the primary store.
+- [ ] Rebuildable memory index can be deleted and rebuilt from Markdown.
+- [ ] `MEMORY-CONTRACT.md` defines note schema, viewer modes, settings,
+  explicit consent boundaries, and session import receipts.
+- [ ] Existing session imports require explicit selected source paths, backup or
+  snapshot, deduplication, provenance, scope labels, and receipts.
+- [ ] Repeating the same import creates no duplicate note and does not reinforce
+  the existing note again.
+- [ ] Failed import restores the pre-import Markdown tree, writes a rollback
+  receipt, and leaves source data intact.
+- [ ] ACC works with no memory viewer installed.
+- [ ] Optional Obsidian paths never bundle, redistribute, launch, install, or
+  open a vault without explicit consent.
+- [ ] Setup preserves chosen memory path and writes a plain-language receipt.
+- [ ] Session import is preview-only until explicit confirmation.
+- [ ] Obsidian present, absent, declined, and failed-install paths do not block
+  no-viewer ACC operation.
+- [ ] Consented `winget` install passes no agreement-acceptance flags.
+- [ ] Unsupported vault opening shows manual `Open folder as vault`
+  instructions.
+- [ ] Official download-page action opens only the official URL and never runs
+  the installer.
+- [ ] Existing memory-path file conflicts fail visibly and preserve the file.
+- [ ] Permission-denied legacy migration writes a rollback receipt and
+  preserves the source plus existing Markdown.
+- [ ] Upgrade stops before setup or journal writes when memory migration rolls
+  back.
+- [ ] A plain file reader can read note headings and follow normal or
+  wiki-style links without ACC.
 
 ## Workflow surface
 
@@ -43,6 +72,11 @@
 - [ ] Helper skills exist for `status`, `resume`, `settings`, `usage`, and `update`.
 - [ ] `onboard`, `clarify`, `plan`, `execute`, `verify`, and `learn` point to local workflow files.
 - [ ] Fast path and full path are both represented in the skill guidance.
+- [ ] Request-to-plan smoke: `python plugins/anyone-can-code/scripts/product_intake.py` prints `Plan: website + auth + deploy. Payments later.`
+- [ ] Product intake asks at most five blocking questions and skips known answers.
+- [ ] Adaptive checklist covers relevant engineering and UX areas with `include`, `defer`, `skip`, or `unknown`.
+- [ ] Status uses only `in scope`, `designed`, `approved`, `implemented`, `verified`, `blocked`, or `deferred`.
+- [ ] Status reports failures, silent failures, unverified work, uncertainty, route, and next step.
 
 ## Anti-hallucination rules
 
@@ -50,6 +84,7 @@
 - [ ] Medium-impact unknowns are described as ranked options plus a recommendation.
 - [ ] Low-impact safe inference is allowed only when marked.
 - [ ] Verification language clearly separates built from verified.
+- [ ] `verified` always has evidence; missing checks remain implemented, blocked, or unverified.
 
 ## Recovery and upgrade
 
@@ -61,6 +96,10 @@
 - [ ] `doctor.py` reports whether the marketplace is tracked by Codex marketplace management.
 - [ ] Corrupt workflow files are quarantined instead of overwritten silently.
 - [ ] A migration journal is written during updates.
+- [ ] Known ACC-owned legacy JSONL is backed up, migrated, verified, and retained.
+- [ ] `$update` does not scan arbitrary user session locations.
+- [ ] Doctor reports Markdown storage health separately from optional viewer
+  availability.
 - [ ] Restart plus new thread are documented after local plugin refresh.
 - [ ] Update prints project, source, and runtime versions.
 - [ ] Update prints project, marketplace, source, and runtime roots when found.
@@ -76,7 +115,11 @@
 - [ ] `python -m py_compile scripts/setup.py`
 - [ ] `python -m py_compile scripts/update.py`
 - [ ] `python -m py_compile scripts/doctor.py`
+- [ ] `python -m py_compile scripts/product_intake.py`
+- [ ] `python -m py_compile scripts/status_model.py`
 - [ ] `python -m py_compile scripts/codeburn.py`
 - [ ] `python scripts/doctor.py --json` returns a structured report.
+- [ ] `doctor.py` reports `product_intake_smoke` as `PASS`.
+- [ ] `doctor.py` reports `status_model_smoke` as `PASS`.
 - [ ] `doctor.py` reports source root, runtime root, and source/runtime version match or mismatch.
 - [ ] `doctor.py` warns when the parent umbrella root looks open instead of the plugin-dev repo.

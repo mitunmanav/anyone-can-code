@@ -23,11 +23,18 @@ Write a verification record to:
 Include:
 
 - what was checked
-- what evidence exists
+- result: pass, fail, or pass with uncertainty
+- exact evidence: command, file, output, or captured behavior
 - what passed
-- what failed
-- what still needs confirmation
+- what failed, including silent failure discovered later
+- what remains uncertain or unverified
+- next step
 
 ## Rule
 
 Built is not verified. Do not collapse those states.
+Only use these workflow states: `in scope`, `designed`, `approved`,
+`implemented`, `verified`, `blocked`, `deferred`.
+
+Use `verified` only when evidence exists. If a check did not run, say
+`implemented` or `blocked`, then name the missing proof.

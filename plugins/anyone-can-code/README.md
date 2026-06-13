@@ -5,7 +5,9 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
 ## What changed
 
 - One front door plus a small helper surface.
-- Bundled MCP memory is now the main durable learning path.
+- Portable linked Markdown is the durable memory contract. The bundled MCP
+  remains the access interface while the legacy JSONL store becomes migration
+  input only.
 - Bundled plugin hooks stay opt-in and signal-first.
 - Project-owned workflow data now lives under `.codex/anyone-can-code/`.
 - Setup, update, and diagnostics now follow the Codex Windows plugin model more closely.
@@ -13,14 +15,28 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
 ## Core workflow
 
 - front door: `$orchestrator` or a natural-language request
+- deterministic route helper: `scripts/front_door.py`
+- installed-plugin bridge: manifest scan first, ACC fallback on missing/null coverage
 - optional detection/bootstrap: `$onboard`
 - intake only when needed: `$clarify`
 - planning only when needed: `$plan`
 - implementation: `$execute`
 - evidence-first completion: `$verify`
 - recovery: `$resume`
-- durable learnings: `$learn`
+- durable learnings: `$learn` through portable Markdown memory
 - user controls: `$status`, `$settings`, `$usage`, `$update`
+
+Front-door routes cover idea, written spec, existing repo, feature, bug,
+polish/review, ship/verify, and mid-work requirement changes. User-visible
+output stays compact:
+
+```text
+Detected: existing repo + feature request
+Route: plan -> execute -> verify
+```
+
+Plugin discovery reads installed manifests and skill descriptions only. It does
+not execute third-party plugin code while deciding where to route.
 
 ## Install model
 
@@ -29,8 +45,12 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
 3. Restart Codex after changing the plugin source used by your marketplace.
 4. Open a new thread after install or update so the installed runtime refreshes.
 5. Open a project and run `$setup`.
-6. If you want bundled plugin hooks, enable Codex `plugin_hooks` and trust the hook bundle.
-7. If you want repo-local hook files in addition to bundled hooks, run `$setup --project-hooks`.
+6. Confirm Markdown storage. Choose no viewer or optional Obsidian. Viewer
+   choice alone never launches or installs anything.
+7. Existing session files stay untouched unless exact paths, scope, preview,
+   and import confirmation are supplied.
+8. If you want bundled plugin hooks, enable Codex `plugin_hooks` and trust the hook bundle.
+9. If you want repo-local hook files in addition to bundled hooks, run `$setup --project-hooks`.
 
 For plugin development from a local checkout of this repo:
 
@@ -60,6 +80,11 @@ Root truth:
 - `plugin source root`: `./plugins/anyone-can-code`
 - `installed plugin root`: `~/.codex/plugins/cache/...`
 
+ACC repository maintainers should keep implementation, candidate testing, and
+stable local `main` in separate Git worktrees. Repository-specific tracking and
+publishing rules belong in the repository root `AGENTS.md` and
+`DEVELOPMENT-WORKFLOW.md`; they must not be copied into user projects.
+
 Workflow:
 
 1. edit plugin code in `plugin source root`
@@ -80,11 +105,23 @@ Use hooks only when testing hooks on purpose.
 
 ## Memory model
 
-- main durable memory: bundled MCP server
+- durable memory: linked Markdown files under user-visible ACC storage
+- access interface: bundled MCP server
+- machine index: rebuildable cache only, never durable truth
+- session import: explicit selected paths only, receipt-backed
+- migration safety: source snapshot/backup before write, hash dedupe,
+  Markdown verification, rollback receipt, originals retained
 - retrieval order: `project -> user -> shared`
 - retrieval size: top `3-5` only
-- local files: thin fallback only
+- viewer: optional; ACC works with no viewer
+- Obsidian: optional third-party viewer, never bundled, only offered after
+  explicit consent
+- setup receipts: unique Markdown and JSON records under
+  `.codex/anyone-can-code/state/receipts/`
+- ACC viewer: future work, unavailable now
+- existing session files: import sources only after explicit user selection
 - learn mode: trigger-auto plus manual `$learn`
+- full contract: `MEMORY-CONTRACT.md`
 
 ## Local data layout
 
@@ -93,7 +130,19 @@ Use hooks only when testing hooks on purpose.
   anyone-can-code/
     artifacts/
     backups/
-    learning/
+    learning/                 tiny fallback ledgers plus legacy migration inputs
+    memory/
+      notes/                  target linked Markdown durable memory
+        project/
+        user/
+        shared/
+        lessons/
+        failures/
+        decisions/
+        evidence/
+        archive/
+      index/                  rebuildable machine index, not durable truth
+      imports/                backups, snapshots, transactions, and receipts
     migrations/
     settings/
       preferences.json
@@ -126,6 +175,12 @@ Anyone Can Code treats upgrades as three separate layers:
 
 Use Codex marketplace management for layer 1. Use `$update` only for layer 3.
 
+During layer 3, `$update` migrates only known ACC-owned legacy JSONL memory.
+It backs up before writing, keeps old files after verification, skips duplicate
+content on repeated runs, and writes a success or rollback receipt. Existing
+Codex/session files are never scanned here; those still require explicit setup
+paths, scope, preview, and confirmation.
+
 `$update` compares:
 
 - project state version
@@ -145,3 +200,4 @@ If source is newer than runtime, refresh plugin first. Do not migrate yet.
 
 - `IMPLEMENTATION-SOURCE-OF-TRUTH.md`
 - `VALIDATION.md`
+- `MEMORY-CONTRACT.md`

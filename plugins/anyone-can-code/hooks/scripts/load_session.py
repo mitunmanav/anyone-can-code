@@ -46,7 +46,7 @@ def build_context(repo_root: Path, source: str) -> str:
         f"State: {workflow.get('phase', 'idle')} / {workflow.get('route', 'unknown')}.",
         f"Next: {workflow.get('next_step', 'N/A')}.",
         f"Talk: {prefs.get('communication_mode', 'caveman-strict')}.",
-        f"Memory: {workflow.get('memory_mode', 'mcp-first')}.",
+        f"Memory: {workflow.get('memory_mode', 'portable-markdown')}.",
         f"From: {source}.",
     ]
     if agents:

@@ -5,7 +5,7 @@
 
 ACC is one front door for non-technical builders using Codex Windows Desktop.
 The user describes what they want to build; ACC handles research, planning,
-code, tests, Git, GitHub, memory, learning, backend setup, and installed
+code, tests, Git, GitHub, portable Markdown learning, backend setup, and installed
 skill/plugin routing. The user stays focused on product decisions, not tooling.
 
 Primary persona: non-technical solo builder with no coding background. They do
@@ -42,8 +42,10 @@ Core product modules:
 - Checklist generator: produces adapted checklist across frontend, backend, DB, auth, payments, security, performance, SEO, analytics, deploy, tests, docs, UX theme, responsive behavior, accessibility, loading states, and error states.
 - Skill/plugin bridge: routes to available skills/plugins automatically and returns to ACC if external workflow goes null or cannot continue.
 - Observability line: reports exact state, failures, silent failures, and unverified work in user-readable form.
-- Memory adapter: stores lessons, retrieves top 3-5 relevant memories, and
-  treats memory as advisory rather than authoritative.
+- Memory adapter: stores lessons in portable linked Markdown, retrieves top
+  3-5 relevant memories, and treats memory as advisory rather than
+  authoritative. Legacy JSONL remains migration input only until
+  `fn-4-build-portable-markdown-memory` is complete.
 - Git/GitHub adapter: handles commits, PRs, rollback, and project history.
 - Scope controller: keeps plan cursor visible and prevents uncontrolled
   expansion.
@@ -144,7 +146,7 @@ Status: implemented, tests verified, deploy blocked
   known.
 - The development system used to build ACC must not leak into the shipped
   plugin UX.
-- Self-learning, observability, model advice, and advanced automation are secondary until product intake plus checklist works, but their contracts must be represented in plan/state so later tasks do not drift.
+- Self-learning, observability, model advice, and advanced automation are secondary until product intake plus checklist works, but their contracts must be represented in plan/state so later tasks do not drift. Durable self-learning implementation waits for `fn-4-build-portable-markdown-memory`.
 
 ## Acceptance Criteria
 <!-- scope: both -->
@@ -165,8 +167,8 @@ Status: implemented, tests verified, deploy blocked
 - **R7:** ACC renders observability using exact states: in scope, designed, approved, implemented, verified, blocked, deferred.
 - **R8:** Git/GitHub/PR handling has rollback support before being treated as
   complete.
-- **R9:** Self-learning stores lessons, recalls the top 3-5 relevant lessons,
-  and never treats memory as truth.
+- **R9:** Self-learning stores lessons in portable linked Markdown, recalls the
+  top 3-5 relevant lessons, and never treats memory as truth.
 - **R10:** Generated code and project output remain human-readable enough for a
   developer to understand within 10 minutes.
 - **R11:** The plugin works on Windows Codex Desktop without conflicting with
@@ -176,10 +178,12 @@ Status: implemented, tests verified, deploy blocked
 - **R13:** Caveman communication is default across every user-facing skill and can be switched by explicit setting.
 - **R14:** ACC handles product types: website, app, game, API, script, automation, plugin, data tool, dashboard, and native app.
 - **R15:** ACC handles UX checklist decisions for theme, responsive behavior, accessibility, loading states, error states, and performance.
-- **R16:** ACC reads official/local docs before execution and uses web only when local docs are stale, missing, or uncertain.
+- **R16:** During ACC development, the agent reads official/local docs before execution and uses web only when local docs are stale, missing, or uncertain. This is a development-process rule, not shipped plugin UX.
 - **R17:** ACC owns setup, installs, environments, local servers, DB, auth, payments, deployment, Git, GitHub, PRs, CI, branches, and commits, asking users only for secrets, paid service choices, account logins, destructive actions, and product decisions.
 - **R18:** ACC backs up or creates rollback path before risky changes.
-- **R19:** ACC learns from sessions across project, user, and shared scopes, including model/task fit from local session evidence.
+- **R19:** ACC learns from sessions across project, user, and shared scopes,
+  including user-supplied existing local session files and model/task fit from
+  local session evidence.
 - **R20:** ACC reports what happened, what failed, what failed silently, and what remains unverified; it never says done without verification.
 - **R21:** ACC captures mid-work requirement changes, updates plan/state, and resumes from the correct task position.
 - **R22:** ACC settings cover tone, depth, research, learning, approvals, and plugin routing with automatic defaults.
@@ -204,6 +208,8 @@ Out of scope until intake works:
 
 - Full autonomous Ralph loop for end users.
 - Advanced self-learning UX.
+- Full portable Markdown memory migration and existing-session import; this is
+  owned by `fn-4-build-portable-markdown-memory`.
 - Model advice line.
 - Full deploy automation.
 - Full GitHub PR automation implementation.
@@ -241,6 +247,15 @@ should be routed through explicit availability checks, not assumptions. Memory
 should be useful context, but never source of truth. Git/GitHub automation and
 Ralph can build on this later after plan generation is reliable.
 
+### Post-Obsidian Repair Checkpoint
+<!-- scope: both -->
+
+Tasks `.1` through `.4` remain valid because they built persona setup, intake,
+routing, plugin bridge, and exact status language. They did not finish durable
+learning. Any surface from those tasks that mentions bundled MCP/JSONL memory
+must be updated by `fn-4-build-portable-markdown-memory.4` before task `.5`
+starts. Task `.5` is blocked by the spec-level dependency on `fn-4`.
+
 ## Quick commands
 <!-- scope: technical -->
 
@@ -268,21 +283,21 @@ Task `fn-1-define-project-direction.2` proves the core approach: a plain-languag
 | R6 | Installed skills/plugins route automatically when relevant | fn-1-define-project-direction.3 | - |
 | R7 | Observability line uses exact states | fn-1-define-project-direction.4 | - |
 | R8 | Git/GitHub/PR handling has rollback support | fn-1-define-project-direction.5 | First spec builds guardrails/scaffold; full automation remains out of scope until intake works. |
-| R9 | Self-learning stores and recalls top 3-5 lessons without treating memory as truth | fn-1-define-project-direction.5 | - |
+| R9 | Self-learning stores linked Markdown lessons and recalls top 3-5 lessons without treating memory as truth | fn-4-build-portable-markdown-memory, fn-1-define-project-direction.5 | fn-4 changes durable storage first; `.5` adds final guardrail UX after migration. |
 | R10 | Output remains human-readable within 10 minutes | fn-1-define-project-direction.4, fn-1-define-project-direction.5 | - |
 | R11 | Windows Codex Desktop compatible | fn-1-define-project-direction.1, fn-1-define-project-direction.4 | - |
 | R12 | Dev-system concepts do not leak into shipped UX | fn-1-define-project-direction.3, fn-1-define-project-direction.5 | - |
 | R13 | Caveman default everywhere, switchable | fn-1-define-project-direction.1, fn-1-define-project-direction.4 | - |
 | R14 | Broad product type support | fn-1-define-project-direction.2 | - |
 | R15 | UX checklist coverage | fn-1-define-project-direction.2, fn-1-define-project-direction.4 | - |
-| R16 | Official/local docs before execution, web when stale/uncertain | fn-1-define-project-direction.3, fn-1-define-project-direction.5 | - |
+| R16 | Development-process docs rule, not shipped plugin UX | fn-2-harden-acc-development-system, AGENTS.md, DEVELOPMENT-WORKFLOW.md | User clarified R16 belongs to ACC development system only. |
 | R17 | Tooling/Git/env ownership with narrow user asks | fn-1-define-project-direction.5 | Full automation staged after intake works; guardrail contract lands now. |
 | R18 | Backup/rollback before risky changes | fn-1-define-project-direction.5 | - |
-| R19 | Session learning plus model/task fit memory | fn-1-define-project-direction.5 | - |
+| R19 | Session learning, existing local session import, and model/task fit memory | fn-4-build-portable-markdown-memory, fn-1-define-project-direction.5 | fn-4 owns Markdown storage/import; `.5` owns final learning guardrails. |
 | R20 | Failure/silent failure/unverified reporting; no false done | fn-1-define-project-direction.4 | - |
-| R21 | Requirement-change capture and resume | fn-1-define-project-direction.3, fn-1-define-project-direction.4 | - |
-| R22 | Settings with automatic defaults | fn-1-define-project-direction.1 | - |
-| R23 | New/existing/production repo modes | fn-1-define-project-direction.1, fn-1-define-project-direction.2 | - |
+| R21 | Requirement-change capture and resume | fn-1-define-project-direction.3, fn-1-define-project-direction.4, fn-1-define-project-direction.5 | `.3`/`.4` define route/status; `.5` must preserve cursor during learning/Git guardrails. |
+| R22 | Settings with automatic defaults, including memory path/viewer/import choices | fn-1-define-project-direction.1, fn-4-build-portable-markdown-memory | fn-4 adds memory-specific settings. |
+| R23 | New/existing/production repo modes, including session import caution | fn-1-define-project-direction.1, fn-1-define-project-direction.2, fn-4-build-portable-markdown-memory | fn-4 adds memory/session import behavior per repo mode. |
 | R24 | Efficient subagent use | fn-1-define-project-direction.3 | - |
 | R25 | Web search on doubt and missing requirement surfacing | fn-1-define-project-direction.3, fn-1-define-project-direction.5 | - |
 
@@ -298,4 +313,3 @@ Task `fn-1-define-project-direction.2` proves the core approach: a plain-languag
 - `plugins/anyone-can-code/skills/clarify/SKILL.md` - intake surface.
 - `plugins/anyone-can-code/skills/bridge/SKILL.md` - installed plugin routing.
 - `plugins/anyone-can-code/skills/verify/SKILL.md` - evidence-first verification.
-

@@ -135,7 +135,8 @@ def handle_user_prompt_submit(payload: dict, repo_root: Path) -> None:
             "route": explicit_route or entry_mode,
             "entry_mode": entry_mode,
             "communication_mode": preferences.get("communication_mode", "normal"),
-            "memory_mode": "mcp-first",
+            "memory_mode": preferences.get("memory_mode", "portable-markdown"),
+            "viewer_mode": preferences.get("viewer_mode", "none"),
         },
     )
 
@@ -145,7 +146,7 @@ def handle_user_prompt_submit(payload: dict, repo_root: Path) -> None:
     context = (
         f"Talk: {current.get('communication_mode', 'caveman-strict')}. "
         f"Path: {entry_mode}/{current.get('phase', 'route')}. "
-        f"Memory: {current.get('memory_mode', 'mcp-first')}. "
+        f"Memory: {current.get('memory_mode', 'portable-markdown')}. "
         f"Unclear: {uncertainty}. Talk short."
     )
 

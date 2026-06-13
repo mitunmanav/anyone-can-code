@@ -6,6 +6,7 @@ Project update helper for Anyone Can Code.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import shutil
@@ -60,7 +61,9 @@ def load_install_state(target: Path) -> dict:
         "schema_version": 2,
         "plugin_version": "0.0.0",
         "hook_mode": "bundled",
-        "memory_mode": "mcp-first",
+        "memory_mode": "portable-markdown",
+        "memory_path": ".codex/anyone-can-code/memory/notes",
+        "viewer_mode": "none",
         "mcp_server": "memory",
     }
 
@@ -85,6 +88,7 @@ def backup_supported_data(target: Path, destination: Path) -> None:
         project_root(target) / "state",
         project_root(target) / "artifacts",
         project_root(target) / "learning",
+        project_root(target) / "memory",
         project_root(target) / "settings",
         project_root(target) / "logs",
         target / "AGENTS.md",
@@ -110,7 +114,13 @@ def quarantine_corrupt_files(target: Path) -> list[str]:
     return quarantined
 
 
-def write_migration_journal(target: Path, before_version: str, after_version: str, quarantined: list[str]) -> Path:
+def write_migration_journal(
+    target: Path,
+    before_version: str,
+    after_version: str,
+    quarantined: list[str],
+    memory_receipt: dict,
+) -> Path:
     journal_dir = project_root(target) / "migrations"
     journal_dir.mkdir(parents=True, exist_ok=True)
     journal = journal_dir / f"migration-{time.strftime('%Y%m%dT%H%M%S')}.json"
@@ -121,6 +131,13 @@ def write_migration_journal(target: Path, before_version: str, after_version: st
                 "before_version": before_version,
                 "after_version": after_version,
                 "quarantined": quarantined,
+                "memory_migration": {
+                    "status": memory_receipt.get("status"),
+                    "sources": memory_receipt.get("sources", []),
+                    "imported_count": memory_receipt.get("imported_count", 0),
+                    "skipped_count": memory_receipt.get("skipped_count", 0),
+                    "receipt_path": memory_receipt.get("receipt_path", ""),
+                },
             },
             indent=2,
         )
@@ -130,11 +147,75 @@ def write_migration_journal(target: Path, before_version: str, after_version: st
     return journal
 
 
-def run_setup(target: Path, hook_mode: str) -> None:
+def run_setup(target: Path, hook_mode: str, before: dict) -> None:
     args = [sys.executable, str(SETUP), str(target), "--force"]
     if hook_mode == "project":
         args.append("--project-hooks")
+    memory_path = before.get("memory_path")
+    if memory_path:
+        args.extend(["--memory-path", str(memory_path)])
+    viewer_mode = before.get("viewer_mode", "none")
+    if viewer_mode in {"none", "obsidian"}:
+        args.extend(["--viewer", viewer_mode])
     subprocess.run(args, check=True, timeout=30)
+
+
+def load_memory_server():
+    path = PLUGIN_ROOT / "mcp" / "server.py"
+    spec = importlib.util.spec_from_file_location("acc_update_memory_server", path)
+    if not spec or not spec.loader:
+        raise RuntimeError("Memory server could not load")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def legacy_memory_sources(target: Path) -> list[Path]:
+    root = project_root(target)
+    candidates = [
+        root / "memory.jsonl",
+        root / "learning" / "feedback.jsonl",
+        root / "learning" / "patterns.jsonl",
+        root / "learning" / "mistakes.jsonl",
+        root / "learning" / "learnings.jsonl",
+        root / "memory" / "memory.jsonl",
+        root / "memory" / "feedback.jsonl",
+    ]
+    return [path for path in candidates if path.is_file()]
+
+
+def selected_memory_root(target: Path, before: dict | None = None) -> Path:
+    settings = before or load_install_state(target)
+    raw = Path(str(settings.get("memory_path") or ".codex/anyone-can-code/memory/notes"))
+    notes = raw if raw.is_absolute() else target / raw
+    return notes.resolve().parent
+
+
+def migrate_legacy_memory(target: Path, before: dict | None = None) -> dict:
+    sources = legacy_memory_sources(target)
+    if not sources:
+        return {
+            "status": "not found",
+            "operation": "legacy-jsonl",
+            "sources": [],
+            "imported_count": 0,
+            "skipped_count": 0,
+        }
+    old_root = os.environ.get("ACC_MCP_DATA_ROOT")
+    os.environ["ACC_MCP_DATA_ROOT"] = str(selected_memory_root(target, before))
+    try:
+        return load_memory_server().migrate_legacy_jsonl(
+            {
+                "paths": [str(path) for path in sources],
+                "scope": "project",
+                "project_root": str(target),
+            }
+        )
+    finally:
+        if old_root is None:
+            os.environ.pop("ACC_MCP_DATA_ROOT", None)
+        else:
+            os.environ["ACC_MCP_DATA_ROOT"] = old_root
 
 
 def run_doctor(target: Path) -> dict | None:
@@ -214,7 +295,13 @@ def migrate(target: Path) -> None:
     backup = backup_dir(target, before_version)
     backup_supported_data(target, backup)
     quarantined = quarantine_corrupt_files(target)
-    run_setup(target, hook_mode)
+    memory_receipt = migrate_legacy_memory(target, before)
+    if memory_receipt["status"] == "rolled_back":
+        print("Need: stop")
+        print("Memory migration rolled back.")
+        print(f"Receipt: {memory_receipt['rollback_receipt_path']}")
+        return
+    run_setup(target, hook_mode, before)
 
     install_state = install_state_path(target)
     install_state.parent.mkdir(parents=True, exist_ok=True)
@@ -225,7 +312,9 @@ def migrate(target: Path) -> None:
                 "plugin_version": runtime_version,
                 "installed_via": "update.py",
                 "hook_mode": hook_mode,
-                "memory_mode": "mcp-first",
+                "memory_mode": "portable-markdown",
+                "memory_path": before.get("memory_path", ".codex/anyone-can-code/memory/notes"),
+                "viewer_mode": before.get("viewer_mode", "none"),
                 "mcp_server": "memory",
             },
             indent=2,
@@ -234,12 +323,26 @@ def migrate(target: Path) -> None:
         encoding="utf-8",
     )
 
-    journal = write_migration_journal(target, before_version, runtime_version, quarantined)
+    journal = write_migration_journal(
+        target,
+        before_version,
+        runtime_version,
+        quarantined,
+        memory_receipt,
+    )
     doctor = run_doctor(target)
     print("Need: migrate")
     print(f"Update done: {before_version} -> {runtime_version}")
     print(f"Backup: {backup}")
     print(f"Journal: {journal}")
+    if memory_receipt["status"] == "verified":
+        print(
+            f"Legacy memory: {memory_receipt['imported_count']} imported, "
+            f"{memory_receipt['skipped_count']} duplicate skipped."
+        )
+        print(f"Memory receipt: {memory_receipt['receipt_path']}")
+    else:
+        print("Legacy memory: none found.")
     if quarantined:
         print("Bad files moved:")
         for item in quarantined:
@@ -247,7 +350,7 @@ def migrate(target: Path) -> None:
     if doctor and "summary" in doctor:
         summary = doctor["summary"]
         print(f"Doctor: {summary['pass']} PASS, {summary['warn']} WARN, {summary['fail']} FAIL")
-    print("Memory: MCP first. Local tiny backup.")
+    print("Memory: portable Markdown. Viewer: none.")
     print("Restart Codex. Open new thread.")
 
 

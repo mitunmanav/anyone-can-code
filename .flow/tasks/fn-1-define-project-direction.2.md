@@ -44,9 +44,13 @@ The user-facing proof point is: request `I want to build a website` leads to con
 - [ ] Validation docs include a smoke check for request-to-plan behavior.
 
 ## Done summary
-TBD
+Built deterministic product intake and adaptive checklist flow.
 
+- Added `scripts/product_intake.py` with product classification, five-question intake, checklist generation, plan-line rendering, and smoke check.
+- Added tests for vague request intake, skipped known answers, required product types, checklist decisions, plan-line output, and doctor smoke reporting.
+- Updated clarify, plan, orchestrator, doctor, and validation docs to anchor the request-to-plan behavior.
+- Codex implementation review blocked on Windows by `PermissionError: [WinError 5] Access is denied` when launching Codex CLI.
 ## Evidence
 - Commits:
-- Tests:
+- Tests: python -m unittest plugins\anyone-can-code\tests\test_product_intake.py, python -m unittest discover plugins\anyone-can-code\tests, python plugins\anyone-can-code\scripts\product_intake.py, python plugins\anyone-can-code\scripts\doctor.py --json, python -m py_compile plugins\anyone-can-code\mcp\server.py plugins\anyone-can-code\scripts\setup.py plugins\anyone-can-code\scripts\doctor.py plugins\anyone-can-code\scripts\product_intake.py, python .flow\bin\flowctl.py validate --spec fn-1-define-project-direction --json
 - PRs:

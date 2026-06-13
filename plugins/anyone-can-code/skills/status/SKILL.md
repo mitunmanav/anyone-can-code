@@ -23,6 +23,8 @@ Read:
 
 Return:
 
+- exact status line from the closed states: `in scope`, `designed`, `approved`,
+  `implemented`, `verified`, `blocked`, `deferred`
 - current phase
 - current route
 - last task
@@ -30,5 +32,14 @@ Return:
 - project root
 - source version
 - runtime version
-- memory mode: `mcp-first` or fallback
+- memory mode: `portable-markdown` or fallback
+- memory storage health and latest migration/import receipt status
+- viewer mode: `none`, `obsidian`, or future `acc-viewer` unavailable
+- failures
+- silent failures
+- unverified work
+- remaining uncertainty
 - blockers or missing evidence
+
+Never use `done`, `complete`, `finished`, or similar words as workflow states.
+Example: `Status: build implemented, tests verified, deploy blocked`.

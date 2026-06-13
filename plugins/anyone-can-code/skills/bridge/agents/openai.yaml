@@ -1,4 +1,4 @@
 interface:
   display_name: "Bridge"
   short_description: "Installed plugin detection — routes tasks, prevents duplication"
-  default_prompt: "Use $bridge to check if another installed plugin can handle the current task."
+  default_prompt: "Use $bridge to read installed plugin manifests, route only confident matches, and fall back to ACC when coverage is missing or returns no result."

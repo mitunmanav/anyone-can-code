@@ -4,10 +4,11 @@
 - Phase: build
 - Route: Flow-Next local development
 - Entry mode: existing project
-- Last task: `fn-2-harden-acc-development-system` spec created
-- Next task: `fn-2-harden-acc-development-system.1` define change-impact matrix
+- Last task: `fn-4-build-portable-markdown-memory.4` completed
+- Next task: `fn-4-build-portable-markdown-memory.5` only after user approval
 - Communication mode: caveman-strict
-- Memory mode: mcp-first
+- Development memory mode: Obsidian project brain first
+- Product memory target: portable linked Markdown through bundled MCP, with JSONL as migration input only
 
 ## Expectations
 - User-visible replies must use caveman-full style across this project at all times.
@@ -25,8 +26,9 @@
 - Record agent actions, decisions, what happened, what did not happen, evidence, warnings, and next state into Obsidian immediately during the work, not later.
 
 ## Current Goal
-- Harden the ACC development system around Flow-Next before resuming plugin
-  product task `fn-1-define-project-direction.3`.
+- Repair completed task plans after the portable Markdown memory decision, then
+  continue with `fn-4-build-portable-markdown-memory` before product task
+  `fn-1-define-project-direction.5`.
 
 ## Project Delivery Model
 - Obsidian is the complete project brain and history: requests, decisions, explanations, evidence, reversals, and continuity.
@@ -42,8 +44,8 @@
 - Keep `test-candidate` local-only.
 - Publish/release only from approved local `main`.
 - Follow `DEVELOPMENT-WORKFLOW.md`.
-- Before plugin-product work resumes, complete the development reliability gate
-  in `fn-2-harden-acc-development-system`.
+- Before memory/learning product work resumes, complete
+  `fn-4-build-portable-markdown-memory`; task `fn-1...5` depends on it.
 - Before local `main` receives candidate work, run
   `scripts\check-promotion-scope.ps1` with the appropriate policy. Stop if it
   reports `FAIL`.
