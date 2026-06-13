@@ -13,7 +13,8 @@ Add one lightweight PowerShell guard script under `scripts/check-promotion-scope
 Policy data is hardcoded in the script for now to keep the system small:
 
 - `reliability`: allows Flow reliability files and workflow docs only.
-- `development-system`: allows this guard script, its tests, `fn-3` Flow files, and workflow docs only.`n- `docs-only`: allows repo documentation and Flow documentation only.
+- `development-system`: allows this guard script, its tests, `fn-3` Flow files, and workflow docs only.
+- `docs-only`: allows repo documentation and Flow documentation only.
 - `plugin-product`: allows plugin product files, but is intentionally explicit and never used for reliability promotion.
 
 ## API Contracts

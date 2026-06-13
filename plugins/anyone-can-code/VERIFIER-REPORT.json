@@ -1,24 +1,24 @@
 {
   "report": {
     "title": "ACC Setup Drift Verification",
-    "timestamp": "2026-06-12T00:00:00+05:30",
-    "overall": "PASS_WITH_WARNINGS",
-    "overall_reason": "Current local verification passes, with plugin runtime installation still intentionally not refreshed.",
+    "timestamp": "2026-06-13T00:00:00+05:30",
+    "overall": "PASS",
+    "overall_reason": "Current local verification passes. Installed runtime cache exists and matches source manifest/hooks.",
     "current_results": [
       {
         "check": "skills_count",
         "passed": true,
-        "evidence": "doctor.py --json reports 19 skill folders"
+        "evidence": "doctor.py reports 19 skill folders"
       },
       {
         "check": "doctor",
         "passed": true,
-        "evidence": "18 PASS, 1 WARN, 0 FAIL"
+        "evidence": "root Doctor: 20 PASS, 0 WARN, 0 FAIL; dev/test Doctor: 21 PASS, 0 WARN, 0 FAIL"
       },
       {
         "check": "tests",
         "passed": true,
-        "evidence": "python -m unittest discover ran 3 tests; OK"
+        "evidence": "root plugin tests: 5 OK; dev/test plugin tests: 11 OK"
       },
       {
         "check": "python_compile",
@@ -28,21 +28,25 @@
       {
         "check": "flow_validation",
         "passed": true,
-        "evidence": "flowctl.py validate --spec fn-1-define-project-direction --json returned valid true with 5 tasks"
+        "evidence": "root Flow validates with 3 specs and 10 tasks; dev/test validate with 3 specs and 10 tasks after guard sync"
       },
       {
         "check": "marketplace_source",
         "passed": true,
         "evidence": "personal marketplace points to the local ACC plugin source path"
+      },
+      {
+        "check": "runtime_cache",
+        "passed": true,
+        "evidence": "installed cache exists at C:\\Users\\Mitun Manav G Y\\.codex\\plugins\\cache\\anyone-can-code-marketplace\\anyone-can-code\\1.0.0; source/cache manifest and hooks hashes match"
       }
     ],
     "warnings": [
-      "No installed ACC runtime was found in the Codex cache.",
       "pytest is not installed for the active Python 3.14 runtime; current tests use unittest."
     ],
     "notes": [
-      "This file replaces a stale historical verifier report with old skill-count evidence.",
-      "No plugin reinstall or runtime refresh was performed."
+      "This file replaces stale warning text from before the runtime cache was created.",
+      "No GitHub push, PR update, tag, publish, or release was performed."
     ]
   }
 }
