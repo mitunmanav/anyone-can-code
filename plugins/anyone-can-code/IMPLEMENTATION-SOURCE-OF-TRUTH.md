@@ -22,6 +22,8 @@
 
 ## Added
 - Bundled `hooks/hooks.json`.
+- ACC-only development-tree suppression through the ancestor marker
+  `.codex/anyone-can-code-hooks.disabled`. This does not disable other hooks.
 - Windows-safe project bootstrap with optional repo-local hook installation.
 - Structured local stores for state, artifacts, portable Markdown memory,
   settings, backups, imports, and migrations.

@@ -95,13 +95,23 @@ Workflow:
 6. open new thread
 7. run `$update` in the repo root if project state needs migration
 
-Plugin-dev repo should stay quiet by default:
+ACC hook behavior in its development workspace:
 
-- `[features].hooks = false`
-- `[features].plugin_hooks = false`
+- Put `.codex/anyone-can-code-hooks.disabled` at the root of a development
+  tree that must not run ACC hooks.
+- The marker applies to that folder and every descendant repo/worktree.
+- ACC hook scripts return empty success before reading or writing ACC state.
+- Other Codex and plugin hooks remain enabled.
 - `[features].memories = false`
 
-Use hooks only when testing hooks on purpose.
+The ACC source workspace uses the marker at:
+
+```text
+C:\Users\Mitun Manav G Y\Desktop\Plugin development\.codex\anyone-can-code-hooks.disabled
+```
+
+Remove or rename that marker only when testing ACC hooks on purpose and only
+after explicit approval.
 
 ## Memory model
 
@@ -194,7 +204,8 @@ If source is newer than runtime, refresh plugin first. Do not migrate yet.
 - if a skill path still shows an older version folder, old runtime still active
 - if project name shows parent `codex` folder, wrong root open
 - if source is newer than runtime, refresh plugin first
-- if hooks still run in plugin-dev repo, check project trust, `.codex/config.toml`, and `plugin_hooks`
+- if ACC hooks run below a disabled tree, verify the parent
+  `.codex/anyone-can-code-hooks.disabled` marker exists and restart Codex
 
 ## Reference files
 

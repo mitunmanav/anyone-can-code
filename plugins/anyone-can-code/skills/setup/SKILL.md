@@ -30,7 +30,9 @@ Reply rule:
 - Writes an install record that tracks plugin version, hook mode, portable Markdown memory mode, memory path, and viewer mode.
 - Selected session import snapshots every source before write, skips duplicate
   content on rerun, verifies Markdown, and writes success or rollback receipt.
-- Keeps plugin-dev repo quiet by default: hooks off, plugin_hooks off, memories off.
+- Keeps Codex memories off in the plugin-development reference config.
+- ACC-only hook suppression uses an ancestor
+  `.codex/anyone-can-code-hooks.disabled` marker so unrelated hooks remain active.
 - Refreshes `AGENTS.md` from the project template if needed.
 - Optionally installs repo-local hooks with `$setup --project-hooks`.
 - Runs `doctor.py` so the project gets an immediate health report.

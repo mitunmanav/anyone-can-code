@@ -1,6 +1,4 @@
 [features]
-hooks = false
-plugin_hooks = false
 memories = false
 
 [agents]

@@ -150,6 +150,12 @@ Next task:
 
 ## Rules
 
+- ACC hook scripts must return empty success before reads, writes, context
+  injection, permission decisions, or learning anywhere below a parent
+  `.codex/anyone-can-code-hooks.disabled` marker.
+- The parent `Plugin development` tree carries that marker. Do not use
+  `[features].hooks = false` for ACC isolation because that disables unrelated
+  hooks too.
 - Never build features directly on `main`.
 - Never merge a whole development branch into local `main` without first running
   `scripts\check-promotion-scope.ps1` and confirming the selected policy allows

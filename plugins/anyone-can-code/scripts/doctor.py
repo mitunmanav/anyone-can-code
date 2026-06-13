@@ -31,6 +31,19 @@ PROJECT_ROOT = Path(os.environ.get("ACC_PROJECT_ROOT", Path.cwd()))
 PROJECT_NAMESPACE = "anyone-can-code"
 ALLOWED_PERSONA_MODES = {"builder", "developer", "mixed"}
 ALLOWED_REPO_MODES = {"new", "existing", "production", "unknown"}
+ACC_HOOK_DISABLE_MARKER = Path(".codex") / "anyone-can-code-hooks.disabled"
+
+
+def acc_hook_disable_marker(project_root: Path) -> Path | None:
+    current = project_root.resolve()
+    for candidate in (current, *current.parents):
+        marker = candidate / ACC_HOOK_DISABLE_MARKER
+        try:
+            if marker.is_file():
+                return marker
+        except OSError:
+            continue
+    return None
 
 
 class Doctor:
@@ -284,6 +297,16 @@ class Doctor:
 
     def run_project_config(self) -> None:
         config_path = PROJECT_ROOT / ".codex" / "config.toml"
+        marker = acc_hook_disable_marker(PROJECT_ROOT)
+        if marker is not None:
+            self.check(
+                "config",
+                "project_hooks_mode",
+                "PASS",
+                "info",
+                f"ACC-only marker active; other hooks stay enabled: {marker}",
+            )
+            return
         if not config_path.exists():
             self.check("config", "project_config", "WARN", "warning", "No project .codex/config.toml found")
             return

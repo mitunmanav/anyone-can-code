@@ -234,6 +234,9 @@ def main() -> None:
     if repo_root is None:
         print(json.dumps({}))
         return
+    if state.acc_hooks_disabled(repo_root):
+        print(json.dumps({}))
+        return
 
     summary = session_summary(payload)
     signal_line, signals = recent_signal_summary(repo_root)

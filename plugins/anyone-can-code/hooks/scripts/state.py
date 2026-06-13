@@ -14,6 +14,7 @@ from pathlib import Path
 
 
 PROJECT_NAMESPACE = "anyone-can-code"
+HOOK_DISABLE_MARKER = Path(".codex") / "anyone-can-code-hooks.disabled"
 
 DEFAULT_STATE = {
     "schema_version": 2,
@@ -62,6 +63,19 @@ DEFAULT_PREFERENCES = {
 
 def utc_now():
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def acc_hooks_disabled(location: Path) -> bool:
+    current = location.resolve()
+    if current.is_file():
+        current = current.parent
+    for candidate in (current, *current.parents):
+        try:
+            if (candidate / HOOK_DISABLE_MARKER).is_file():
+                return True
+        except OSError:
+            continue
+    return False
 
 
 def plugin_runtime_root(script_path: Path) -> Path:

@@ -24,6 +24,12 @@
 - Do not dump whole repos, whole docs folders, or large raw files into context. Summarize findings, cite paths, and pull only the slices needed for the current task.
 - When anything changes, automatically update every affected repo doc, Flow record, and Obsidian note required to keep truth current.
 - Record agent actions, decisions, what happened, what did not happen, evidence, warnings, and next state into Obsidian immediately during the work, not later.
+- ACC hooks are disabled only for the full
+  `C:\Users\Mitun Manav G Y\Desktop\Plugin development` tree by
+  `.codex\anyone-can-code-hooks.disabled` at that parent root.
+- Do not disable all Codex hooks to achieve this. Flow-Next and other plugin
+  hooks remain available. Do not remove or bypass the ACC marker unless the
+  user explicitly reverses this decision.
 
 ## Current Goal
 - Repair completed task plans after the portable Markdown memory decision, then

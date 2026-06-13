@@ -188,6 +188,9 @@ def main() -> None:
     if repo_root is None:
         print(json.dumps({}))
         return
+    if state.acc_hooks_disabled(repo_root):
+        print(json.dumps({}))
+        return
 
     hook_event = payload.get("hook_event_name", "")
     if hook_event == "UserPromptSubmit":

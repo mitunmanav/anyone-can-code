@@ -62,6 +62,9 @@ def main() -> None:
     if repo_root is None:
         print(json.dumps({}))
         return
+    if state.acc_hooks_disabled(repo_root):
+        print(json.dumps({}))
+        return
 
     source = payload.get("source", "startup")
     print(

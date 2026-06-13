@@ -1,0 +1,29 @@
+{
+  "branch_name": "dev-fn-1-define-project-direction-2",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-06-13T14:08:45.302459Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-6-disable-acc-hooks-in-plugin-development",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "ready": true,
+  "spec_path": ".flow/specs/fn-6-disable-acc-hooks-in-plugin-development.md",
+  "status": "done",
+  "title": "Disable ACC hooks in plugin development tree",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-13T14:18:50.521115Z"
+}

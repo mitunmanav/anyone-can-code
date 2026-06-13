@@ -21,6 +21,10 @@
 - [ ] Repo-local hook commands resolve through `.codex/hooks/scripts/` in project mode.
 - [ ] Hook scripts emit valid JSON only.
 - [ ] Hook logic stays signal-first. No heavy learning write in hooks.
+- [ ] An ancestor `.codex/anyone-can-code-hooks.disabled` marker makes every
+      ACC hook return `{}` with exit code 0 before any ACC state read/write.
+- [ ] ACC-only suppression does not require `[features].hooks = false`; other
+      hooks remain enabled.
 - [ ] Stop hook writes session snapshots under `.codex/anyone-can-code/state/` and never overwrites root `AGENTS.md`.
 
 ## Windows-first runtime

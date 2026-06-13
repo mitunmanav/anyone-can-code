@@ -4,6 +4,7 @@ import json
 import importlib.util
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -34,9 +35,87 @@ setup = load_script("setup")
 doctor = load_script("doctor")
 update = load_script("update")
 save_session = load_hook_script("save_session")
+hook_state = load_hook_script("state")
 
 
 class ProjectStateTests(unittest.TestCase):
+    def test_acc_hook_disable_marker_applies_to_descendants_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            marked_tree = root / "plugin-development"
+            nested_repo = marked_tree / "inspiration" / "sample"
+            outside_repo = root / "other-project"
+            marker = marked_tree / ".codex" / "anyone-can-code-hooks.disabled"
+            marker.parent.mkdir(parents=True)
+            marker.write_text(
+                "ACC hooks disabled for this directory tree.\n",
+                encoding="utf-8",
+            )
+            nested_repo.mkdir(parents=True)
+            outside_repo.mkdir()
+
+            self.assertTrue(hook_state.acc_hooks_disabled(nested_repo))
+            self.assertFalse(hook_state.acc_hooks_disabled(outside_repo))
+
+    def test_all_acc_hooks_noop_without_state_writes_below_marker(self) -> None:
+        payloads = {
+            "guard.py": {
+                "hook_event_name": "UserPromptSubmit",
+                "prompt": "build a website",
+            },
+            "audit.py": {
+                "hook_event_name": "PostToolUse",
+                "tool_name": "Bash",
+                "tool_input": {"command": "echo hi"},
+                "tool_response": {"exit_code": 0},
+            },
+            "load_session.py": {
+                "hook_event_name": "SessionStart",
+                "source": "startup",
+            },
+            "save_session.py": {
+                "hook_event_name": "Stop",
+                "turn_id": "test-turn",
+                "stop_hook_active": False,
+                "last_assistant_message": "test",
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            tree = Path(tmp) / "plugin-development"
+            repo = tree / "sample-project"
+            marker = tree / ".codex" / "anyone-can-code-hooks.disabled"
+            marker.parent.mkdir(parents=True)
+            marker.write_text("disabled\n", encoding="utf-8")
+            repo.mkdir(parents=True)
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+
+            for script_name, payload in payloads.items():
+                with self.subTest(script=script_name):
+                    result = subprocess.run(
+                        [sys.executable, str(PLUGIN_ROOT / "hooks" / "scripts" / script_name)],
+                        input=json.dumps(payload),
+                        text=True,
+                        capture_output=True,
+                        cwd=repo,
+                        timeout=20,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(json.loads(result.stdout), {})
+                    self.assertFalse((repo / ".codex" / "anyone-can-code").exists())
+
+    def test_acc_repo_does_not_disable_all_codex_hooks(self) -> None:
+        repo_root = PLUGIN_ROOT.parents[1]
+        configs = [PLUGIN_ROOT / "reference" / "project" / ".codex" / "config.toml"]
+        local_config = repo_root / ".codex" / "config.toml"
+        if local_config.exists():
+            configs.append(local_config)
+
+        for config_path in configs:
+            with self.subTest(config=config_path):
+                config = config_path.read_text(encoding="utf-8")
+                self.assertNotIn("hooks = false", config)
+                self.assertNotIn("plugin_hooks = false", config)
+
     def test_setup_uses_selected_memory_path_and_writes_plain_receipt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
@@ -321,6 +400,42 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(by_check["memory_storage"]["status"], "PASS")
         self.assertEqual(by_check["memory_viewer"]["status"], "WARN")
         self.assertIn("Markdown storage still works", by_check["memory_viewer"]["evidence"])
+
+    def test_doctor_accepts_acc_only_ancestor_marker_without_disabling_other_hooks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tree = Path(tmp) / "plugin-development"
+            target = tree / "sample-project"
+            marker = tree / ".codex" / "anyone-can-code-hooks.disabled"
+            marker.parent.mkdir(parents=True)
+            marker.write_text("disabled\n", encoding="utf-8")
+            (target / ".codex").mkdir(parents=True)
+            (target / ".codex" / "config.toml").write_text(
+                "[features]\nmemories = false\n",
+                encoding="utf-8",
+            )
+
+            old_project_root = doctor.PROJECT_ROOT
+            doctor.PROJECT_ROOT = target
+            try:
+                instance = doctor.Doctor(json_mode=True)
+                instance.run_project_config()
+            finally:
+                doctor.PROJECT_ROOT = old_project_root
+
+        result = instance.results[0]
+        self.assertEqual(result["check"], "project_hooks_mode")
+        self.assertEqual(result["status"], "PASS")
+        self.assertIn("ACC-only marker", result["evidence"])
+
+    def test_runtime_version_comparison_ignores_codex_cachebuster_metadata(self) -> None:
+        self.assertEqual(
+            doctor.runtime_info.compare_versions(
+                "1.0.0",
+                "1.0.0+codex.20260613140139",
+            ),
+            0,
+        )
+        self.assertLess(doctor.runtime_info.compare_versions("1.0.0", "1.0.1+codex.local"), 0)
 
     def test_update_migrates_only_project_owned_legacy_jsonl(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

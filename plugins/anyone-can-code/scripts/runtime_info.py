@@ -60,7 +60,8 @@ def install_state_version(project_root: Path) -> str | None:
 def version_key(value: str | None) -> tuple[int, int, int, str]:
     if not value:
         return (0, 0, 0, "")
-    parts = str(value).split(".")
+    base_value = str(value).split("+", 1)[0]
+    parts = base_value.split(".")
     numbers: list[int] = []
     suffix = ""
     for part in parts[:3]:
