@@ -44,6 +44,9 @@
 - Follow `DEVELOPMENT-WORKFLOW.md`.
 - Before plugin-product work resumes, complete the development reliability gate
   in `fn-2-harden-acc-development-system`.
+- Before local `main` receives candidate work, run
+  `scripts\check-promotion-scope.ps1` with the appropriate policy. Stop if it
+  reports `FAIL`.
 - Use `Projects\Anyone Can Code\02 Current Status.md` for status overview.
 - Use `Projects\Anyone Can Code\03 Timeline.md` for reconstructed past work.
 - Linear is legacy only. Do not read, write, sync, or create Linear items.

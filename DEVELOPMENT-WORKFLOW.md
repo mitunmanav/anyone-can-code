@@ -55,11 +55,14 @@ anyone-can-code/
 12. Update `test-candidate` from the committed development branch.
 13. Run full local validation in the testing worktree.
 14. Fix failures in the development worktree, then test a new candidate.
-15. On user approval, merge the verified candidate into local `main`.
-16. Keep local `main` offline until the user explicitly orders a GitHub action.
-17. On explicit user command, push verified local `main` to GitHub.
-18. On explicit user command, publish or release from stable `main`.
-19. Update Obsidian status, timeline, and evidence after completion or publication.
+15. On user approval, run the scoped promotion guard before local `main` changes.
+16. Promote only the approved file scope into local `main`; do not merge a
+    whole development branch unless the guard policy explicitly allows every
+    changed file.
+17. Keep local `main` offline until the user explicitly orders a GitHub action.
+18. On explicit user command, push verified local `main` to GitHub.
+19. On explicit user command, publish or release from stable `main`.
+20. Update Obsidian status, timeline, and evidence after completion or publication.
 
 ## Development Reliability Gate
 
@@ -110,6 +113,23 @@ Do not call work complete until all applicable checks pass:
 7. `git ls-remote origin refs/heads/main` when GitHub state matters.
 8. Flow evidence and Obsidian evidence updated.
 
+### Local-main promotion guard
+
+Before local `main` receives candidate work, run the scope guard from the root
+checkout:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check-promotion-scope.ps1 -Base main -Candidate <candidate-branch> -Policy <policy>
+```
+
+Use `-Policy reliability` for development reliability work. If the guard prints
+`FAIL`, stop. Do not merge, cherry-pick, copy files, push, or publish until the
+forbidden files are understood and the user approves the expanded scope.
+
+The guard is intentionally small. It only reads Git diff file names and exits
+with pass/fail. It does not change files, branches, Flow state, Obsidian,
+runtime cache, GitHub, PRs, tags, releases, or plugin behavior.
+
 ### Evidence receipt
 
 Every completed reliability or plugin task should leave this proof shape in Flow
@@ -131,6 +151,9 @@ Next task:
 ## Rules
 
 - Never build features directly on `main`.
+- Never merge a whole development branch into local `main` without first running
+  `scripts\check-promotion-scope.ps1` and confirming the selected policy allows
+  every changed file.
 - Never publish from a development or testing worktree.
 - Never edit product code in `test-candidate`.
 - Never start implementation before searching connected ACC Obsidian notes.

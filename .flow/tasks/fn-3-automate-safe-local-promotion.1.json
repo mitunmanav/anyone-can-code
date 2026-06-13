@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-06-13T04:54:43.660878Z",
+  "depends_on": [],
+  "id": "fn-3-automate-safe-local-promotion.1",
+  "priority": null,
+  "spec": "fn-3-automate-safe-local-promotion",
+  "spec_path": ".flow/tasks/fn-3-automate-safe-local-promotion.1.md",
+  "status": "todo",
+  "title": "Add scoped promotion guard",
+  "updated_at": "2026-06-13T05:00:09.464826Z"
+}
