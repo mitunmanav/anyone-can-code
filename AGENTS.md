@@ -4,8 +4,8 @@
 - Phase: build
 - Route: Flow-Next local development
 - Entry mode: existing project
-- Last task: `fn-4-build-portable-markdown-memory.4` completed
-- Next task: `fn-4-build-portable-markdown-memory.5` only after user approval
+- Last task: `fn-6-disable-acc-hooks-in-plugin-development.1` completed
+- Current task: `fn-6-disable-acc-hooks-in-plugin-development.2`
 - Communication mode: caveman-strict
 - Development memory mode: Obsidian project brain first
 - Product memory target: portable linked Markdown through bundled MCP, with JSONL as migration input only
@@ -32,9 +32,10 @@
   user explicitly reverses this decision.
 
 ## Current Goal
-- Repair completed task plans after the portable Markdown memory decision, then
-  continue with `fn-4-build-portable-markdown-memory` before product task
-  `fn-1-define-project-direction.5`.
+- Repair ACC hook launch when Codex supplies the local marketplace repository
+  as `PLUGIN_ROOT`, then verify the ACC-only disable marker remains effective.
+- Resume Ruflo-inspired roadmap discussion only after this repair is verified
+  and the user approves the next product-direction task.
 
 ## Project Delivery Model
 - Obsidian is the complete project brain and history: requests, decisions, explanations, evidence, reversals, and continuity.

@@ -590,6 +590,60 @@ class ProjectStateTests(unittest.TestCase):
                 )
                 self.assertEqual(result.returncode, 0, result.stderr)
 
+    @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
+    def test_hook_commands_accept_marketplace_repo_as_plugin_root(self) -> None:
+        hooks = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
+        marketplace_repo = PLUGIN_ROOT.parents[1]
+        workspace_root = marketplace_repo.parent
+        env = os.environ.copy()
+        env["PLUGIN_ROOT"] = str(marketplace_repo)
+        env.pop("CLAUDE_PLUGIN_ROOT", None)
+
+        cases = [
+            (
+                hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"],
+                {
+                    "hook_event_name": "UserPromptSubmit",
+                    "prompt": "test",
+                    "cwd": str(workspace_root),
+                },
+            ),
+            (
+                hooks["hooks"]["PreToolUse"][0]["hooks"][0]["command"],
+                {
+                    "hook_event_name": "PreToolUse",
+                    "tool_name": "Bash",
+                    "tool_input": {"command": "echo hi"},
+                    "cwd": str(workspace_root),
+                },
+            ),
+            (
+                hooks["hooks"]["PostToolUse"][0]["hooks"][0]["command"],
+                {
+                    "hook_event_name": "PostToolUse",
+                    "tool_name": "Bash",
+                    "tool_input": {"command": "echo hi"},
+                    "tool_response": {"exit_code": 0},
+                    "cwd": str(workspace_root),
+                },
+            ),
+        ]
+
+        for command, payload in cases:
+            with self.subTest(event=payload["hook_event_name"]):
+                result = subprocess.run(
+                    command,
+                    input=json.dumps(payload),
+                    text=True,
+                    capture_output=True,
+                    cwd=workspace_root,
+                    env=env,
+                    shell=True,
+                    timeout=20,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip(), "{}")
+
 
 if __name__ == "__main__":
     unittest.main()

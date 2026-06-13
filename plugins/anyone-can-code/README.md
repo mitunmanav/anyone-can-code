@@ -101,6 +101,8 @@ ACC hook behavior in its development workspace:
   tree that must not run ACC hooks.
 - The marker applies to that folder and every descendant repo/worktree.
 - ACC hook scripts return empty success before reading or writing ACC state.
+- Hook launchers accept either the plugin directory or its marketplace
+  repository root and resolve the nested `plugins/anyone-can-code` directory.
 - Other Codex and plugin hooks remain enabled.
 - `[features].memories = false`
 
@@ -206,6 +208,9 @@ If source is newer than runtime, refresh plugin first. Do not migrate yet.
 - if source is newer than runtime, refresh plugin first
 - if ACC hooks run below a disabled tree, verify the parent
   `.codex/anyone-can-code-hooks.disabled` marker exists and restart Codex
+- if every visible ACC hook exits `1`, verify Codex did not supply the
+  marketplace repository as `PLUGIN_ROOT`; current launchers normalize it
+  before running hook scripts
 
 ## Reference files
 

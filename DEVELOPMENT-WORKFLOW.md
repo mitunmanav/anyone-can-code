@@ -153,6 +153,9 @@ Next task:
 - ACC hook scripts must return empty success before reads, writes, context
   injection, permission decisions, or learning anywhere below a parent
   `.codex/anyone-can-code-hooks.disabled` marker.
+- ACC hook launchers must validate `PLUGIN_ROOT` and `CLAUDE_PLUGIN_ROOT`.
+  Codex may supply the marketplace repository root, so launchers must normalize
+  that value to nested `plugins/anyone-can-code` before running hook scripts.
 - The parent `Plugin development` tree carries that marker. Do not use
   `[features].hooks = false` for ACC isolation because that disables unrelated
   hooks too.
