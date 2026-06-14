@@ -22,11 +22,16 @@ Reply rule:
 
 ## Read from
 
-- `.codex/anyone-can-code/state/workflow.json`
-- `.codex/anyone-can-code/state/turn-ledger.jsonl`
-- `.codex/anyone-can-code/logs/signal-ledger.jsonl`
-- `.codex/anyone-can-code/logs/mistake-ledger.jsonl`
-- `.codex/anyone-can-code/artifacts/`
-- `AGENTS.md`
+Start with canonical
+`.codex/anyone-can-code/state/workflow.json`. Confirm derived files carry same
+transaction ID. Use history, ledgers, artifacts, and `AGENTS.md` only as
+supporting evidence.
+
+Use `scripts/canonical_state.py` recovery behavior to re-anchor from canonical
+state. Read `active_task_capsule` for goal, task, decisions, boundaries,
+evidence, and next action. Before known restart, handoff, or compaction risk,
+save a context-transition capsule when possible.
 
 Choose the lightest recovery mode that is still safe.
+If active truths conflict, block work and repair state before resuming.
+Report every missing or uncertain field. Never invent recovery context.

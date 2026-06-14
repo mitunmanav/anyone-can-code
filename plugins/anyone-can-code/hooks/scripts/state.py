@@ -9,8 +9,15 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from pathlib import Path
+
+SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+import canonical_state
 
 
 PROJECT_NAMESPACE = "anyone-can-code"
@@ -157,11 +164,12 @@ def read_state(repo_root: Path) -> dict:
 
 
 def write_state(repo_root: Path, updates: dict) -> dict:
-    current = read_state(repo_root)
-    current.update(updates)
-    current["updated_at"] = utc_now()
-    _write_json(workflow_state_path(repo_root), current)
-    return current
+    normalized = dict(updates)
+    if "last_task" in normalized and "active_task" not in normalized:
+        normalized["active_task"] = normalized["last_task"]
+    if "next_step" in normalized and "next_action" not in normalized:
+        normalized["next_action"] = normalized["next_step"]
+    return canonical_state.update_canonical_state(repo_root, normalized)
 
 
 def read_preferences(repo_root: Path) -> dict:

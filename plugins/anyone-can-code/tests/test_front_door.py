@@ -115,8 +115,64 @@ class FrontDoorTests(unittest.TestCase):
 
         self.assertEqual(matched["plugin"], "browser-tools")
         self.assertTrue(matched["matched"])
+        self.assertEqual(matched["health"]["status"], "healthy")
+        self.assertFalse(matched["durable_truth"])
         self.assertEqual(fallback["source"], "acc")
         self.assertEqual(fallback["reason"], "plugin-returned-no-result")
+        self.assertEqual(fallback["fallback"]["owner"], "acc")
+
+    def test_capability_probe_blocks_unhealthy_plugin_and_uses_acc_fallback(self) -> None:
+        probes = []
+
+        def unhealthy_probe(plugin):
+            probes.append(plugin["name"])
+            return {"status": "unhealthy", "reason": "service unavailable"}
+
+        result = front_door.choose_plugin_route(
+            "Open localhost and take a screenshot",
+            [
+                {
+                    "name": "browser-tools",
+                    "description": "Open and inspect local websites.",
+                    "skills": ["browser"],
+                    "capability_text": "browser open inspect localhost screenshot",
+                    "manifest": "plugin.json",
+                    "health_probe": unhealthy_probe,
+                }
+            ],
+        )
+
+        self.assertEqual(probes, ["browser-tools"])
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["reason"], "capability-unhealthy")
+        self.assertEqual(result["health"]["status"], "unhealthy")
+        self.assertEqual(result["fallback"]["owner"], "acc")
+        self.assertFalse(result["durable_truth"])
+
+    def test_capability_runtime_failure_returns_to_acc(self) -> None:
+        decision = front_door.choose_plugin_route(
+            "Open localhost and take a screenshot",
+            [
+                {
+                    "name": "browser-tools",
+                    "description": "Open and inspect local websites.",
+                    "skills": ["browser"],
+                    "capability_text": "browser open inspect localhost screenshot",
+                    "manifest": "plugin.json",
+                }
+            ],
+        )
+
+        result = front_door.complete_plugin_route(
+            decision,
+            {"status": "failed", "reason": "browser did not start"},
+        )
+
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["source"], "acc")
+        self.assertEqual(result["reason"], "capability-runtime-failure")
+        self.assertEqual(result["workflow_owner"], "acc")
+        self.assertFalse(result["durable_truth"])
 
     def test_front_door_uses_plugin_route_and_keeps_acc_fallback(self) -> None:
         plugins = [
@@ -134,8 +190,65 @@ class FrontDoorTests(unittest.TestCase):
             plugins=plugins,
         )
 
-        self.assertEqual(result["route"], ["plugin:browser-tools"])
+        self.assertEqual(result["workflow_owner"], "acc")
+        self.assertEqual(result["route"], ["intake", "checklist", "plan"])
         self.assertEqual(result["fallback_route"], ["intake", "checklist", "plan"])
+        assignment = result["bridge"]["assignment"]
+        self.assertEqual(assignment["specialist"], "browser-tools")
+        self.assertEqual(assignment["workflow_owner"], "acc")
+        self.assertEqual(assignment["return_to"], "acc")
+        self.assertIn("create-controlling-plan", assignment["forbidden_actions"])
+
+    def test_specialist_takeover_is_blocked_and_technical_result_is_kept(self) -> None:
+        decision = {
+            "matched": True,
+            "source": "plugin",
+            "plugin": "design-tools",
+            "capability": "UI design",
+            "reason": "installed-manifest-match",
+        }
+        assignment = front_door.build_specialist_assignment(
+            decision,
+            request="Improve this page",
+            allowed_output="UI recommendations",
+        )
+
+        result = front_door.complete_plugin_route(
+            {**decision, "assignment": assignment},
+            {
+                "technical_result": ["Increase contrast"],
+                "workflow_owner": "design-tools",
+                "plan": "Use the plugin plan",
+                "commit_required": True,
+            },
+        )
+
+        self.assertEqual(result["source"], "plugin")
+        self.assertEqual(result["workflow_owner"], "acc")
+        self.assertEqual(result["result"], ["Increase contrast"])
+        self.assertTrue(result["takeover_blocked"])
+        self.assertCountEqual(
+            result["blocked_controls"],
+            ["workflow_owner", "plan", "commit_required"],
+        )
+
+    def test_explicit_user_handoff_allows_new_workflow_owner(self) -> None:
+        decision = {
+            "matched": True,
+            "source": "plugin",
+            "plugin": "design-tools",
+            "capability": "UI design",
+            "reason": "installed-manifest-match",
+        }
+        assignment = front_door.build_specialist_assignment(
+            decision,
+            request="Let design-tools own this workflow",
+            allowed_output="full workflow",
+            user_handoff=True,
+        )
+
+        self.assertEqual(assignment["workflow_owner"], "design-tools")
+        self.assertTrue(assignment["user_handoff"])
 
     def test_bridge_does_not_route_weak_or_self_matches(self) -> None:
         plugins = [
@@ -182,7 +295,7 @@ class FrontDoorTests(unittest.TestCase):
         ok, evidence = front_door.smoke_check()
 
         self.assertTrue(ok)
-        self.assertIn("plugin fallback ready", evidence)
+        self.assertIn("capability probe and fallback ready", evidence)
 
 
 if __name__ == "__main__":

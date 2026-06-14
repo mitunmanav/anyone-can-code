@@ -1,0 +1,24 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T11:28:06.151973Z",
+  "depends_on": [
+    "fn-11-build-acc-codex-desktop-reliability-and.2",
+    "fn-11-build-acc-codex-desktop-reliability-and.3",
+    "fn-11-build-acc-codex-desktop-reliability-and.4",
+    "fn-11-build-acc-codex-desktop-reliability-and.5",
+    "fn-11-build-acc-codex-desktop-reliability-and.6",
+    "fn-11-build-acc-codex-desktop-reliability-and.7",
+    "fn-11-build-acc-codex-desktop-reliability-and.8",
+    "fn-11-build-acc-codex-desktop-reliability-and.9",
+    "fn-11-build-acc-codex-desktop-reliability-and.10"
+  ],
+  "id": "fn-11-build-acc-codex-desktop-reliability-and.11",
+  "priority": 11,
+  "spec": "fn-11-build-acc-codex-desktop-reliability-and",
+  "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.11.md",
+  "status": "todo",
+  "title": "Run installed Codex Desktop real-user QA",
+  "updated_at": "2026-06-14T11:28:06.151995Z"
+}

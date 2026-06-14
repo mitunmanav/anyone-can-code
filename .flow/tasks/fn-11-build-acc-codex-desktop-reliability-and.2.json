@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T11:28:00.429286Z",
+  "depends_on": [
+    "fn-11-build-acc-codex-desktop-reliability-and.1"
+  ],
+  "id": "fn-11-build-acc-codex-desktop-reliability-and.2",
+  "priority": 2,
+  "spec": "fn-11-build-acc-codex-desktop-reliability-and",
+  "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.2.md",
+  "status": "todo",
+  "title": "Enforce workflow ownership and specialist boundaries",
+  "updated_at": "2026-06-14T12:23:24.523960Z"
+}

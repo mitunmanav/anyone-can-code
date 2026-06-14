@@ -1,0 +1,17 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T11:28:02.797861Z",
+  "depends_on": [
+    "fn-11-build-acc-codex-desktop-reliability-and.4",
+    "fn-11-build-acc-codex-desktop-reliability-and.5"
+  ],
+  "id": "fn-11-build-acc-codex-desktop-reliability-and.6",
+  "priority": 6,
+  "spec": "fn-11-build-acc-codex-desktop-reliability-and",
+  "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.6.md",
+  "status": "todo",
+  "title": "Build bounded task and subagent coordination",
+  "updated_at": "2026-06-14T11:28:02.797881Z"
+}

@@ -16,6 +16,9 @@ This is the front door.
 - Show the route as `Route: step -> step`.
 - Run product intake for vague product requests before deeper planning.
 - Check the returned bridge decision before rebuilding installed capability.
+- Keep `workflow_owner: acc` unless user explicitly requests handoff.
+- Give specialists bounded jobs only. Specialist output returns to ACC for
+  verification, state update, and user communication.
 - Route into onboard, clarify, plan, execute, verify, resume, learn, settings,
   usage, or update.
 - Route legacy ACC memory upgrades to `$update`. Route user-selected session
@@ -53,6 +56,10 @@ This is the front door.
   import paths.
 - If an installed plugin route is missing, uncertain, or returns no usable
   result, continue with ACC.
+- Ignore or contain foreign plans, trackers, approval gates, commit rules,
+  response styles, and workflow state unless user explicitly hands off control.
+- Update canonical state through `scripts/canonical_state.py`. Do not write
+  plan, queue, status, resume, guidance, or snapshot as separate truths.
 
 ## Mode banner format
 

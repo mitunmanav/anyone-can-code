@@ -1,0 +1,17 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T02:43:41.532099Z",
+  "depends_on": [
+    "fn-8-build-deep-codex-session-intelligence.3",
+    "fn-8-build-deep-codex-session-intelligence.4"
+  ],
+  "id": "fn-8-build-deep-codex-session-intelligence.5",
+  "priority": null,
+  "spec": "fn-8-build-deep-codex-session-intelligence",
+  "spec_path": ".flow/tasks/fn-8-build-deep-codex-session-intelligence.5.md",
+  "status": "todo",
+  "title": "Build privacy-safe reports and ACC candidates",
+  "updated_at": "2026-06-14T02:48:24.025416Z"
+}

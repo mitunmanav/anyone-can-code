@@ -1,0 +1,19 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T08:40:46.546508Z",
+  "depends_on": [
+    "fn-9-build-forensic-session-ledger.3",
+    "fn-9-build-forensic-session-ledger.4",
+    "fn-9-build-forensic-session-ledger.5",
+    "fn-9-build-forensic-session-ledger.6"
+  ],
+  "id": "fn-9-build-forensic-session-ledger.7",
+  "priority": null,
+  "spec": "fn-9-build-forensic-session-ledger",
+  "spec_path": ".flow/tasks/fn-9-build-forensic-session-ledger.7.md",
+  "status": "todo",
+  "title": "Verify current inbox and gate old-run cleanup",
+  "updated_at": "2026-06-14T08:41:33.316790Z"
+}

@@ -15,6 +15,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import product_intake
+import capability_registry
 
 
 ROUTES = {
@@ -63,6 +64,24 @@ STOP_WORDS = {
     "test",
     "verify",
     "workflow",
+}
+
+SPECIALIST_FORBIDDEN_ACTIONS = (
+    "change-workflow-owner",
+    "create-controlling-plan",
+    "create-task-tracker",
+    "require-commit",
+    "add-approval-gate",
+    "change-user-style",
+)
+
+TAKEOVER_CONTROL_KEYS = {
+    "workflow_owner",
+    "plan",
+    "tracker",
+    "commit_required",
+    "approval_gate",
+    "response_style",
 }
 
 
@@ -193,27 +212,44 @@ def choose_plugin_route(
     request_text = normalize_text(request)
     request_tokens = meaningful_tokens(request_text)
     best: tuple[int, str, dict[str, Any]] | None = None
+    unhealthy_match: dict[str, Any] | None = None
 
-    for plugin in plugins or []:
-        name = normalize_text(plugin.get("name"))
+    registry = capability_registry.build_capability_registry(plugins or [])
+    for capability in registry:
+        name = normalize_text(capability.get("provider"))
         if not name or name == "anyone-can-code":
             continue
-        capability_text = normalize_text(plugin.get("capability_text"))
+        capability_text = normalize_text(capability.get("capability_text"))
         overlap = request_tokens & meaningful_tokens(capability_text)
         explicit_name = name in request_text or name.replace("-", " ") in request_text
         skill_match = any(
             normalize_text(skill) in request_text
-            for skill in plugin.get("skills", [])
+            for skill in capability.get("skills", [])
             if normalize_text(skill)
         )
         score = len(overlap) + (3 if explicit_name else 0) + (2 if skill_match else 0)
         if score < 2:
             continue
-        candidate = (score, name, plugin)
+        if capability["health"]["status"] != "healthy":
+            unhealthy_match = capability
+            continue
+        candidate = (score, name, capability)
         if best is None or candidate[:2] > best[:2]:
             best = candidate
 
     if best is None:
+        if unhealthy_match:
+            return {
+                "matched": False,
+                "source": "acc",
+                "plugin": unhealthy_match["provider"],
+                "capability": unhealthy_match["description"],
+                "reason": "capability-unhealthy",
+                "health": unhealthy_match["health"],
+                "fallback": unhealthy_match["fallback"],
+                "workflow_owner": "acc",
+                "durable_truth": False,
+            }
         return {
             "matched": False,
             "source": "acc",
@@ -222,13 +258,39 @@ def choose_plugin_route(
             "reason": "no-confident-plugin-match",
         }
 
-    _, _, plugin = best
+    _, _, capability = best
     return {
         "matched": True,
         "source": "plugin",
-        "plugin": plugin["name"],
-        "capability": plugin.get("description") or ", ".join(plugin.get("skills", [])),
+        "plugin": capability["provider"],
+        "capability": capability.get("description") or ", ".join(capability.get("skills", [])),
         "reason": "installed-manifest-match",
+        "health": capability["health"],
+        "capability_source": capability["source"],
+        "fallback": capability["fallback"],
+        "workflow_owner": "acc",
+        "durable_truth": False,
+    }
+
+
+def build_specialist_assignment(
+    decision: dict[str, Any],
+    *,
+    request: str,
+    allowed_output: str,
+    user_handoff: bool = False,
+) -> dict[str, Any]:
+    specialist = normalize_text(decision.get("plugin"))
+    owner = specialist if user_handoff else "acc"
+    return {
+        "workflow_owner": owner,
+        "specialist": specialist,
+        "request": str(request).strip(),
+        "allowed_output": str(allowed_output).strip(),
+        "permissions": ["read-needed-context", "produce-bounded-output"],
+        "forbidden_actions": [] if user_handoff else list(SPECIALIST_FORBIDDEN_ACTIONS),
+        "return_to": specialist if user_handoff else "acc",
+        "user_handoff": bool(user_handoff),
     }
 
 
@@ -245,8 +307,65 @@ def complete_plugin_route(
             "plugin": decision.get("plugin"),
             "capability": decision.get("capability"),
             "reason": "plugin-returned-no-result",
+            "health": {
+                "status": "unhealthy",
+                "reason": "plugin-returned-no-result",
+            },
+            "fallback": decision.get("fallback")
+            or {"owner": "acc", "route": "local-acc"},
+            "workflow_owner": "acc",
+            "durable_truth": False,
         }
-    return {**decision, "result": plugin_result}
+    if isinstance(plugin_result, dict) and normalize_text(plugin_result.get("status")) in {
+        "failed",
+        "unavailable",
+        "unhealthy",
+    }:
+        return {
+            "matched": False,
+            "source": "acc",
+            "plugin": decision.get("plugin"),
+            "capability": decision.get("capability"),
+            "reason": "capability-runtime-failure",
+            "health": {
+                "status": "unhealthy",
+                "reason": normalize_text(plugin_result.get("reason"))
+                or normalize_text(plugin_result.get("status")),
+            },
+            "fallback": decision.get("fallback")
+            or {"owner": "acc", "route": "local-acc"},
+            "workflow_owner": "acc",
+            "durable_truth": False,
+        }
+    assignment = decision.get("assignment") or {}
+    owner = assignment.get("workflow_owner") or "acc"
+    if not isinstance(plugin_result, dict) or assignment.get("user_handoff"):
+        return {
+            **decision,
+            "workflow_owner": owner,
+            "result": plugin_result,
+            "takeover_blocked": False,
+            "blocked_controls": [],
+        }
+
+    blocked_controls = [
+        key for key in TAKEOVER_CONTROL_KEYS if key in plugin_result
+    ]
+    technical_result = plugin_result.get("technical_result")
+    if technical_result is None:
+        technical_result = {
+            key: value
+            for key, value in plugin_result.items()
+            if key not in TAKEOVER_CONTROL_KEYS
+        }
+    return {
+        **decision,
+        "workflow_owner": "acc",
+        "durable_truth": False,
+        "result": technical_result,
+        "takeover_blocked": bool(blocked_controls),
+        "blocked_controls": blocked_controls,
+    }
 
 
 def route_request(
@@ -266,6 +385,7 @@ def route_request(
             "product_type": "unknown",
             "banner": "Detected: requirement change",
             "route": ["update-plan", "update-state", resume_step],
+            "workflow_owner": "acc",
             "bridge": {
                 "matched": False,
                 "source": "acc",
@@ -293,13 +413,21 @@ def route_request(
     active_route = local_route
     fallback_route = None
     if bridge.get("matched"):
-        active_route = [f"plugin:{bridge['plugin']}"]
         fallback_route = local_route
+        bridge = {
+            **bridge,
+            "assignment": build_specialist_assignment(
+                bridge,
+                request=request,
+                allowed_output="bounded technical result for the matched capability",
+            ),
+        }
     result = {
         "entry_mode": entry_mode,
         "product_type": product_type,
         "banner": f"Detected: {detected}",
         "route": active_route,
+        "workflow_owner": "acc",
         "bridge": bridge,
     }
     if fallback_route is not None:
@@ -316,7 +444,7 @@ def smoke_check() -> tuple[bool, str]:
         return False, "idea route mismatch"
     if bug["route"] != ["fix", "verify"]:
         return False, "bug route mismatch"
-    return True, "idea -> intake; bug -> fix; plugin fallback ready"
+    return True, "idea -> intake; bug -> fix; capability probe and fallback ready"
 
 
 if __name__ == "__main__":

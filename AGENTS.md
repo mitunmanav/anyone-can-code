@@ -24,12 +24,19 @@
 - Do not dump whole repos, whole docs folders, or large raw files into context. Summarize findings, cite paths, and pull only the slices needed for the current task.
 - When anything changes, automatically update every affected repo doc, Flow record, and Obsidian note required to keep truth current.
 - Record agent actions, decisions, what happened, what did not happen, evidence, warnings, and next state into Obsidian immediately during the work, not later.
-- ACC hooks are disabled only for the full
-  `C:\Users\Mitun Manav G Y\Desktop\Plugin development` tree by
-  `.codex\anyone-can-code-hooks.disabled` at that parent root.
-- Do not disable all Codex hooks to achieve this. Flow-Next and other plugin
-  hooks remain available. Do not remove or bypass the ACC marker unless the
-  user explicitly reverses this decision.
+- ACC is the product under development in the full
+  `C:\Users\Mitun Manav G Y\Desktop\Plugin development` tree, not an active
+  helper there.
+- No ACC plugin runtime, ACC hooks, ACC MCP, or ACC skills may be used inside
+  the Plugin development project. Treat any ACC runtime activity there as a
+  bug.
+- Parent project config and repo project config both disable only
+  `anyone-can-code@anyone-can-code-marketplace` for this project; the parent
+  `.codex\anyone-can-code-hooks.disabled` marker remains only as
+  defense-in-depth.
+- Do not disable all Codex hooks to achieve this. Non-plugin hooks and other
+  non-ACC tools can still work. Do not remove or bypass the ACC marker unless
+  the user explicitly reverses this decision.
 
 ## Current Goal
 - Repair ACC hook launch when Codex supplies the local marketplace repository

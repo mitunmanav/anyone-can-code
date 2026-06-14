@@ -12,10 +12,11 @@ Reply rule:
 - talk strict caveman only
 - keep answer short
 
-Read:
+Read canonical `.codex/anyone-can-code/state/workflow.json` first.
+`state-current.md` is derived and must carry same transaction ID.
 
-- `.codex/anyone-can-code/state/workflow.json`
-- `.codex/anyone-can-code/state/state-current.md`
+Also read:
+
 - `.codex/anyone-can-code/artifacts/VERIFICATION.md` if present
 - `.codex/anyone-can-code/state/install.json`
 - source manifest if repo has `.agents/plugins/marketplace.json`
@@ -40,6 +41,8 @@ Return:
 - unverified work
 - remaining uncertainty
 - blockers or missing evidence
+- active-task capsule saved time and next action
+- canonical transaction ID and any derived-view disagreement
 
 Never use `done`, `complete`, `finished`, or similar words as workflow states.
 Example: `Status: build implemented, tests verified, deploy blocked`.

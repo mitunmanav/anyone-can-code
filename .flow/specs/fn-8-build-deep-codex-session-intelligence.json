@@ -1,0 +1,25 @@
+{
+  "branch_name": "fn-8-build-deep-codex-session-intelligence",
+  "created_at": "2026-06-14T02:42:07.665545Z",
+  "depends_on_epics": [
+    "fn-7-build-isolated-session-analyzer"
+  ],
+  "id": "fn-8-build-deep-codex-session-intelligence",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-8-build-deep-codex-session-intelligence.md",
+  "status": "open",
+  "title": "Build deep Codex session intelligence analyzer",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-14T02:47:47.528433Z"
+}

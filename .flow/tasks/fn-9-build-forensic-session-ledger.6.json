@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T08:40:46.113118Z",
+  "depends_on": [
+    "fn-9-build-forensic-session-ledger.2"
+  ],
+  "id": "fn-9-build-forensic-session-ledger.6",
+  "priority": null,
+  "spec": "fn-9-build-forensic-session-ledger",
+  "spec_path": ".flow/tasks/fn-9-build-forensic-session-ledger.6.md",
+  "status": "todo",
+  "title": "Build compaction and caveman reports",
+  "updated_at": "2026-06-14T08:41:32.915301Z"
+}

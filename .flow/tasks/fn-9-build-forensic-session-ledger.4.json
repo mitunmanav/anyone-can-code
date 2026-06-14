@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T08:40:45.211729Z",
+  "depends_on": [
+    "fn-9-build-forensic-session-ledger.2"
+  ],
+  "id": "fn-9-build-forensic-session-ledger.4",
+  "priority": null,
+  "spec": "fn-9-build-forensic-session-ledger",
+  "spec_path": ".flow/tasks/fn-9-build-forensic-session-ledger.4.md",
+  "status": "todo",
+  "title": "Build usage cost and rate-limit reports",
+  "updated_at": "2026-06-14T08:41:32.065760Z"
+}

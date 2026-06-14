@@ -242,12 +242,23 @@ def main() -> None:
     signal_line, signals = recent_signal_summary(repo_root)
     updates = {
         "last_task": summary[:160] if summary else "",
+        "active_task": summary[:160] if summary else "",
         "next_step": infer_next_step(summary),
+        "next_action": infer_next_step(summary),
         "memory_mode": "portable-markdown",
     }
     workflow = state.write_state(repo_root, updates)
-    write_session_snapshot(repo_root, f"{summary}\n\n{signal_line}", workflow)
-    write_resume_artifacts(repo_root, payload, summary, workflow)
+    state.append_jsonl(
+        state.ensure_project_layout(repo_root)["state"] / "turn-ledger.jsonl",
+        {
+            "timestamp": state.utc_now(),
+            "turn_id": payload.get("turn_id", "unknown"),
+            "summary": summary,
+            "phase": workflow.get("phase", "idle"),
+            "route": workflow.get("route", "unknown"),
+            "transaction_id": workflow.get("transaction_id", ""),
+        },
+    )
     write_mistake_ledger(repo_root, signals)
     durable_memory_writes(repo_root, signals, summary)
     print(json.dumps({}))

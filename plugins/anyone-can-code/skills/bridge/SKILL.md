@@ -13,12 +13,20 @@ Detect and route to other installed plugins.
    `~/.codex/plugins/cache/*/*/*/.codex-plugin/plugin.json`.
 2. Read structured manifest name, descriptions, declared skills path, and skill
    frontmatter descriptions.
-3. Skip malformed manifests, missing skill folders, weak matches, and ACC
-   itself.
-4. Treat the best confident match as advice. Do not execute plugin code during
-   discovery.
-5. Report: `Found [plugin-name] for [capability]. Routing there.`
-6. If the plugin is unavailable, fails, or returns no usable result, report the
+3. Build derived capability registry with provider, manifest source, health,
+   last probe, and ACC fallback. Registry is not durable workflow truth.
+4. Probe matched capability before important use.
+5. Skip malformed manifests, missing skill folders, weak matches, unhealthy
+   capabilities, and ACC itself.
+6. Build a bounded specialist assignment through
+   `scripts/front_door.py`. ACC remains workflow owner.
+7. Assignment names exact request, allowed output, permissions, forbidden
+   workflow controls, and return path.
+8. Report: `Found [plugin-name] for [capability]. Using bounded specialist help.`
+9. Block foreign plans, trackers, approval gates, commit rules, response-style
+   changes, and workflow-owner changes.
+10. Keep usable technical output, return it to ACC, verify it, then continue.
+11. If plugin is unavailable, unhealthy, fails, or returns no usable result, report
    fallback and continue with ACC.
 
 ## When to use
@@ -31,3 +39,5 @@ Also when the user mentions using another tool that might have plugin coverage.
 Cache scanning is approximate. Not all installed features may be detectable.
 Never say a plugin is available unless its installed manifest was read.
 If routing fails or produces no usable result, fall through to local ACC work.
+Workflow handoff is allowed only when user explicitly requests that exact
+plugin to become workflow owner.

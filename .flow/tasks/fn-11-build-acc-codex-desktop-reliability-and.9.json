@@ -1,0 +1,18 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T11:28:04.457441Z",
+  "depends_on": [
+    "fn-11-build-acc-codex-desktop-reliability-and.5",
+    "fn-11-build-acc-codex-desktop-reliability-and.7",
+    "fn-11-build-acc-codex-desktop-reliability-and.8"
+  ],
+  "id": "fn-11-build-acc-codex-desktop-reliability-and.9",
+  "priority": 9,
+  "spec": "fn-11-build-acc-codex-desktop-reliability-and",
+  "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.9.md",
+  "status": "todo",
+  "title": "Build Doctor recovery and conflict control",
+  "updated_at": "2026-06-14T11:28:04.457467Z"
+}

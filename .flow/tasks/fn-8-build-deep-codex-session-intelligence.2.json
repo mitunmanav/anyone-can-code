@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T02:43:40.152220Z",
+  "depends_on": [
+    "fn-8-build-deep-codex-session-intelligence.1"
+  ],
+  "id": "fn-8-build-deep-codex-session-intelligence.2",
+  "priority": null,
+  "spec": "fn-8-build-deep-codex-session-intelligence",
+  "spec_path": ".flow/tasks/fn-8-build-deep-codex-session-intelligence.2.md",
+  "status": "todo",
+  "title": "Build streaming normalized session model",
+  "updated_at": "2026-06-14T02:48:23.336184Z"
+}

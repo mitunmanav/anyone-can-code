@@ -1,0 +1,17 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T11:28:02.161445Z",
+  "depends_on": [
+    "fn-11-build-acc-codex-desktop-reliability-and.2",
+    "fn-11-build-acc-codex-desktop-reliability-and.3"
+  ],
+  "id": "fn-11-build-acc-codex-desktop-reliability-and.5",
+  "priority": 5,
+  "spec": "fn-11-build-acc-codex-desktop-reliability-and",
+  "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.5.md",
+  "status": "todo",
+  "title": "Build capability registry health and fallbacks",
+  "updated_at": "2026-06-14T11:28:02.161469Z"
+}

@@ -16,7 +16,11 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
 
 - front door: `$orchestrator` or a natural-language request
 - deterministic route helper: `scripts/front_door.py`
-- installed-plugin bridge: manifest scan first, ACC fallback on missing/null coverage
+- installed-plugin bridge: manifest scan, bounded specialist assignment, ACC
+  ownership, health probe, takeover blocking, fallback on missing, unhealthy,
+  failed, or null coverage
+- restart recovery: canonical active-task capsule, transaction checks, derived
+  view repair, and explicit uncertainty reporting
 - optional detection/bootstrap: `$onboard`
 - intake only when needed: `$clarify`
 - planning only when needed: `$plan`

@@ -20,6 +20,7 @@ from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import runtime_info
+import canonical_state
 
 
 def plugin_root() -> Path:
@@ -420,8 +421,15 @@ def bootstrap_project(
     )
     workflow_path = paths["state"] / "workflow.json"
     workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
-    workflow.update({"memory_mode": "portable-markdown", "viewer_mode": viewer_mode})
-    workflow_path.write_text(json.dumps(workflow, indent=2) + "\n", encoding="utf-8")
+    workflow.update(
+        {
+            "workflow_owner": "acc",
+            "memory_mode": "portable-markdown",
+            "viewer_mode": viewer_mode,
+            "next_action": workflow.get("next_step", ""),
+        }
+    )
+    canonical_state.update_canonical_state(target, workflow)
     write_json_if_missing(
         paths["state"] / "install.json",
         {

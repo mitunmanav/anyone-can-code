@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-06-14T08:40:44.300618Z",
+  "depends_on": [
+    "fn-9-build-forensic-session-ledger.1"
+  ],
+  "id": "fn-9-build-forensic-session-ledger.2",
+  "priority": null,
+  "spec": "fn-9-build-forensic-session-ledger",
+  "spec_path": ".flow/tasks/fn-9-build-forensic-session-ledger.2.md",
+  "status": "todo",
+  "title": "Build complete event and message ledgers",
+  "updated_at": "2026-06-14T08:41:31.209598Z"
+}

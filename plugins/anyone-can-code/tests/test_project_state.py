@@ -36,9 +36,200 @@ doctor = load_script("doctor")
 update = load_script("update")
 save_session = load_hook_script("save_session")
 hook_state = load_hook_script("state")
+canonical_state = load_script("canonical_state")
 
 
 class ProjectStateTests(unittest.TestCase):
+    def test_canonical_state_renders_all_working_views_from_one_transaction(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+
+            result = canonical_state.update_canonical_state(
+                target,
+                {
+                    "active_goal": "Build login",
+                    "active_task": "Add password reset",
+                    "next_action": "Run interaction test",
+                    "plan": ["Add reset form", "Send reset email"],
+                    "tasks": [
+                        {"name": "Add reset form", "state": "implemented"},
+                        {"name": "Send reset email", "state": "in scope"},
+                    ],
+                    "verification": {
+                        "level": "automated checks passed",
+                        "evidence": ["12 tests passed"],
+                        "stale": False,
+                    },
+                },
+            )
+
+            root = target / ".codex" / "anyone-can-code"
+            workflow = json.loads((root / "state" / "workflow.json").read_text(encoding="utf-8"))
+            status = (root / "state" / "state-current.md").read_text(encoding="utf-8")
+            queue = (root / "state" / "task-queue.md").read_text(encoding="utf-8")
+            resume = (root / "artifacts" / "resume-note.md").read_text(encoding="utf-8")
+            guidance = (root / "artifacts" / "active-guidance.md").read_text(encoding="utf-8")
+            snapshot = (root / "state" / "session-snapshot.md").read_text(encoding="utf-8")
+
+        self.assertEqual(workflow["transaction_id"], result["transaction_id"])
+        for rendered in (status, queue, resume, guidance, snapshot):
+            self.assertIn(result["transaction_id"], rendered)
+        self.assertIn("Add password reset", status)
+        self.assertIn("Send reset email", queue)
+        self.assertIn("Run interaction test", resume)
+
+    def test_scope_change_preserves_history_and_invalidates_old_verification(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            canonical_state.update_canonical_state(
+                target,
+                {
+                    "active_goal": "Build login",
+                    "active_task": "Password login",
+                    "verification": {
+                        "level": "real interaction verified",
+                        "evidence": ["Login worked"],
+                        "stale": False,
+                    },
+                },
+            )
+
+            changed = canonical_state.apply_scope_change(
+                target,
+                new_goal="Build passwordless login",
+                new_task="Add email magic link",
+                reason="User changed requirement",
+            )
+
+            history = (
+                target
+                / ".codex"
+                / "anyone-can-code"
+                / "state"
+                / "state-history.jsonl"
+            ).read_text(encoding="utf-8")
+
+        self.assertEqual(changed["active_goal"], "Build passwordless login")
+        self.assertEqual(changed["active_task"], "Add email magic link")
+        self.assertTrue(changed["verification"]["stale"])
+        self.assertEqual(changed["verification"]["level"], "unverified")
+        self.assertIn("Password login", history)
+        self.assertIn("superseded", history)
+
+    def test_failed_derived_write_rolls_back_entire_state_transaction(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            before = canonical_state.update_canonical_state(
+                target,
+                {"active_goal": "Original", "active_task": "Original task"},
+            )
+            workflow_path = (
+                target / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            )
+            before_text = workflow_path.read_text(encoding="utf-8")
+
+            with (
+                mock.patch.object(
+                    canonical_state,
+                    "_write_text_atomic",
+                    side_effect=OSError("disk full"),
+                ),
+                self.assertRaises(canonical_state.StateTransactionError),
+            ):
+                canonical_state.update_canonical_state(
+                    target,
+                    {"active_goal": "Changed", "active_task": "Changed task"},
+                )
+
+            after_text = workflow_path.read_text(encoding="utf-8")
+
+        self.assertEqual(after_text, before_text)
+        self.assertEqual(json.loads(after_text)["transaction_id"], before["transaction_id"])
+
+    def test_active_task_capsule_keeps_recovery_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            result = canonical_state.update_canonical_state(
+                target,
+                {
+                    "active_goal": "Build reliable resume",
+                    "active_task": "Save active task capsule",
+                    "decisions": ["Canonical state is truth"],
+                    "boundaries": ["Do not guess missing context"],
+                    "next_action": "Run recovery test",
+                    "verification": {
+                        "level": "automated checks passed",
+                        "evidence": ["Capsule test passed"],
+                        "stale": False,
+                    },
+                },
+            )
+            capsule_path = (
+                target
+                / ".codex"
+                / "anyone-can-code"
+                / "artifacts"
+                / "active-task-capsule.md"
+            )
+            capsule_text = capsule_path.read_text(encoding="utf-8")
+
+        capsule = result["active_task_capsule"]
+        self.assertEqual(capsule["goal"], "Build reliable resume")
+        self.assertEqual(capsule["decisions"], ["Canonical state is truth"])
+        self.assertEqual(capsule["boundaries"], ["Do not guess missing context"])
+        self.assertEqual(capsule["evidence"], ["Capsule test passed"])
+        self.assertEqual(capsule["next_action"], "Run recovery test")
+        self.assertIn(result["transaction_id"], capsule_text)
+
+    def test_context_transition_saves_capsule_and_recovery_repairs_derived_views(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            canonical_state.update_canonical_state(
+                target,
+                {
+                    "active_goal": "Build recovery",
+                    "active_task": "Test restart",
+                    "next_action": "Resume task",
+                },
+            )
+            saved = canonical_state.prepare_context_transition(
+                target,
+                transition="compaction",
+            )
+            status_path = (
+                target
+                / ".codex"
+                / "anyone-can-code"
+                / "state"
+                / "state-current.md"
+            )
+            status_path.write_text("stale transaction\n", encoding="utf-8")
+
+            uncertain = canonical_state.recover_from_canonical_state(target)
+            repaired = canonical_state.recover_from_canonical_state(target, repair=True)
+            status_text = status_path.read_text(encoding="utf-8")
+
+        self.assertEqual(saved["recovery"]["last_transition"], "compaction")
+        self.assertEqual(uncertain["status"], "uncertain")
+        self.assertIn("state-current.md transaction mismatch", uncertain["uncertainty"])
+        self.assertTrue(repaired["repaired"])
+        self.assertEqual(repaired["status"], "ready")
+        self.assertIn(repaired["transaction_id"], status_text)
+
+    def test_recovery_reports_missing_context_without_guessing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            canonical_state.update_canonical_state(
+                target,
+                {"active_goal": "Build recovery"},
+            )
+
+            recovery = canonical_state.recover_from_canonical_state(target)
+
+        self.assertEqual(recovery["status"], "uncertain")
+        self.assertIn("active task missing", recovery["uncertainty"])
+        self.assertIn("next action missing", recovery["uncertainty"])
+
     def test_acc_hook_disable_marker_applies_to_descendants_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -331,6 +522,12 @@ class ProjectStateTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
+            status_text = (
+                target / ".codex" / "anyone-can-code" / "state" / "state-current.md"
+            ).read_text(encoding="utf-8")
+            resume_text = (
+                target / ".codex" / "anyone-can-code" / "artifacts" / "resume-note.md"
+            ).read_text(encoding="utf-8")
             memory_notes_exists = (target / ".codex" / "anyone-can-code" / "memory" / "notes").exists()
             memory_index_exists = (target / ".codex" / "anyone-can-code" / "memory" / "index").exists()
             memory_imports_exists = (target / ".codex" / "anyone-can-code" / "memory" / "imports").exists()
@@ -357,6 +554,10 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(workflow["unverified"], ["build", "tests"])
         self.assertEqual(workflow["failures"], [])
         self.assertEqual(workflow["silent_failures"], [])
+        self.assertEqual(workflow["workflow_owner"], "acc")
+        self.assertTrue(workflow["transaction_id"])
+        self.assertIn(workflow["transaction_id"], status_text)
+        self.assertIn(workflow["transaction_id"], resume_text)
         self.assertTrue(memory_notes_exists)
         self.assertTrue(memory_index_exists)
         self.assertTrue(memory_imports_exists)

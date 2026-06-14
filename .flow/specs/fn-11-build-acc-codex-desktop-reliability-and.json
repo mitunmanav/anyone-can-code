@@ -1,0 +1,23 @@
+{
+  "branch_name": "fn-11-build-acc-codex-desktop-reliability-and",
+  "created_at": "2026-06-14T11:27:57.094934Z",
+  "depends_on_epics": [],
+  "id": "fn-11-build-acc-codex-desktop-reliability-and",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-11-build-acc-codex-desktop-reliability-and.md",
+  "status": "open",
+  "title": "Build ACC Codex Desktop reliability and orchestration foundation",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-14T11:27:58.141325Z"
+}
