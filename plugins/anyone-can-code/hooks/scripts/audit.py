@@ -92,16 +92,7 @@ def handle_permission_request(payload: dict, repo_root: Path) -> None:
     print(json.dumps({}))
 
 
-def main() -> None:
-    payload = json.load(sys.stdin)
-    repo_root = find_repo_root()
-    if repo_root is None:
-        print(json.dumps({}))
-        return
-    if state.acc_hooks_disabled(repo_root):
-        print(json.dumps({}))
-        return
-
+def handle_payload(payload: dict, repo_root: Path) -> dict:
     hook_event = payload.get("hook_event_name", "")
     if hook_event == "PostToolUse":
         log_tool_call(repo_root, payload)
@@ -113,18 +104,34 @@ def main() -> None:
             log_signal(repo_root, "verified_failure", f"{tool_name} looked bad.", payload)
         if any(token in lower for token in ["success", "passed", "ready", "\"stored\": true"]):
             log_signal(repo_root, "verified_success", f"{tool_name} looked good.", payload)
+        return {}
+    if hook_event == "PermissionRequest":
+        log_tool_call(repo_root, payload)
+        tool_name = payload.get("tool_name", "")
+        if any(allowed in tool_name for allowed in SAFE_PERMISSION_TOOLS):
+            log_signal(repo_root, "permission_auto_allow", f"Allowed {tool_name}.", payload)
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PermissionRequest",
+                    "decision": {"behavior": "allow"},
+                }
+            }
+    return {}
+
+
+def main() -> None:
+    payload = json.load(sys.stdin)
+    repo_root = find_repo_root()
+    if repo_root is None or state.acc_hooks_disabled(repo_root):
         print(json.dumps({}))
         return
-    if hook_event == "PermissionRequest":
-        handle_permission_request(payload, repo_root)
-        return
-    print(json.dumps({}))
+    print(json.dumps(state.run_optional_hook(repo_root, "audit", lambda: handle_payload(payload, repo_root))))
 
 
 if __name__ == "__main__":
     try:
         main()
     except json.JSONDecodeError:
-        print(json.dumps({"systemMessage": "audit.py: invalid JSON on stdin."}))
+        print(json.dumps({}))
     except Exception as exc:  # pragma: no cover - hook best effort
-        print(json.dumps({"systemMessage": f"audit.py: {exc}"}))
+        print(json.dumps({}))

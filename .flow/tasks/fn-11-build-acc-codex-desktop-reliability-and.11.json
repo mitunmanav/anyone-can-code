@@ -18,7 +18,7 @@
   "priority": 11,
   "spec": "fn-11-build-acc-codex-desktop-reliability-and",
   "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.11.md",
-  "status": "todo",
+  "status": "done",
   "title": "Run installed Codex Desktop real-user QA",
-  "updated_at": "2026-06-14T11:28:06.151995Z"
+  "updated_at": "2026-06-14T13:30:18.570774Z"
 }

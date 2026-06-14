@@ -129,6 +129,39 @@ class MemoryBackendTests(unittest.TestCase):
         self.assertEqual(alpha["count"], 1)
         self.assertEqual(beta["count"], 0)
 
+    def test_memory_is_advisory_scoped_and_revocable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            old_root = os.environ.get("ACC_MCP_DATA_ROOT")
+            os.environ["ACC_MCP_DATA_ROOT"] = tmp
+            try:
+                stored = server.store_feedback(
+                    {
+                        "scope": "project",
+                        "kind": "pattern",
+                        "summary": "Use advisory lesson only when relevant",
+                        "source": "test",
+                        "project_root": "C:/project-one",
+                    }
+                )
+                before = server.retrieve_context(
+                    {"query": "advisory lesson", "project_root": "C:/project-one"}
+                )
+                revoked = server.revoke_memory({"id": stored["record"]["id"]})
+                after = server.retrieve_context(
+                    {"query": "advisory lesson", "project_root": "C:/project-one"}
+                )
+                note_text = Path(stored["path"]).read_text(encoding="utf-8")
+            finally:
+                if old_root is None:
+                    os.environ.pop("ACC_MCP_DATA_ROOT", None)
+                else:
+                    os.environ["ACC_MCP_DATA_ROOT"] = old_root
+
+        self.assertEqual(before["count"], 1)
+        self.assertEqual(revoked["record"]["status"], "revoked")
+        self.assertEqual(after["count"], 0)
+        self.assertIn('status: "revoked"', note_text)
+
     def test_rebuild_index_is_disposable(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             old_root = os.environ.get("ACC_MCP_DATA_ROOT")

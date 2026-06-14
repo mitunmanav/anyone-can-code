@@ -4,16 +4,15 @@
 TBD
 
 ## Acceptance
-- [ ] Each hook has one measurable purpose.
-- [ ] Core operation works when hooks are absent or fail.
-- [ ] Repair retries are bounded.
-- [ ] Circuit breaker stops cross-layer repair loops.
-- [ ] Real restart proof is required before fixed claims.
+- [x] Each hook has one measurable purpose.
+- [x] Core operation works when hooks are absent or fail.
+- [x] Repair retries are bounded.
+- [x] Circuit breaker stops cross-layer repair loops.
+- [x] Real restart proof is required before fixed claims.
 
 
 ## Done summary
-TBD
-
+Redesigned hooks as optional measured helpers with one declared purpose per hook, health ledger, bounded two-failure retry, circuit breaker, safe empty fallback on hook failure, and restart/new-thread proof requirement before fixed claims.
 ## Evidence
 - Commits:
 - Tests:

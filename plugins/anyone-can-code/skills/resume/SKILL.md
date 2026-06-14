@@ -35,3 +35,5 @@ save a context-transition capsule when possible.
 Choose the lightest recovery mode that is still safe.
 If active truths conflict, block work and repair state before resuming.
 Report every missing or uncertain field. Never invent recovery context.
+Hooks may help with session context, but resume must work when hooks are absent,
+failed, or circuit-broken. Do not treat hook output as canonical truth.

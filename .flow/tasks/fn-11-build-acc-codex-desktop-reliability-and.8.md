@@ -4,16 +4,15 @@
 TBD
 
 ## Acceptance
-- [ ] Important actions write readable receipts.
-- [ ] Learning remains portable Markdown, advisory, scoped, and revocable.
-- [ ] Security uses native Codex sandbox and approvals first.
-- [ ] Risky work has backup or rollback before execution.
-- [ ] Remote actions require exact evidence and user authority.
+- [x] Important actions write readable receipts.
+- [x] Learning remains portable Markdown, advisory, scoped, and revocable.
+- [x] Security uses native Codex sandbox and approvals first.
+- [x] Risky work has backup or rollback before execution.
+- [x] Remote actions require exact evidence and user authority.
 
 
 ## Done summary
-TBD
-
+Added readable action receipts, risky-work approval plus rollback gate, remote authority evidence gate, native sandbox context recording, and project-scoped Markdown memory revocation by ID.
 ## Evidence
 - Commits:
 - Tests:

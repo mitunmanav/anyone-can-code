@@ -46,8 +46,9 @@ This is the front door.
 - For plain requests like "I want to build a website", classify product type, ask only missing blocking questions, generate the adaptive checklist, then show one concise plan line.
 - Read local project and official docs first. Use web only when local evidence
   is missing, stale, or uncertain.
-- Use subagents for independent reading/research only when parallel work saves
-  time or protects context.
+- Use subagents only when the user explicitly requested them and Codex needs
+  isolated or parallel work. Bound max parallel work, require concise evidence,
+  and return control to ACC.
 - If requirements change during work, update plan and state, then resume from
   the last valid step.
 - Never expose candidate/stable workflow, audit ledger, proof journal, or phase

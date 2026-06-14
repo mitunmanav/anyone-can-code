@@ -12,6 +12,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Callable
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
@@ -22,6 +23,13 @@ import canonical_state
 
 PROJECT_NAMESPACE = "anyone-can-code"
 HOOK_DISABLE_MARKER = Path(".codex") / "anyone-can-code-hooks.disabled"
+HOOK_RETRY_LIMIT = 2
+HOOK_PURPOSES = {
+    "guard": "Block obvious prompt-injection and dangerous command signals.",
+    "audit": "Measure tool-use signals for later evidence review.",
+    "load_session": "Inject small resumable context at session start.",
+    "save_session": "Save small resumable context and learning signals.",
+}
 
 DEFAULT_STATE = {
     "schema_version": 2,
@@ -145,6 +153,14 @@ def mistake_log_path(repo_root: Path) -> Path:
     return journal_path(repo_root, "mistake-ledger.jsonl")
 
 
+def hook_health_path(repo_root: Path) -> Path:
+    return journal_path(repo_root, "hook-health.json")
+
+
+def hook_health_ledger_path(repo_root: Path) -> Path:
+    return journal_path(repo_root, "hook-health-ledger.jsonl")
+
+
 def _read_json(path: Path, default: dict) -> dict:
     if path.exists():
         try:
@@ -157,6 +173,86 @@ def _read_json(path: Path, default: dict) -> dict:
 def _write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def read_hook_health(repo_root: Path) -> dict:
+    health = _read_json(
+        hook_health_path(repo_root),
+        {
+            "schema_version": 1,
+            "retry_limit": HOOK_RETRY_LIMIT,
+            "hooks": {},
+        },
+    )
+    health.setdefault("schema_version", 1)
+    health.setdefault("retry_limit", HOOK_RETRY_LIMIT)
+    health.setdefault("hooks", {})
+    return health
+
+
+def hook_circuit_open(repo_root: Path, hook_name: str) -> bool:
+    entry = read_hook_health(repo_root).get("hooks", {}).get(hook_name, {})
+    return bool(entry.get("circuit_open"))
+
+
+def record_hook_result(
+    repo_root: Path,
+    hook_name: str,
+    status: str,
+    *,
+    reason: str = "",
+    duration_ms: int = 0,
+) -> dict:
+    health = read_hook_health(repo_root)
+    hooks = health.setdefault("hooks", {})
+    previous = hooks.get(hook_name, {})
+    failures = int(previous.get("consecutive_failures") or 0)
+    if status == "pass":
+        failures = 0
+    elif status == "fail":
+        failures += 1
+    circuit_open = failures >= HOOK_RETRY_LIMIT
+    entry = {
+        "purpose": HOOK_PURPOSES.get(hook_name, "Optional helper signal."),
+        "status": status,
+        "reason": reason[:240],
+        "checked_at": utc_now(),
+        "duration_ms": duration_ms,
+        "consecutive_failures": failures,
+        "retry_limit": HOOK_RETRY_LIMIT,
+        "circuit_open": circuit_open,
+    }
+    hooks[hook_name] = entry
+    _write_json(hook_health_path(repo_root), health)
+    append_jsonl(
+        hook_health_ledger_path(repo_root),
+        {
+            "timestamp": entry["checked_at"],
+            "hook": hook_name,
+            "purpose": entry["purpose"],
+            "status": status,
+            "reason": entry["reason"],
+            "duration_ms": duration_ms,
+            "circuit_open": circuit_open,
+        },
+    )
+    return entry
+
+
+def run_optional_hook(repo_root: Path, hook_name: str, worker: Callable[[], dict]) -> dict:
+    if hook_circuit_open(repo_root, hook_name):
+        record_hook_result(repo_root, hook_name, "skipped", reason="circuit-open")
+        return {}
+    started = time.monotonic()
+    try:
+        result = worker()
+    except Exception as exc:  # pragma: no cover - hook best effort
+        duration_ms = int((time.monotonic() - started) * 1000)
+        record_hook_result(repo_root, hook_name, "fail", reason=str(exc), duration_ms=duration_ms)
+        return {}
+    duration_ms = int((time.monotonic() - started) * 1000)
+    record_hook_result(repo_root, hook_name, "pass", duration_ms=duration_ms)
+    return result
 
 
 def read_state(repo_root: Path) -> dict:

@@ -17,6 +17,7 @@ import front_door
 import product_intake
 import runtime_info
 import status_model
+import work_visibility
 
 
 def plugin_root() -> Path:
@@ -32,6 +33,22 @@ PROJECT_NAMESPACE = "anyone-can-code"
 ALLOWED_PERSONA_MODES = {"builder", "developer", "mixed"}
 ALLOWED_REPO_MODES = {"new", "existing", "production", "unknown"}
 ACC_HOOK_DISABLE_MARKER = Path(".codex") / "anyone-can-code-hooks.disabled"
+HOOK_HEALTH_FILE = Path(".codex") / PROJECT_NAMESPACE / "logs" / "hook-health.json"
+STATE_AGREEMENT_FIELDS = (
+    "persona_mode",
+    "repo_mode",
+    "communication_mode",
+    "memory_mode",
+    "viewer_mode",
+)
+WORKFLOW_CONTROL_WORDS = {
+    "acc",
+    "anyone",
+    "workflow",
+    "orchestrator",
+    "project state",
+    "canonical state",
+}
 
 
 def acc_hook_disable_marker(project_root: Path) -> Path | None:
@@ -197,6 +214,9 @@ class Doctor:
         except OSError as exc:
             return None, str(exc)
 
+    def plain_next(self, message: str, action: str) -> str:
+        return f"{message} Next: {action}"
+
     def run_project_state(self) -> None:
         namespace_root = PROJECT_ROOT / ".codex" / PROJECT_NAMESPACE
         preferences_path = namespace_root / "settings" / "preferences.json"
@@ -260,6 +280,43 @@ class Doctor:
                     "Workflow states use invalid vocabulary",
                 )
 
+        if isinstance(preferences, dict) and isinstance(workflow, dict):
+            mismatches = [
+                field
+                for field in STATE_AGREEMENT_FIELDS
+                if preferences.get(field) != workflow.get(field)
+            ]
+            if mismatches:
+                self.check(
+                    "recovery",
+                    "state_agreement",
+                    "WARN",
+                    "warning",
+                    self.plain_next(
+                        f"Settings and workflow disagree: {', '.join(mismatches)}.",
+                        "run setup or update before continuing recovery.",
+                    ),
+                )
+            else:
+                self.check(
+                    "recovery",
+                    "state_agreement",
+                    "PASS",
+                    "info",
+                    "Settings and workflow agree.",
+                )
+        else:
+            self.check(
+                "recovery",
+                "state_agreement",
+                "WARN",
+                "warning",
+                self.plain_next(
+                    "Cannot compare settings and workflow.",
+                    "run setup or update before continuing recovery.",
+                ),
+            )
+
         repo_mode = None
         if isinstance(preferences, dict):
             repo_mode = preferences.get("repo_mode")
@@ -294,6 +351,62 @@ class Doctor:
             self.check("memory", "memory_viewer", status, severity, evidence)
         else:
             self.check("memory", "memory_viewer", "WARN", "warning", f"Unsupported viewer mode: {viewer_mode}")
+
+    def run_hook_health(self) -> None:
+        health_path = PROJECT_ROOT / HOOK_HEALTH_FILE
+        health, error = self.read_project_json(health_path)
+        if health is None:
+            self.check(
+                "recovery",
+                "hook_health",
+                "PASS",
+                "info",
+                self.plain_next(
+                    "No hook health file yet; hooks are optional and core ACC still works.",
+                    "enable hooks only if measured helper signals are wanted.",
+                ),
+            )
+            return
+
+        hooks = health.get("hooks")
+        if not isinstance(hooks, dict):
+            self.check(
+                "recovery",
+                "hook_health",
+                "WARN",
+                "warning",
+                self.plain_next(
+                    f"Hook health is unreadable: {error or 'hooks map missing'}.",
+                    "delete the bad health file and let hooks recreate it.",
+                ),
+            )
+            return
+
+        broken = [
+            name
+            for name, entry in hooks.items()
+            if isinstance(entry, dict)
+            and (entry.get("status") == "fail" or entry.get("circuit_open"))
+        ]
+        if broken:
+            self.check(
+                "recovery",
+                "hook_health",
+                "WARN",
+                "warning",
+                self.plain_next(
+                    f"Hook helper problem: {', '.join(sorted(broken))}.",
+                    "continue from canonical state; repair hooks after restart or new-thread proof.",
+                ),
+            )
+        else:
+            self.check(
+                "recovery",
+                "hook_health",
+                "PASS",
+                "info",
+                f"{len(hooks)} hook helper record(s) healthy or skipped.",
+            )
 
     def run_project_config(self) -> None:
         config_path = PROJECT_ROOT / ".codex" / "config.toml"
@@ -345,6 +458,32 @@ class Doctor:
         else:
             self.check("verification", "usage_script", "FAIL", "blocking", evidence[:240])
 
+    def run_work_visibility(self) -> None:
+        script_path = PLUGIN_ROOT / "scripts" / "work_visibility.py"
+        if not script_path.exists():
+            self.check("verification", "work_visibility", "FAIL", "blocking", "work_visibility.py not found")
+            return
+        ok, evidence = self.syntax_ok(script_path)
+        if not ok:
+            self.check("verification", "work_visibility", "FAIL", "blocking", evidence[:240])
+            return
+        ok, evidence = work_visibility.smoke_check(PROJECT_ROOT)
+        if ok:
+            self.check("verification", "work_visibility", "PASS", "info", evidence)
+        else:
+            self.check("verification", "work_visibility", "FAIL", "blocking", evidence)
+
+    def run_installed_qa_support(self) -> None:
+        script_path = PLUGIN_ROOT / "scripts" / "installed_runtime_qa.py"
+        if not script_path.exists():
+            self.check("verification", "installed_qa_support", "FAIL", "blocking", "installed_runtime_qa.py not found")
+            return
+        ok, evidence = self.syntax_ok(script_path)
+        if ok:
+            self.check("verification", "installed_qa_support", "PASS", "info", "installed runtime QA receipt script parses")
+        else:
+            self.check("verification", "installed_qa_support", "FAIL", "blocking", evidence[:240])
+
     def run_product_intake(self) -> None:
         ok, evidence = product_intake.smoke_check()
         if ok:
@@ -372,6 +511,7 @@ class Doctor:
         runtime_root = info.get("installed_plugin_root")
         source_version = info.get("plugin_source_version")
         runtime_version = info.get("installed_runtime_version")
+        project_version = info.get("project_state_version")
 
         if source_root:
             self.check("runtime", "source_root", "PASS", "info", source_root)
@@ -399,13 +539,75 @@ class Doctor:
         if runtime_root:
             self.check("runtime", "installed_root", "PASS", "info", runtime_root)
         else:
-            self.check("runtime", "installed_root", "WARN", "warning", "No installed runtime found in Codex cache")
+            self.check(
+                "runtime",
+                "installed_root",
+                "WARN",
+                "warning",
+                self.plain_next(
+                    "No installed runtime found in Codex cache.",
+                    "install or refresh ACC in Codex, then open a new thread.",
+                ),
+            )
+
+        if runtime_root:
+            runtime_path = Path(str(runtime_root))
+            installed_doctor = runtime_path / "scripts" / "doctor.py"
+            installed_manifest = runtime_path / ".codex-plugin" / "plugin.json"
+            if installed_doctor.exists() and installed_manifest.exists():
+                self.check("runtime", "installed_source", "PASS", "info", "Installed ACC source has manifest and Doctor")
+            else:
+                self.check(
+                    "runtime",
+                    "installed_source",
+                    "WARN",
+                    "warning",
+                    self.plain_next(
+                        "Installed ACC runtime is incomplete.",
+                        "refresh ACC from its marketplace source; do not edit another plugin.",
+                    ),
+                )
+        else:
+            self.check(
+                "runtime",
+                "installed_source",
+                "WARN",
+                "warning",
+                self.plain_next(
+                    "Installed ACC source cannot be checked because runtime is missing.",
+                    "install or refresh ACC in Codex first.",
+                ),
+            )
 
         if source_version and runtime_version:
             if runtime_info.compare_versions(source_version, runtime_version) == 0:
                 self.check("runtime", "source_runtime_match", "PASS", "info", f"{source_version} == {runtime_version}")
             else:
-                self.check("runtime", "source_runtime_match", "WARN", "warning", f"source {source_version}, runtime {runtime_version}")
+                self.check(
+                    "runtime",
+                    "source_runtime_match",
+                    "WARN",
+                    "warning",
+                    self.plain_next(
+                        f"source {source_version}, runtime {runtime_version}.",
+                        "refresh ACC through Codex, restart, then rerun Doctor.",
+                    ),
+                )
+
+        if project_version and runtime_version:
+            if runtime_info.compare_versions(project_version, runtime_version) == 0:
+                self.check("runtime", "project_runtime_match", "PASS", "info", f"{project_version} == {runtime_version}")
+            else:
+                self.check(
+                    "runtime",
+                    "project_runtime_match",
+                    "WARN",
+                    "warning",
+                    self.plain_next(
+                        f"project {project_version}, runtime {runtime_version}.",
+                        "run update only after ACC runtime is refreshed.",
+                    ),
+                )
 
         if info.get("wrong_root_hint"):
             self.check("runtime", "project_root_hint", "WARN", "warning", f"Maybe wrong root. Try: {info['wrong_root_hint']}")
@@ -413,6 +615,69 @@ class Doctor:
             self.check("runtime", "project_root_hint", "WARN", "warning", "Looks like umbrella root, not plugin-dev repo")
         else:
             self.check("runtime", "project_root_hint", "PASS", "info", str(PROJECT_ROOT))
+
+    def run_plugin_conflicts(self) -> None:
+        plugins = front_door.scan_installed_plugins()
+        duplicate_note = ""
+        acc_entries = [
+            (
+                plugin.get("manifest"),
+                runtime_info.read_manifest_version(Path(str(plugin.get("manifest", ""))).parent.parent),
+            )
+            for plugin in plugins
+            if front_door.normalize_text(plugin.get("name")) == PROJECT_NAMESPACE
+        ]
+        if len(acc_entries) > 1:
+            versions = [version for _, version in acc_entries]
+            first = versions[0]
+            same_version = bool(first) and all(
+                runtime_info.compare_versions(first, version) == 0
+                for version in versions
+                if version
+            ) and all(versions)
+            if same_version:
+                duplicate_note = f"{len(acc_entries)} ACC cache entries share version {first}; runtime selector owns active source. "
+            else:
+                self.check(
+                    "runtime",
+                    "plugin_conflicts",
+                    "WARN",
+                    "warning",
+                    self.plain_next(
+                        f"Multiple installed ACC runtimes found: {len(acc_entries)}.",
+                        "refresh ACC from one marketplace source; do not edit other plugins.",
+                    ),
+                )
+                return
+
+        possible_owners = []
+        for plugin in plugins:
+            name = front_door.normalize_text(plugin.get("name"))
+            if not name or name == PROJECT_NAMESPACE:
+                continue
+            capability_text = front_door.normalize_text(plugin.get("capability_text"))
+            if any(word in capability_text for word in WORKFLOW_CONTROL_WORDS):
+                possible_owners.append(name)
+
+        if possible_owners:
+            self.check(
+                "runtime",
+                "plugin_conflicts",
+                "PASS",
+                "info",
+                self.plain_next(
+                    f"{duplicate_note}Possible workflow helpers present: {', '.join(sorted(possible_owners))}. ACC keeps workflow ownership and fallback.",
+                    "ask before handing ownership to another plugin.",
+                ),
+            )
+        else:
+            self.check(
+                "runtime",
+                "plugin_conflicts",
+                "PASS",
+                "info",
+                f"{duplicate_note}ACC owns workflow; other plugins stay bounded helpers.",
+            )
 
     def summary(self) -> dict:
         summary = {"pass": 0, "warn": 0, "fail": 0}
@@ -435,12 +700,16 @@ class Doctor:
         self.run_project_layout()
         self.run_project_state()
         self.run_project_config()
+        self.run_hook_health()
         self.run_default_prompts()
         self.run_usage_script()
+        self.run_work_visibility()
+        self.run_installed_qa_support()
         self.run_product_intake()
         self.run_front_door()
         self.run_status_model()
         self.run_runtime_truth()
+        self.run_plugin_conflicts()
         return {"results": self.results, "summary": self.summary()}
 
 

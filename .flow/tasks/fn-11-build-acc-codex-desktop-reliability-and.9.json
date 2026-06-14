@@ -12,7 +12,7 @@
   "priority": 9,
   "spec": "fn-11-build-acc-codex-desktop-reliability-and",
   "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.9.md",
-  "status": "todo",
+  "status": "done",
   "title": "Build Doctor recovery and conflict control",
   "updated_at": "2026-06-14T11:28:04.457467Z"
 }

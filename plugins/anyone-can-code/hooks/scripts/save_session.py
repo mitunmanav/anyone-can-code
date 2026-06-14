@@ -224,19 +224,9 @@ def write_resume_artifacts(repo_root: Path, payload: dict, summary: str, workflo
     )
 
 
-def main() -> None:
-    payload = json.load(sys.stdin)
+def handle_payload(payload: dict, repo_root: Path) -> dict:
     if payload.get("stop_hook_active"):
-        print(json.dumps({}))
-        return
-
-    repo_root = find_repo_root()
-    if repo_root is None:
-        print(json.dumps({}))
-        return
-    if state.acc_hooks_disabled(repo_root):
-        print(json.dumps({}))
-        return
+        return {}
 
     summary = session_summary(payload)
     signal_line, signals = recent_signal_summary(repo_root)
@@ -261,13 +251,22 @@ def main() -> None:
     )
     write_mistake_ledger(repo_root, signals)
     durable_memory_writes(repo_root, signals, summary)
-    print(json.dumps({}))
+    return {}
+
+
+def main() -> None:
+    payload = json.load(sys.stdin)
+    repo_root = find_repo_root()
+    if repo_root is None or state.acc_hooks_disabled(repo_root):
+        print(json.dumps({}))
+        return
+    print(json.dumps(state.run_optional_hook(repo_root, "save_session", lambda: handle_payload(payload, repo_root))))
 
 
 if __name__ == "__main__":
     try:
         main()
     except json.JSONDecodeError:
-        print(json.dumps({"continue": False, "stopReason": "save_session.py: bad json in."}))
+        print(json.dumps({}))
     except Exception as exc:  # pragma: no cover - hook best effort
-        print(json.dumps({"continue": False, "stopReason": f"save_session.py: save fail: {exc}"}))
+        print(json.dumps({}))

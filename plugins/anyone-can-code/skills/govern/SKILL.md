@@ -9,6 +9,7 @@ Use `$govern` when a proposed change could materially alter the accepted scope.
 
 ## Inputs
 
+- `.codex/anyone-can-code/state/workflow.json`
 - `.codex/anyone-can-code/artifacts/SPEC-DRAFT.md`
 - `.codex/anyone-can-code/artifacts/PLAN.md`
 - `.codex/anyone-can-code/state/task-queue.md`
@@ -18,3 +19,9 @@ Use `$govern` when a proposed change could materially alter the accepted scope.
 - Surface consequences before changing direction.
 - Require explicit user confirmation for meaningful scope changes.
 - Keep a timestamped change record in local artifacts.
+- Update through `scripts/canonical_state.py`; plans and task queues are
+  derived views, not separate truth.
+- Risky, remote, destructive, install, publish, or release changes must also
+  pass the safety receipt gate before execution.
+- Never claim a Git, GitHub, rollback, publish, release, or remote action
+  happened unless receipt and evidence prove it.

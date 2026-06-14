@@ -37,9 +37,296 @@ update = load_script("update")
 save_session = load_hook_script("save_session")
 hook_state = load_hook_script("state")
 canonical_state = load_script("canonical_state")
+task_coordination = load_script("task_coordination")
+safety_receipts = load_script("safety_receipts")
+work_visibility = load_script("work_visibility")
+installed_runtime_qa = load_script("installed_runtime_qa")
 
 
 class ProjectStateTests(unittest.TestCase):
+    def test_usage_budget_estimates_large_reads_and_loops_with_uncertainty(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            large_file = target / "large.txt"
+            large_file.write_text("x" * 26000, encoding="utf-8")
+
+            budget = work_visibility.estimate_context_cost(
+                paths=[large_file],
+                loop_items=40,
+            )
+
+        self.assertTrue(budget["large_read"])
+        self.assertTrue(budget["large_loop"])
+        self.assertIn("exact usage may differ", budget["uncertainty"])
+        self.assertGreaterEqual(len(budget["warnings"]), 2)
+
+    def test_tool_evidence_receipt_compacts_large_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            receipt = work_visibility.write_tool_evidence_receipt(
+                target,
+                tool="Bash",
+                command="test command",
+                exit_code=0,
+                stdout="A" * 3000,
+            )
+            text = Path(receipt["receipt_markdown"]).read_text(encoding="utf-8")
+
+        self.assertTrue(receipt["evidence"]["compacted"])
+        self.assertIn("Compacted: yes", text)
+        self.assertLess(len(receipt["evidence"]["excerpt"]), 2000)
+
+    def test_background_work_must_be_visible_stoppable_and_bounded(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            blocked = work_visibility.start_background_work(
+                target,
+                name="bad scanner",
+                purpose="",
+                stop_command="",
+                stopping_condition="",
+                limit_seconds=0,
+                limit_steps=0,
+            )
+            started = work_visibility.start_background_work(
+                target,
+                name="session scan",
+                purpose="scan local Codex sessions for usage",
+                stop_command="python scripts/codeburn.py stop",
+                stopping_condition="stop after one scan or 60 seconds",
+                limit_seconds=60,
+                limit_steps=1,
+            )
+            completed = work_visibility.complete_background_work(
+                target,
+                started["id"],
+                status="completed",
+                evidence=["one scan complete"],
+            )
+
+        self.assertEqual(blocked["status"], "blocked")
+        self.assertIn("purpose", blocked["work"]["missing"])
+        self.assertEqual(started["status"], "started")
+        self.assertEqual(completed["status"], "completed")
+        self.assertEqual(completed["work"]["state"], "completed")
+
+    def test_normal_work_uses_cheap_checks_and_risk_uses_deep_checks(self) -> None:
+        cheap = work_visibility.choose_check_depth(changed_files=1)
+        deep = work_visibility.choose_check_depth(
+            changed_files=2,
+            shared_behavior=True,
+            user_visible=True,
+        )
+
+        self.assertEqual(cheap["depth"], "cheap")
+        self.assertNotIn("full tests", cheap["checks"])
+        self.assertEqual(deep["depth"], "deep")
+        self.assertIn("doctor", deep["checks"])
+
+    def test_installed_runtime_qa_fails_when_target_is_not_installed_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            runtime = target / "source-copy"
+            runtime.mkdir()
+
+            receipt = installed_runtime_qa.run_installed_qa(
+                target,
+                PLUGIN_ROOT,
+                runtime_root=runtime,
+            )
+
+        self.assertEqual(receipt["status"], "fail")
+        self.assertIn("not Codex installed cache", receipt["plain_result"])
+
+    def test_installed_runtime_qa_does_not_false_pass_missing_behavior(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            runtime = target / ".codex" / "plugins" / "cache" / "market" / "anyone-can-code" / "1.0.0"
+            (runtime / "skills" / "setup").mkdir(parents=True)
+            (runtime / "skills" / "setup" / "SKILL.md").write_text(
+                "Use `$setup` after the plugin is installed\n",
+                encoding="utf-8",
+            )
+
+            receipt = installed_runtime_qa.run_installed_qa(
+                target,
+                PLUGIN_ROOT,
+                runtime_root=runtime,
+            )
+
+        self.assertEqual(receipt["status"], "fail")
+        self.assertIn("failed", receipt["plain_result"])
+        self.assertTrue(any(item["status"] == "fail" for item in receipt["scenarios"]))
+
+    def test_task_coordination_records_ownership_claims_dependencies_and_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            task_coordination.set_task_queue(
+                target,
+                [
+                    {"id": "design", "name": "Design flow", "status": "done", "evidence": ["Sketch approved"]},
+                    {"id": "build", "name": "Build flow", "dependencies": ["design"], "owner": "acc"},
+                ],
+            )
+
+            claimed = task_coordination.claim_task(
+                target,
+                "build",
+                owner="acc",
+                claim_id="claim-1",
+            )
+            with self.assertRaises(task_coordination.TaskCoordinationError):
+                task_coordination.claim_task(
+                    target,
+                    "build",
+                    owner="other-worker",
+                    claim_id="claim-2",
+                )
+            completed = task_coordination.complete_task(
+                target,
+                "build",
+                claim_id="claim-1",
+                evidence=["72 tests passed"],
+            )
+
+        by_id = {task["id"]: task for task in completed["tasks"]}
+        self.assertEqual(claimed["task_claims"]["build"]["claim_id"], "claim-1")
+        self.assertEqual(by_id["build"]["status"], "done")
+        self.assertEqual(by_id["build"]["owner"], "acc")
+        self.assertEqual(by_id["build"]["dependencies"], ["design"])
+        self.assertIn("72 tests passed", by_id["build"]["evidence"])
+        self.assertNotIn("build", completed["task_claims"])
+
+    def test_subagent_assignment_requires_user_request_and_codex_need(self) -> None:
+        denied_user = task_coordination.build_subagent_assignment(
+            task="Parallel QA",
+            user_requested=False,
+            codex_requires_subagent=True,
+            reason="Needs isolated context",
+        )
+        denied_need = task_coordination.build_subagent_assignment(
+            task="Parallel QA",
+            user_requested=True,
+            codex_requires_subagent=False,
+            reason="Can run inline",
+        )
+        approved = task_coordination.build_subagent_assignment(
+            task="Parallel QA",
+            user_requested=True,
+            codex_requires_subagent=True,
+            reason="Needs isolated context",
+            max_parallel=3,
+        )
+
+        self.assertFalse(denied_user["approved"])
+        self.assertEqual(denied_user["reason"], "explicit-user-request-required")
+        self.assertFalse(denied_need["approved"])
+        self.assertEqual(denied_need["reason"], "codex-subagent-need-not-present")
+        self.assertTrue(approved["approved"])
+        self.assertEqual(approved["workflow_owner"], "acc")
+        self.assertEqual(approved["bounds"]["return_to"], "acc")
+        self.assertEqual(approved["bounds"]["max_parallel"], 3)
+
+    def test_hook_health_records_one_purpose_per_hook_and_opens_circuit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            for hook_name in ("guard", "audit", "load_session", "save_session"):
+                hook_state.record_hook_result(target, hook_name, "pass")
+
+            hook_state.record_hook_result(target, "guard", "fail", reason="boom")
+            open_entry = hook_state.record_hook_result(target, "guard", "fail", reason="boom again")
+            called = False
+
+            def worker() -> dict:
+                nonlocal called
+                called = True
+                return {"should": "not run"}
+
+            result = hook_state.run_optional_hook(target, "guard", worker)
+            health = hook_state.read_hook_health(target)
+
+        purposes = {
+            name: entry["purpose"]
+            for name, entry in health["hooks"].items()
+            if name in {"guard", "audit", "load_session", "save_session"}
+        }
+        self.assertEqual(set(purposes), {"guard", "audit", "load_session", "save_session"})
+        self.assertTrue(all(purposes.values()))
+        self.assertTrue(open_entry["circuit_open"])
+        self.assertFalse(called)
+        self.assertEqual(result, {})
+
+    def test_optional_hook_failure_returns_empty_result_and_records_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+
+            result = hook_state.run_optional_hook(
+                target,
+                "save_session",
+                lambda: (_ for _ in ()).throw(RuntimeError("write failed")),
+            )
+            health = hook_state.read_hook_health(target)
+
+        self.assertEqual(result, {})
+        self.assertEqual(health["hooks"]["save_session"]["status"], "fail")
+        self.assertEqual(health["hooks"]["save_session"]["consecutive_failures"], 1)
+
+    def test_action_receipt_blocks_risky_work_without_rollback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            with self.assertRaises(safety_receipts.SafetyGateError):
+                safety_receipts.prepare_action(
+                    target,
+                    {
+                        "name": "delete generated output",
+                        "type": "delete",
+                        "user_approval": "User approved cleanup",
+                        "sandbox": "codex-native",
+                    },
+                    evidence=["cleanup target listed"],
+                )
+            receipts = list(
+                (target / ".codex" / "anyone-can-code" / "artifacts" / "receipts").glob("*.md")
+            )
+            text = receipts[0].read_text(encoding="utf-8")
+
+        self.assertEqual(len(receipts), 1)
+        self.assertIn("Status: `blocked`", text)
+        self.assertIn("backup or rollback path", text)
+
+    def test_remote_action_requires_exact_authority_and_writes_readable_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            blocked = safety_receipts.write_action_receipt(
+                target,
+                {
+                    "name": "push branch",
+                    "type": "push",
+                    "user_approval": "User said push this branch",
+                    "sandbox": "codex-native",
+                },
+                status="blocked",
+                evidence=["branch clean"],
+            )
+            approved = safety_receipts.prepare_action(
+                target,
+                {
+                    "name": "push branch",
+                    "type": "push",
+                    "user_approval": "User said push this branch",
+                    "remote_authority": "origin/main push explicitly requested",
+                    "sandbox": "codex-native",
+                },
+                evidence=["branch clean"],
+            )
+            blocked_text = Path(blocked["receipt_markdown"]).read_text(encoding="utf-8")
+            approved_text = Path(approved["receipt_markdown"]).read_text(encoding="utf-8")
+
+        self.assertIn("remote authority evidence", blocked["missing"])
+        self.assertIn("Status: `blocked`", blocked_text)
+        self.assertIn("Status: `approved`", approved_text)
+        self.assertIn("Remote: yes", approved_text)
+
     def test_canonical_state_renders_all_working_views_from_one_transaction(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
@@ -582,6 +869,28 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(by_check["repo_mode"]["status"], "PASS")
         self.assertEqual(by_check["memory_storage"]["status"], "PASS")
         self.assertEqual(by_check["memory_viewer"]["status"], "PASS")
+        self.assertEqual(by_check["state_agreement"]["status"], "PASS")
+
+    def test_doctor_warns_when_settings_and_workflow_disagree(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            setup.bootstrap_project(target)
+            workflow_path = target / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["viewer_mode"] = "obsidian"
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            old_project_root = doctor.PROJECT_ROOT
+            doctor.PROJECT_ROOT = target
+            try:
+                instance = doctor.Doctor(json_mode=True)
+                instance.run_project_state()
+            finally:
+                doctor.PROJECT_ROOT = old_project_root
+
+        by_check = {item["check"]: item for item in instance.results}
+        self.assertEqual(by_check["state_agreement"]["status"], "WARN")
+        self.assertIn("Next:", by_check["state_agreement"]["evidence"])
 
     def test_doctor_keeps_storage_healthy_when_selected_viewer_is_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -627,6 +936,92 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(result["check"], "project_hooks_mode")
         self.assertEqual(result["status"], "PASS")
         self.assertIn("ACC-only marker", result["evidence"])
+
+    def test_doctor_reports_optional_hook_health_recovery_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+
+            old_project_root = doctor.PROJECT_ROOT
+            doctor.PROJECT_ROOT = target
+            try:
+                instance = doctor.Doctor(json_mode=True)
+                instance.run_hook_health()
+            finally:
+                doctor.PROJECT_ROOT = old_project_root
+
+        result = instance.results[0]
+        self.assertEqual(result["check"], "hook_health")
+        self.assertEqual(result["status"], "PASS")
+        self.assertIn("Next:", result["evidence"])
+
+    def test_doctor_blocks_silent_repair_of_incomplete_runtime(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            runtime = target / "cache" / "anyone-can-code"
+            (runtime / ".codex-plugin").mkdir(parents=True)
+            (runtime / ".codex-plugin" / "plugin.json").write_text(
+                json.dumps({"name": "anyone-can-code", "version": "1.0.0"}),
+                encoding="utf-8",
+            )
+            info = {
+                "plugin_source_root": str(runtime),
+                "installed_plugin_root": str(runtime),
+                "plugin_source_version": "1.0.0",
+                "installed_runtime_version": "1.0.0",
+                "project_state_version": "1.0.0",
+                "marketplace_root": str(target),
+                "marketplace_name": "acc",
+                "managed_marketplace_configured": True,
+                "marketplace_upgrade_mode": "local",
+                "managed_marketplace_source": str(target),
+                "wrong_root_hint": None,
+            }
+
+            old_project_root = doctor.PROJECT_ROOT
+            doctor.PROJECT_ROOT = target
+            try:
+                with mock.patch.object(doctor.runtime_info, "build_runtime_info", return_value=info):
+                    instance = doctor.Doctor(json_mode=True)
+                    instance.run_runtime_truth()
+            finally:
+                doctor.PROJECT_ROOT = old_project_root
+
+        by_check = {item["check"]: item for item in instance.results}
+        self.assertEqual(by_check["installed_source"]["status"], "WARN")
+        self.assertIn("do not edit another plugin", by_check["installed_source"]["evidence"])
+
+    def test_doctor_conflict_control_names_owner_and_fallback(self) -> None:
+        plugins = [
+            {
+                "name": "flow-next",
+                "capability_text": "workflow orchestrator project state",
+                "manifest": "flow/plugin.json",
+            }
+        ]
+
+        with mock.patch.object(doctor.front_door, "scan_installed_plugins", return_value=plugins):
+            instance = doctor.Doctor(json_mode=True)
+            instance.run_plugin_conflicts()
+
+        result = instance.results[0]
+        self.assertEqual(result["check"], "plugin_conflicts")
+        self.assertEqual(result["status"], "PASS")
+        self.assertIn("ACC keeps workflow ownership and fallback", result["evidence"])
+
+    def test_doctor_warns_on_duplicate_acc_runtime(self) -> None:
+        plugins = [
+            {"name": "anyone-can-code", "capability_text": "acc", "manifest": "one/plugin.json"},
+            {"name": "anyone-can-code", "capability_text": "acc", "manifest": "two/plugin.json"},
+        ]
+
+        with mock.patch.object(doctor.front_door, "scan_installed_plugins", return_value=plugins):
+            instance = doctor.Doctor(json_mode=True)
+            instance.run_plugin_conflicts()
+
+        result = instance.results[0]
+        self.assertEqual(result["check"], "plugin_conflicts")
+        self.assertEqual(result["status"], "WARN")
+        self.assertIn("do not edit other plugins", result["evidence"])
 
     def test_runtime_version_comparison_ignores_codex_cachebuster_metadata(self) -> None:
         self.assertEqual(

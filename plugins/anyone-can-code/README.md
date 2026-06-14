@@ -8,7 +8,7 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
 - Portable linked Markdown is the durable memory contract. The bundled MCP
   remains the access interface while the legacy JSONL store becomes migration
   input only.
-- Bundled plugin hooks stay opt-in and signal-first.
+- Bundled plugin hooks stay opt-in, measured, signal-first, and non-essential.
 - Project-owned workflow data now lives under `.codex/anyone-can-code/`.
 - Setup, update, and diagnostics now follow the Codex Windows plugin model more closely.
 
@@ -21,6 +21,20 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
   failed, or null coverage
 - restart recovery: canonical active-task capsule, transaction checks, derived
   view repair, and explicit uncertainty reporting
+- bounded task coordination: named tasks carry dependencies, owner, status,
+  claim lock, and evidence; duplicate active work is blocked
+- subagent coordination: ACC only creates bounded subagent assignments after
+  explicit user request and a Codex need, with concise evidence returning to ACC
+- optional hook helpers: each hook records one purpose, pass/fail/skipped
+  health, bounded retry state, and circuit-breaker status
+- safety receipts: important actions write readable JSON/Markdown receipts;
+  risky local work needs approval plus rollback; remote work needs exact user
+  authority evidence
+- Git/GitHub/rollback guardrails: exact workflow state plus receipts decide
+  what can be claimed; remote action still requires explicit user command
+- usage and background visibility: large reads and loops get approximate cost
+  estimates, tool output is compacted into receipts, and background work must
+  be visible, stoppable, bounded, and receipt-producing
 - optional detection/bootstrap: `$onboard`
 - intake only when needed: `$clarify`
 - planning only when needed: `$plan`
@@ -105,6 +119,13 @@ ACC hook behavior in its development workspace:
   tree that must not run ACC hooks.
 - The marker applies to that folder and every descendant repo/worktree.
 - ACC hook scripts return empty success before reading or writing ACC state.
+- ACC hooks are helpers only. Core workflow uses canonical state and continues
+  when hooks are absent, fail, or trip their circuit breaker.
+- Hook health is stored in `.codex/anyone-can-code/logs/hook-health.json` and
+  `.codex/anyone-can-code/logs/hook-health-ledger.jsonl`.
+- Hook repair retries stop after two consecutive failures. Fixed claims require
+  restart or new-thread proof, not just edited source.
+- Risky and remote actions must pass the safety receipt gate before execution.
 - Hook launchers accept either the plugin directory or its marketplace
   repository root and resolve the nested `plugins/anyone-can-code` directory.
 - Other Codex and plugin hooks remain enabled.
@@ -177,6 +198,12 @@ after explicit approval.
 - Evidence first.
 - No silent assumptions for meaningful decisions.
 - Built is not verified.
+- Usage warnings state uncertainty because transcript and token accounting are
+  approximate from local evidence.
+- Normal work starts with cheap checks. Deep checks are added when risk, shared
+  behavior, or user-visible behavior requires them.
+- Source tests alone do not close installed-app guardrails. Installed runtime
+  QA receipt must pass first.
 - Visible talk can be caveman. Hidden reasoning control is not promised.
 - Windows-first scripts and paths.
 - Optional integrations should degrade safely.
@@ -207,6 +234,15 @@ If source is newer than runtime, refresh plugin first. Do not migrate yet.
 
 ## Troubleshooting
 
+- Run Doctor first when recovery feels wrong. It checks installed ACC source,
+  project state agreement, hook health, memory storage, runtime freshness, and
+  plugin conflict ownership. It also checks usage-budget/background-work support.
+- If Doctor finds another plugin near ACC workflow ownership, ACC keeps control
+  and uses that plugin only as a bounded helper unless the user explicitly hands
+  ownership over.
+- ACC recovery never edits another plugin silently. If another plugin looks
+  broken, the safe next action is to keep ACC fallback running and ask before
+  touching that plugin.
 - if a skill path still shows an older version folder, old runtime still active
 - if project name shows parent `codex` folder, wrong root open
 - if source is newer than runtime, refresh plugin first

@@ -7,6 +7,10 @@ description: "Shows Codex token usage, activity breakdown, and tool patterns —
 
 See Codex usage and activity breakdown without spending any tokens.
 
+Before large reads, broad searches, or loops, estimate context cost with
+`scripts/work_visibility.py`. Always say usage estimates are approximate.
+Compact tool output into receipts instead of pasting full logs into chat.
+
 ## Inline status (inside Codex, 0 tokens)
 
 ```
@@ -42,6 +46,9 @@ python scripts/codeburn.py daemon
 Starts web dashboard at http://localhost:8765.
 Period tabs (Today/7d/30d/Month/All), model/activity/tool tables, daily trend chart.
 Stop with `python scripts/codeburn.py stop`.
+
+Background dashboard or scans must be visible, stoppable, bounded, and
+receipt-producing. Do not leave indefinite hidden workers running.
 
 ## Export
 

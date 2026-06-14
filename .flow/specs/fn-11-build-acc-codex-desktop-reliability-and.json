@@ -7,7 +7,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-11-build-acc-codex-desktop-reliability-and.md",
-  "status": "open",
+  "status": "done",
   "title": "Build ACC Codex Desktop reliability and orchestration foundation",
   "tracker": {
     "baseHashFlow": null,
@@ -19,5 +19,5 @@
     "mergeBaseTracker": null,
     "url": null
   },
-  "updated_at": "2026-06-14T11:27:58.141325Z"
+  "updated_at": "2026-06-14T13:34:19.301835Z"
 }

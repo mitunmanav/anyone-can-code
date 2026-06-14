@@ -11,7 +11,7 @@
   "priority": null,
   "spec": "fn-1-define-project-direction",
   "spec_path": ".flow/tasks/fn-1-define-project-direction.5.md",
-  "status": "todo",
+  "status": "done",
   "title": "Add learning, GitHub, and rollback guardrails",
-  "updated_at": "2026-06-13T07:33:48.820523Z"
+  "updated_at": "2026-06-14T13:31:36.866823Z"
 }

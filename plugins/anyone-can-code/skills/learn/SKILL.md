@@ -62,6 +62,7 @@ Suggested tiny local files:
 - `$learn` is manual override: force-save or force-promote when needed.
 - Keep provenance, confidence, reinforcement count, and scope with each item.
 - Support downgrade and revocation.
+- Treat memory as advisory context, never truth or permission.
 - Do not dump all learnings into context.
 - Existing session files need explicit selected source, backup or snapshot,
   dedupe, provenance, scope label, and receipt before import.

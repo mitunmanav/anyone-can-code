@@ -56,25 +56,29 @@ def build_context(repo_root: Path, source: str) -> str:
     return "\n".join(context_lines)
 
 
+def handle_payload(payload: dict, repo_root: Path) -> dict:
+    source = payload.get("source", "startup")
+    return {
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": build_context(repo_root, source),
+        }
+    }
+
+
 def main() -> None:
     payload = json.load(sys.stdin)
     repo_root = find_repo_root()
-    if repo_root is None:
+    if repo_root is None or state.acc_hooks_disabled(repo_root):
         print(json.dumps({}))
         return
-    if state.acc_hooks_disabled(repo_root):
-        print(json.dumps({}))
-        return
-
-    source = payload.get("source", "startup")
     print(
         json.dumps(
-            {
-                "hookSpecificOutput": {
-                    "hookEventName": "SessionStart",
-                    "additionalContext": build_context(repo_root, source),
-                }
-            }
+            state.run_optional_hook(
+                repo_root,
+                "load_session",
+                lambda: handle_payload(payload, repo_root),
+            )
         )
     )
 
@@ -83,4 +87,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as exc:  # pragma: no cover - hook best effort
-        print(json.dumps({"systemMessage": f"load_session.py: {exc}"}))
+        print(json.dumps({}))

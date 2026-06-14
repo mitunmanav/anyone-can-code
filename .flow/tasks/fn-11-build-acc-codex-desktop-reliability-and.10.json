@@ -12,7 +12,7 @@
   "priority": 10,
   "spec": "fn-11-build-acc-codex-desktop-reliability-and",
   "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.10.md",
-  "status": "todo",
+  "status": "done",
   "title": "Add usage budgets and visible background work",
-  "updated_at": "2026-06-14T11:28:05.342509Z"
+  "updated_at": "2026-06-14T13:23:15.793667Z"
 }

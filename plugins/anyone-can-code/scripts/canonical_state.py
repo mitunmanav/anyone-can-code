@@ -16,7 +16,7 @@ from typing import Any
 NAMESPACE = Path(".codex") / "anyone-can-code"
 
 DEFAULT_STATE: dict[str, Any] = {
-    "schema_version": 4,
+    "schema_version": 5,
     "transaction_id": "",
     "workflow_owner": "acc",
     "active_goal": "",
@@ -34,6 +34,13 @@ DEFAULT_STATE: dict[str, Any] = {
     "next_action": "",
     "plan": [],
     "tasks": [],
+    "task_claims": {},
+    "subagent_policy": {
+        "requires_explicit_user_request": True,
+        "requires_codex_need": True,
+        "max_parallel": 2,
+        "return_to": "acc",
+    },
     "active_task_capsule": {},
     "recovery": {
         "last_transition": "",
@@ -279,7 +286,7 @@ def update_canonical_state(
         verification = copy.deepcopy(current.get("verification") or {})
         verification.update(copy.deepcopy(updates["verification"]))
         updated["verification"] = verification
-    updated["schema_version"] = 4
+    updated["schema_version"] = 5
     updated["transaction_id"] = uuid.uuid4().hex
     updated["updated_at"] = utc_now()
     updated["active_task_capsule"] = _build_active_task_capsule(updated)

@@ -14,8 +14,10 @@ Use `$plan` after the request is clear enough to break into real work.
 
 ## Output
 
-Update canonical state through `scripts/canonical_state.py` with plan, tasks,
-active task, boundaries, and next action. Derived plan guidance and task queue
+Update canonical state through `scripts/canonical_state.py` with plan, active
+task, boundaries, and next action. Create or replace concrete task queues
+through `scripts/task_coordination.py` so each task has name, dependencies,
+owner, status, claim fields, and evidence. Derived plan guidance and task queue
 must share the same transaction ID.
 
 Show one concise builder-facing line, for example:
@@ -32,5 +34,6 @@ For product-intake plans, generate the adapted checklist through `scripts/produc
 - Full path: include scope, architecture, and verification checkpoints.
 - Challenge obviously weak architecture choices before execution begins.
 - Every plan item should have a verification target.
+- Every executable task should have dependencies, owner, status, and evidence target.
 - Never write a separate task queue that disagrees with canonical state.
 - Hide low-level tooling from builder-facing plan lines unless the user asks for technical detail.

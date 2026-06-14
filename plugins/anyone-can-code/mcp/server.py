@@ -406,14 +406,13 @@ def revoke_memory(arguments: dict) -> dict:
         raise ValueError("status must be downgraded or revoked")
     if not record_id:
         raise ValueError("id required")
-    for scope in ("project", "user", "shared"):
-        for row in active_rows(scope):
-            if row.get("id") == record_id:
-                row["status"] = status
-                row["updated_at"] = utc_now()
-                write_note(row)
-                rebuild_index({})
-                return {"updated": True, "record": row}
+    for row in load_all_records():
+        if row.get("id") == record_id:
+            row["status"] = status
+            row["updated_at"] = utc_now()
+            write_note(row)
+            rebuild_index({})
+            return {"updated": True, "record": row}
     raise ValueError(f"Unknown id: {record_id}")
 
 

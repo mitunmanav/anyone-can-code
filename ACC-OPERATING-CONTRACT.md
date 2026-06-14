@@ -129,6 +129,16 @@ user, or both according to preference, access, safety, and product judgment.
 - Pre-work checks and Doctor block unresolved active conflicts.
 - ACC never silently chooses between unresolved active instructions.
 
+## Plugin Conflict Control
+
+- ACC owns ACC workflow state, recovery, evidence, and fallback.
+- Specialist plugins may provide bounded technical output.
+- Another plugin does not become workflow owner unless the user explicitly says
+  so.
+- ACC does not silently edit another plugin to repair ACC.
+- Doctor reports possible workflow-owner conflicts with the owner and safe next
+  action in plain language.
+
 ## Missing Information
 
 - Research discoverable facts from project files, official docs, evidence, and
@@ -146,6 +156,17 @@ user, or both according to preference, access, safety, and product judgment.
 - External sharing of private data requires exact user approval.
 - Possible exposure triggers warning and containment guidance.
 
+## Receipts, Rollback, and Remote Authority
+
+- Important actions write readable JSON and Markdown receipts.
+- Risky local work requires exact approval and backup or rollback path before
+  execution.
+- Remote actions require exact immediate user authority and evidence of target.
+- Native Codex sandbox and approval context are recorded first.
+- Missing approval, rollback, sandbox context, or remote authority blocks the
+  action and writes a blocked receipt.
+- Learning remains portable Markdown, advisory, scoped, and revocable.
+
 ## Background Work
 
 - Background work is visible, stoppable, and bounded.
@@ -154,6 +175,17 @@ user, or both according to preference, access, safety, and product judgment.
 - Update canonical state for important progress and failure.
 - Write final receipt.
 - Hidden indefinite workers are forbidden.
+
+## Usage and Check Depth
+
+- Estimate context cost before large reads, broad searches, or repeated loops.
+- State uncertainty plainly. Estimates use local evidence and cannot promise
+  exact account usage.
+- Tool output evidence is compacted into receipts with hash, size, exit state,
+  and short excerpt.
+- Normal low-risk work uses cheap checks first.
+- Deep checks run when risk, shared behavior, user-visible behavior, or broad
+  changes make them necessary.
 
 ## Completion
 
@@ -184,5 +216,20 @@ ACC must not claim:
 Core ACC behavior cannot depend only on hooks, transcript parsing, native
 memory, subagents, automations, another plugin, or exact usage counters.
 
-Usage-control thresholds and green/yellow/red behavior are future work owned by
-Flow task `fn-11-build-acc-codex-desktop-reliability-and.10`.
+## Hook Helper Contract
+
+- Hooks are optional measured helpers, not workflow truth.
+- Each hook has one declared purpose.
+- Hook failure returns safe empty output unless a deliberate guard deny/block
+  is the intended helper result.
+- Hook health records pass, fail, skipped, duration, reason, retry count, and
+  circuit-breaker status.
+- A hook gets at most two consecutive repair attempts before circuit breaker.
+- Circuit breaker stops cross-layer repair loops and leaves core ACC workflow
+  running from canonical state.
+- Hook repair is not called fixed until installed runtime restart or new-thread
+  proof shows the repaired hook behavior.
+
+Usage-control thresholds and green/yellow/red behavior are implemented through
+bounded estimates, compact receipts, and risk-based check depth. Exact account
+limit prediction remains out of scope.

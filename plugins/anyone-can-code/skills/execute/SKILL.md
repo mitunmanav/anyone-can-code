@@ -21,6 +21,12 @@ Use `$execute` when the work is planned or concrete enough to implement.
 - Update workflow state after meaningful progress.
 - Update through `scripts/canonical_state.py`; derived files are not separate
   writable truths.
+- Claim active tasks through `scripts/task_coordination.py` before execution.
+  Do not start a task already claimed by another active owner.
+- Complete tasks through the same coordinator with concise evidence.
+- Before risky local work, remote work, external sharing, deletion, migration,
+  install, publish, or release, use `scripts/safety_receipts.py` to write a
+  receipt and verify approval, rollback, sandbox context, and remote authority.
 - Use only: `in scope`, `designed`, `approved`, `implemented`, `verified`,
   `blocked`, `deferred`.
 - Code written but not checked is `implemented`, never `verified`.
@@ -30,6 +36,9 @@ Use `$execute` when the work is planned or concrete enough to implement.
   resumes.
 - Scope change preserves old state in history, marks affected verification
   stale, updates every derived view, and moves active cursor to new work.
+- Use subagents only when the user explicitly asked and Codex needs isolated
+  or parallel work. Subagent output is bounded evidence, then control returns
+  to ACC.
 
 ## Output
 

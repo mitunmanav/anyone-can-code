@@ -182,30 +182,74 @@ def handle_pre_tool_use(payload: dict, repo_root: Path) -> None:
     print(json.dumps({}))
 
 
+def handle_payload(payload: dict, repo_root: Path) -> dict:
+    hook_event = payload.get("hook_event_name", "")
+    if hook_event == "UserPromptSubmit":
+        prompt = payload.get("prompt", "")
+        blocked_pattern = check_injection(prompt)
+        if blocked_pattern:
+            log_blocked(repo_root, payload, f"injection pattern: {blocked_pattern}")
+            return {
+                "decision": "block",
+                "reason": f"Guard stop. Found '{blocked_pattern}'.",
+            }
+
+        phase, explicit_route = state.detect_phase(prompt)
+        entry_mode = state.detect_entry_mode(prompt)
+        uncertainty = state.classify_uncertainty(prompt)
+        preferences = state.read_preferences(repo_root)
+        current = state.write_state(
+            repo_root,
+            {
+                "phase": phase or "route",
+                "route": explicit_route or entry_mode,
+                "entry_mode": entry_mode,
+                "communication_mode": preferences.get("communication_mode", "normal"),
+                "memory_mode": preferences.get("memory_mode", "portable-markdown"),
+                "viewer_mode": preferences.get("viewer_mode", "none"),
+            },
+        )
+        for signal_type, detail in detect_prompt_signals(prompt):
+            log_signal(repo_root, signal_type, detail, payload)
+        context = (
+            f"Talk: {current.get('communication_mode', 'caveman-strict')}. "
+            f"Path: {entry_mode}/{current.get('phase', 'route')}. "
+            f"Memory: {current.get('memory_mode', 'portable-markdown')}. "
+            f"Unclear: {uncertainty}. Talk short."
+        )
+        return {
+            "hookSpecificOutput": {
+                "hookEventName": "UserPromptSubmit",
+                "additionalContext": context,
+            }
+        }
+    if hook_event == "PreToolUse":
+        blocked = check_destructive_command(payload.get("tool_input", {}))
+        if blocked:
+            log_blocked(repo_root, payload, f"destructive command: {blocked}")
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "deny",
+                    "permissionDecisionReason": f"Guard stop bad command: {blocked}",
+                }
+            }
+    return {}
+
+
 def main() -> None:
     payload = json.load(sys.stdin)
     repo_root = find_repo_root()
-    if repo_root is None:
+    if repo_root is None or state.acc_hooks_disabled(repo_root):
         print(json.dumps({}))
         return
-    if state.acc_hooks_disabled(repo_root):
-        print(json.dumps({}))
-        return
-
-    hook_event = payload.get("hook_event_name", "")
-    if hook_event == "UserPromptSubmit":
-        handle_user_prompt_submit(payload, repo_root)
-        return
-    if hook_event == "PreToolUse":
-        handle_pre_tool_use(payload, repo_root)
-        return
-    print(json.dumps({}))
+    print(json.dumps(state.run_optional_hook(repo_root, "guard", lambda: handle_payload(payload, repo_root))))
 
 
 if __name__ == "__main__":
     try:
         main()
     except json.JSONDecodeError:
-        print(json.dumps({"systemMessage": "guard.py: bad json in."}))
+        print(json.dumps({}))
     except Exception as exc:  # pragma: no cover - hook best effort
-        print(json.dumps({"systemMessage": f"guard.py: {exc}"}))
+        print(json.dumps({}))
