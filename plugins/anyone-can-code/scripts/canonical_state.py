@@ -50,6 +50,24 @@ DEFAULT_STATE: dict[str, Any] = {
     "updated_at": "",
 }
 
+LEGACY_TRUTH_FIELDS = {
+    "phase",
+    "route",
+    "entry_mode",
+    "active_spec",
+    "last_task",
+    "next_step",
+    "last_verification",
+    "states",
+    "status_line",
+    "work_state",
+    "verification_state",
+    "evidence",
+    "silent_failures",
+    "unverified",
+    "uncertainty",
+}
+
 
 class StateTransactionError(RuntimeError):
     """Raised when canonical state and its derived views cannot update together."""
@@ -86,21 +104,34 @@ def _read_json(path: Path) -> dict[str, Any]:
         return copy.deepcopy(DEFAULT_STATE)
     if not isinstance(value, dict):
         return copy.deepcopy(DEFAULT_STATE)
+    clean_value = strip_legacy_truth_fields(value)
     merged = copy.deepcopy(DEFAULT_STATE)
-    merged.update(value)
+    merged.update(clean_value)
     verification = copy.deepcopy(DEFAULT_STATE["verification"])
-    if isinstance(value.get("verification"), dict):
-        verification.update(value["verification"])
+    if isinstance(clean_value.get("verification"), dict):
+        verification.update(clean_value["verification"])
     merged["verification"] = verification
     recovery = copy.deepcopy(DEFAULT_STATE["recovery"])
-    if isinstance(value.get("recovery"), dict):
-        recovery.update(value["recovery"])
+    if isinstance(clean_value.get("recovery"), dict):
+        recovery.update(clean_value["recovery"])
     merged["recovery"] = recovery
     return merged
 
 
 def read_canonical_state(repo_root: Path) -> dict[str, Any]:
     return _read_json(state_paths(repo_root)["workflow"])
+
+
+def strip_legacy_truth_fields(state: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: copy.deepcopy(value)
+        for key, value in state.items()
+        if key not in LEGACY_TRUTH_FIELDS
+    }
+
+
+def legacy_truth_fields(state: dict[str, Any]) -> list[str]:
+    return sorted(key for key in LEGACY_TRUTH_FIELDS if key in state)
 
 
 def _write_text_atomic(path: Path, text: str) -> None:
@@ -281,11 +312,13 @@ def update_canonical_state(
     paths = state_paths(repo_root)
     current = read_canonical_state(repo_root)
     updated = copy.deepcopy(current)
-    updated.update(copy.deepcopy(updates))
+    clean_updates = strip_legacy_truth_fields(copy.deepcopy(updates))
+    updated.update(clean_updates)
     if isinstance(updates.get("verification"), dict):
         verification = copy.deepcopy(current.get("verification") or {})
         verification.update(copy.deepcopy(updates["verification"]))
         updated["verification"] = verification
+    updated = strip_legacy_truth_fields(updated)
     updated["schema_version"] = 5
     updated["transaction_id"] = uuid.uuid4().hex
     updated["updated_at"] = utc_now()

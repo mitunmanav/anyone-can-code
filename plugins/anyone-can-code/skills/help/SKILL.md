@@ -7,6 +7,13 @@ description: "Reads the local workflow files and explains where the project stan
 
 Use `$help` when the user asks what is happening, what is next, or what is blocked.
 
+Before reading state, run:
+
+`python "$PLUGIN_ROOT/scripts/runtime_info.py" --resolve-project "."`
+
+Use returned `project_root`. If status is `ambiguous`, stop and show candidates;
+never report root idle state as final and never choose silently.
+
 Read from:
 
 - `.codex/anyone-can-code/state/workflow.json`

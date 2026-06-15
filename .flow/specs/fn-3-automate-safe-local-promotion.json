@@ -7,7 +7,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-3-automate-safe-local-promotion.md",
-  "status": "open",
+  "status": "done",
   "title": "Automate safe local promotion",
   "tracker": {
     "baseHashFlow": null,
@@ -19,5 +19,5 @@
     "mergeBaseTracker": null,
     "url": null
   },
-  "updated_at": "2026-06-13T06:13:52.658767Z"
+  "updated_at": "2026-06-15T06:17:19.827255Z"
 }

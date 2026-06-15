@@ -1,0 +1,23 @@
+{
+  "branch_name": "fn-16-enforce-acc-workflow-ownership-across",
+  "created_at": "2026-06-15T04:42:03.907009Z",
+  "depends_on_epics": [],
+  "id": "fn-16-enforce-acc-workflow-ownership-across",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-16-enforce-acc-workflow-ownership-across.md",
+  "status": "done",
+  "title": "Enforce ACC workflow ownership across specialist skills",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-15T06:17:22.351151Z"
+}

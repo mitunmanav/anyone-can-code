@@ -27,6 +27,12 @@ Use `$execute` when the work is planned or concrete enough to implement.
 - Before risky local work, remote work, external sharing, deletion, migration,
   install, publish, or release, use `scripts/safety_receipts.py` to write a
   receipt and verify approval, rollback, sandbox context, and remote authority.
+- If `patch_retry` is present and a failed patch or stale edit target occurs,
+  reread the exact target before retrying the failed patch. Stop and replan
+  after the retry limit instead of repeating misses.
+- If `mechanics_docs_gate` marks platform mechanics work, do not edit code
+  until the docs brief exists. If official docs/source are missing, controlled
+  proof must record uncertainty before platform mechanics code changes.
 - Use only: `in scope`, `designed`, `approved`, `implemented`, `verified`,
   `blocked`, `deferred`.
 - Code written but not checked is `implemented`, never `verified`.

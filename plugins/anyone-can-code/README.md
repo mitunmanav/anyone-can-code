@@ -18,9 +18,27 @@ Docs-native Codex Windows plugin for taking a user from any starting point to a 
 - deterministic route helper: `scripts/front_door.py`
 - installed-plugin bridge: manifest scan, bounded specialist assignment, ACC
   ownership, health probe, takeover blocking, fallback on missing, unhealthy,
-  failed, or null coverage
+  failed, or null coverage, and visible accounting for each requested
+  specialist
+- workflow containment: specialist mentions never imply handoff; project
+  context loads first; specialist process stays advisory; nested foreign plans,
+  gates, state, route, browser/server, and visual-companion controls are removed
+  while bounded technical output is kept
+- routed-response contract: every meaningful route requires visible summary
+  and next action; empty specialist output returns to an ACC fallback response
+- memory preflight: active project is resolved and `scripts/memory_preflight.py`
+  recalls top relevant learned mistakes/preferences before any question, plan,
+  specialist route, browser/server action, or tool action; output must include
+  `Relevant memory used: ...` or `Relevant memory used: none found`
+- active-project resolution: setup, update, help, status, resume, and Doctor
+  resolve bounded nested ACC state before reads or writes; one clear active
+  project is selected and multiple plausible projects block
 - restart recovery: canonical active-task capsule, transaction checks, derived
   view repair, and explicit uncertainty reporting
+- canonical-state cleanup: stale legacy workflow truth fields such as
+  `status_line`, `work_state`, `verification_state`, `states`, and top-level
+  `evidence` are stripped from canonical workflow JSON; Doctor reports any raw
+  legacy truth that remains
 - bounded task coordination: named tasks carry dependencies, owner, status,
   claim lock, and evidence; duplicate active work is blocked
 - subagent coordination: ACC only creates bounded subagent assignments after
@@ -50,11 +68,35 @@ output stays compact:
 
 ```text
 Detected: existing repo + feature request
+Relevant memory used: 2 item(s)
 Route: plan -> execute -> verify
 ```
 
+Existing-site improvement wording routes to polish/review instead of new-idea
+intake. ACC requires model output, but Codex Desktop rendering remains
+platform-owned and needs separate real-app proof.
+
+When Codex opens a workspace above the real project, run:
+
+```powershell
+python "$PLUGIN_ROOT/scripts/runtime_info.py" --resolve-project "."
+```
+
+Generated/cache folders, `.worktrees`, and symlinks are excluded. Scanning
+stops after three levels. Ambiguous results require explicit project choice.
+
 Plugin discovery reads installed manifests and skill descriptions only. It does
 not execute third-party plugin code while deciding where to route.
+
+Every front-door result carries `workflow_contract`. Ownership changes only
+after exact user handoff. Specialist assignments state allowed output,
+permissions, forbidden actions, process authority, and return path.
+When a user names specialists, the front door records each one under
+`requested_specialists` as either matched to an exact installed provider or
+falling back to ACC with a reason.
+The front door also carries `memory_preflight`; installed ACC must run the
+script and show the memory line before it chooses skills or asks the user what
+to do.
 
 ## Install model
 
@@ -123,8 +165,23 @@ ACC hook behavior in its development workspace:
   when hooks are absent, fail, or trip their circuit breaker.
 - Hook health is stored in `.codex/anyone-can-code/logs/hook-health.json` and
   `.codex/anyone-can-code/logs/hook-health-ledger.jsonl`.
+- Durable hook receipts must record correlation ID, session/turn ID, hook name,
+  launch and script-entry timestamps, project-resolution result, returned
+  context/output summary, state-write paths, skip/failure reason, exit status,
+  duration, and final effectiveness state. Exit code zero with `{}` is a
+  measured no-op, not healthy execution.
+- Strong hook QA combines three separate signals when available: live Codex
+  `hook/started`/`hook/completed` notifications, consented local OTLP metrics
+  (`codex.hooks.run` and `codex.hooks.run.duration_ms`), and ACC receipts.
+  No single signal proves useful effect by itself.
+- IMPORTANT deferred state: rollout JSONL is not a complete hook-run ledger.
+  System prompts, normal developer messages, collaboration-mode messages, and
+  plugin capability injections are not hook proof. Resume this work through
+  `fn-14-make-acc-hooks-effective-from-non-git`; do not infer silent runs.
 - Hook repair retries stop after two consecutive failures. Fixed claims require
   restart or new-thread proof, not just edited source.
+- Hook launcher repairs must pass both `cmd.exe /c` and PowerShell outer-shell
+  execution in the installed cache.
 - Risky and remote actions must pass the safety receipt gate before execution.
 - Hook launchers accept either the plugin directory or its marketplace
   repository root and resolve the nested `plugins/anyone-can-code` directory.
@@ -150,6 +207,10 @@ after explicit approval.
   Markdown verification, rollback receipt, originals retained
 - retrieval order: `project -> user -> shared`
 - retrieval size: top `3-5` only
+- first-action recall: required before questions, plans, skill routing,
+  browser/server work, and tool work
+- update/new-thread continuity: `$update` preserves memory path and Doctor
+  checks source-level memory preflight
 - viewer: optional; ACC works with no viewer
 - Obsidian: optional third-party viewer, never bundled, only offered after
   explicit consent
@@ -197,7 +258,16 @@ after explicit approval.
 
 - Evidence first.
 - No silent assumptions for meaningful decisions.
+- `mechanics_docs_gate` is a hard gate for platform mechanics changes. Hook,
+  plugin runtime, installed cache, Windows launch, UI lifecycle, telemetry/log,
+  MCP, and tool-plumbing work needs a docs brief from official docs/source
+  before code. If docs/source are missing, controlled proof must record
+  uncertainty first. Session traces are failure evidence only.
 - Built is not verified.
+- Build, source scan, dependency audit, and HTTP smoke do not prove
+  interactions, visual quality, or user acceptance.
+- Do not claim `works`, `proper`, `perfect`, `final`, or accepted unless the
+  matching interaction, visual QA, or user-acceptance evidence exists.
 - Usage warnings state uncertainty because transcript and token accounting are
   approximate from local evidence.
 - Normal work starts with cheap checks. Deep checks are added when risk, shared

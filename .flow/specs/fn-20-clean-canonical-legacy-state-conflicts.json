@@ -1,0 +1,23 @@
+{
+  "branch_name": "fn-20-clean-canonical-legacy-state-conflicts",
+  "created_at": "2026-06-15T05:53:29.660149Z",
+  "depends_on_epics": [],
+  "id": "fn-20-clean-canonical-legacy-state-conflicts",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-20-clean-canonical-legacy-state-conflicts.md",
+  "status": "done",
+  "title": "Clean canonical legacy state conflicts",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-15T06:17:24.209943Z"
+}

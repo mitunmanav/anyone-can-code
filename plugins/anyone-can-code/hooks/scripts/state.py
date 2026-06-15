@@ -8,9 +8,11 @@ Plugin-owned writable data lives in `PLUGIN_DATA` when available.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import sys
 import time
+import uuid
 from pathlib import Path
 from typing import Callable
 
@@ -24,6 +26,17 @@ import canonical_state
 PROJECT_NAMESPACE = "anyone-can-code"
 HOOK_DISABLE_MARKER = Path(".codex") / "anyone-can-code-hooks.disabled"
 HOOK_RETRY_LIMIT = 2
+PROJECT_SCAN_MAX_DEPTH = 3
+PROJECT_SCAN_EXCLUDED_DIRS = {
+    ".codex",
+    ".flow",
+    ".git",
+    ".hg",
+    ".svn",
+    ".venv",
+    "__pycache__",
+    "node_modules",
+}
 HOOK_PURPOSES = {
     "guard": "Block obvious prompt-injection and dangerous command signals.",
     "audit": "Measure tool-use signals for later evidence review.",
@@ -298,6 +311,280 @@ def read_recent_jsonl(path: Path, limit: int = 25) -> list[dict]:
         except json.JSONDecodeError:
             continue
     return rows
+
+
+def hook_start_location(payload: dict) -> Path:
+    raw = payload.get("cwd") or payload.get("workspace_root") or os.getcwd()
+    try:
+        location = Path(str(raw)).expanduser().resolve()
+    except OSError:
+        location = Path.cwd().resolve()
+    return location.parent if location.is_file() else location
+
+
+def git_root_from_ancestors(location: Path) -> Path | None:
+    current = location.resolve()
+    for candidate in (current, *current.parents):
+        try:
+            if (candidate / ".git").exists():
+                return candidate
+        except OSError:
+            continue
+    return None
+
+
+def is_hook_project_candidate(path: Path) -> bool:
+    try:
+        return (path / ".git").exists() or (path / ".codex" / PROJECT_NAMESPACE).exists()
+    except OSError:
+        return False
+
+
+def is_meaningful_hook_project(path: Path) -> bool:
+    try:
+        return (path / ".codex" / PROJECT_NAMESPACE).exists()
+    except OSError:
+        return False
+
+
+def discover_nested_hook_projects(location: Path) -> list[Path]:
+    discovered: list[Path] = []
+    seen: set[Path] = set()
+    pending: list[tuple[Path, int]] = [(location.resolve(), 0)]
+    while pending:
+        current, depth = pending.pop(0)
+        if current in seen:
+            continue
+        seen.add(current)
+        if is_hook_project_candidate(current):
+            discovered.append(current)
+            continue
+        if depth >= PROJECT_SCAN_MAX_DEPTH:
+            continue
+        try:
+            children = sorted(current.iterdir(), key=lambda item: item.name.lower())
+        except OSError:
+            continue
+        for child in children:
+            if (
+                not child.is_dir()
+                or child.is_symlink()
+                or child.name in PROJECT_SCAN_EXCLUDED_DIRS
+            ):
+                continue
+            try:
+                pending.append((child.resolve(), depth + 1))
+            except OSError:
+                continue
+    return discovered
+
+
+def resolve_hook_project(payload: dict) -> dict:
+    location = hook_start_location(payload)
+    if acc_hooks_disabled(location):
+        return {
+            "status": "disabled",
+            "reason": "acc-hooks-disabled",
+            "cwd": str(location),
+            "fallback_root": str(location),
+            "candidates": [],
+        }
+
+    direct = git_root_from_ancestors(location)
+    candidates = [direct] if direct is not None else discover_nested_hook_projects(location)
+    candidates = list(dict.fromkeys(candidate.resolve() for candidate in candidates))
+    meaningful = [candidate for candidate in candidates if is_meaningful_hook_project(candidate)]
+    selectable = meaningful or candidates
+
+    if len(selectable) == 1:
+        chosen = selectable[0]
+        if acc_hooks_disabled(chosen):
+            return {
+                "status": "disabled",
+                "reason": "acc-hooks-disabled",
+                "cwd": str(location),
+                "fallback_root": str(location),
+                "candidates": [str(candidate) for candidate in candidates],
+            }
+        return {
+            "status": "resolved",
+            "reason": "single-project",
+            "cwd": str(location),
+            "fallback_root": str(location),
+            "project_root": str(chosen),
+            "candidates": [str(candidate) for candidate in candidates],
+        }
+    if len(selectable) > 1:
+        return {
+            "status": "ambiguous",
+            "reason": "ambiguous-project",
+            "cwd": str(location),
+            "fallback_root": str(location),
+            "candidates": [str(candidate) for candidate in selectable],
+        }
+    return {
+        "status": "unresolved",
+        "reason": "no-project",
+        "cwd": str(location),
+        "fallback_root": str(location),
+        "candidates": [],
+    }
+
+
+def hook_receipt_path(root: Path) -> Path:
+    return ensure_project_layout(root)["logs"] / "hook-receipts.jsonl"
+
+
+def digest_payload(value: object) -> str:
+    try:
+        text = json.dumps(value, sort_keys=True, default=str)
+    except TypeError:
+        text = str(value)
+    return hashlib.sha256(text.encode("utf-8", errors="ignore")).hexdigest()
+
+
+def hook_output_kind(result: dict) -> str:
+    if not result:
+        return "empty"
+    specific = result.get("hookSpecificOutput") if isinstance(result, dict) else None
+    if isinstance(specific, dict):
+        if specific.get("additionalContext"):
+            return "context"
+        if specific.get("permissionDecision") or specific.get("decision"):
+            return "permission"
+        return "hookSpecificOutput"
+    if result.get("decision"):
+        return "decision"
+    return "output"
+
+
+def declared_state_writes(hook_name: str, event: str, result: dict) -> list[str]:
+    if hook_name == "save_session":
+        return [
+            ".codex/anyone-can-code/state/workflow.json",
+            ".codex/anyone-can-code/state/turn-ledger.jsonl",
+            ".codex/anyone-can-code/state/session-snapshot.md",
+            ".codex/anyone-can-code/artifacts/resume-note.md",
+        ]
+    if not result:
+        return []
+    if hook_name == "guard" and event == "UserPromptSubmit":
+        return [
+            ".codex/anyone-can-code/state/workflow.json",
+            ".codex/anyone-can-code/logs/signal-ledger.jsonl",
+        ]
+    if hook_name == "guard" and event == "PreToolUse":
+        return [".codex/anyone-can-code/logs/blocked-events.jsonl"]
+    if hook_name == "audit":
+        return [
+            ".codex/anyone-can-code/logs/tool-usage.jsonl",
+            ".codex/anyone-can-code/logs/signal-ledger.jsonl",
+        ]
+    return []
+
+
+def receipt_root_from_resolution(resolution: dict) -> Path | None:
+    if resolution.get("status") == "disabled":
+        return None
+    root = resolution.get("project_root") or resolution.get("fallback_root") or resolution.get("cwd")
+    return Path(str(root)).resolve() if root else None
+
+
+def write_hook_receipt(root: Path, receipt: dict) -> None:
+    append_jsonl(hook_receipt_path(root), receipt)
+
+
+def run_hook_attempt(
+    resolution: dict,
+    hook_name: str,
+    payload: dict,
+    worker: Callable[[], dict],
+) -> dict:
+    if resolution.get("status") == "disabled":
+        return {}
+
+    receipt_root = receipt_root_from_resolution(resolution)
+    if receipt_root is None:
+        return {}
+
+    started_at = utc_now()
+    started = time.monotonic()
+    result: dict = {}
+    failure_class = ""
+    skip_reason = ""
+    status = str(resolution.get("status") or "unresolved")
+    project_root_value = resolution.get("project_root")
+
+    if status != "resolved":
+        skip_reason = str(resolution.get("reason") or status)
+    elif hook_circuit_open(Path(str(project_root_value)), hook_name):
+        skip_reason = "circuit-open"
+        record_hook_result(Path(str(project_root_value)), hook_name, "skipped", reason=skip_reason)
+    else:
+        try:
+            result = worker()
+        except Exception as exc:  # pragma: no cover - hook best effort
+            failure_class = exc.__class__.__name__
+            result = {}
+            record_hook_result(
+                Path(str(project_root_value)),
+                hook_name,
+                "fail",
+                reason=str(exc),
+            )
+        else:
+            record_hook_result(Path(str(project_root_value)), hook_name, "pass")
+
+    duration_ms = int((time.monotonic() - started) * 1000)
+    output_kind = hook_output_kind(result)
+    context_returned = output_kind == "context"
+    state_write_paths = declared_state_writes(hook_name, str(payload.get("hook_event_name") or ""), result)
+    if failure_class:
+        final_effectiveness = "failed"
+    elif skip_reason:
+        final_effectiveness = "skipped"
+    elif output_kind == "empty" and state_write_paths:
+        final_effectiveness = "useful"
+    elif output_kind == "empty":
+        final_effectiveness = "no-op"
+    else:
+        final_effectiveness = "useful"
+
+    event = str(payload.get("hook_event_name") or "")
+    receipt = {
+        "schema_version": 1,
+        "correlation_id": str(
+            payload.get("hook_run_id")
+            or payload.get("run_id")
+            or payload.get("tool_use_id")
+            or f"acc-{uuid.uuid4().hex}"
+        ),
+        "session_id": str(payload.get("session_id") or ""),
+        "turn_id": str(payload.get("turn_id") or ""),
+        "hook": hook_name,
+        "hook_event": event,
+        "source": str(payload.get("source") or ""),
+        "launcher_started_at": started_at,
+        "script_entered_at": started_at,
+        "completed_at": utc_now(),
+        "duration_ms": duration_ms,
+        "cwd": str(resolution.get("cwd") or ""),
+        "resolver_candidates": list(resolution.get("candidates") or []),
+        "chosen_project": str(project_root_value or ""),
+        "resolution_state": status,
+        "output_kind": output_kind,
+        "output_digest": digest_payload(result),
+        "context_returned": context_returned,
+        "state_write_paths": state_write_paths,
+        "state_write_result": "declared" if state_write_paths else "none",
+        "skip_reason": skip_reason,
+        "failure_class": failure_class,
+        "exit_status": "success" if not failure_class else "failure",
+        "circuit_state": "open" if skip_reason == "circuit-open" else "closed",
+        "final_effectiveness": final_effectiveness,
+    }
+    write_hook_receipt(receipt_root, receipt)
+    return result
 
 
 def detect_phase(prompt: str) -> tuple[str | None, str | None]:

@@ -22,6 +22,10 @@ Reply rule:
 
 ## Read from
 
+Run `python "$PLUGIN_ROOT/scripts/runtime_info.py" --resolve-project "."`
+first. Use returned `project_root`. If result is `ambiguous`, block recovery
+and show candidates; never merge or replace competing state automatically.
+
 Start with canonical
 `.codex/anyone-can-code/state/workflow.json`. Confirm derived files carry same
 transaction ID. Use history, ledgers, artifacts, and `AGENTS.md` only as
@@ -31,6 +35,11 @@ Use `scripts/canonical_state.py` recovery behavior to re-anchor from canonical
 state. Read `active_task_capsule` for goal, task, decisions, boundaries,
 evidence, and next action. Before known restart, handoff, or compaction risk,
 save a context-transition capsule when possible.
+If `usage_checkpoint` or session evidence says primary usage is at least 85%,
+checkpoint before continuing. At 90%, split before more work. At 94%, stop now
+unless the user explicitly chooses to continue.
+Ignore legacy workflow truth fields if present. Resume from canonical
+verification, transaction, capsule, recovery, and next-action fields only.
 
 Choose the lightest recovery mode that is still safe.
 If active truths conflict, block work and repair state before resuming.

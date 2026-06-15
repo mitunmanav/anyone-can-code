@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import importlib.util
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -44,6 +45,237 @@ installed_runtime_qa = load_script("installed_runtime_qa")
 
 
 class ProjectStateTests(unittest.TestCase):
+    def test_project_resolver_selects_one_active_nested_project_over_idle_root(self) -> None:
+        resolver = getattr(doctor.runtime_info, "resolve_acc_project", None)
+        self.assertIsNotNone(resolver)
+        if resolver is None:
+            return
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            setup.bootstrap_project(root)
+            nested = root / "zenfit-site"
+            setup.bootstrap_project(nested)
+            workflow_path = (
+                nested / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            )
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["phase"] = "build"
+            workflow["active_task_capsule"] = {
+                "goal": "Refine Zenfit",
+                "task": "Polish existing website",
+                "next_action": "Continue implementation",
+            }
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            result = resolver(root)
+
+        self.assertEqual(result["status"], "selected")
+        self.assertEqual(Path(result["project_root"]), nested.resolve())
+        self.assertEqual(result["reason"], "single-meaningful-nested-project")
+
+    def test_project_resolver_keeps_meaningfully_active_root(self) -> None:
+        resolver = getattr(doctor.runtime_info, "resolve_acc_project", None)
+        self.assertIsNotNone(resolver)
+        if resolver is None:
+            return
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            setup.bootstrap_project(root)
+            workflow_path = root / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["phase"] = "build"
+            workflow["next_step"] = "Run tests"
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+            setup.bootstrap_project(root / "idle-child")
+
+            result = resolver(root)
+
+        self.assertEqual(result["status"], "selected")
+        self.assertEqual(Path(result["project_root"]), root.resolve())
+        self.assertEqual(result["reason"], "requested-root-meaningful")
+
+    def test_project_resolver_blocks_multiple_meaningful_projects(self) -> None:
+        resolver = getattr(doctor.runtime_info, "resolve_acc_project", None)
+        self.assertIsNotNone(resolver)
+        if resolver is None:
+            return
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ("site-one", "site-two"):
+                candidate = root / name
+                setup.bootstrap_project(candidate)
+                workflow_path = (
+                    candidate / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+                )
+                workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+                workflow["phase"] = "build"
+                workflow["next_step"] = f"Continue {name}"
+                workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            result = resolver(root)
+
+        self.assertEqual(result["status"], "ambiguous")
+        self.assertEqual(len(result["candidates"]), 2)
+        self.assertIsNone(result["project_root"])
+
+    def test_project_resolver_ignores_generated_folders(self) -> None:
+        resolver = getattr(doctor.runtime_info, "resolve_acc_project", None)
+        self.assertIsNotNone(resolver)
+        if resolver is None:
+            return
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            generated = root / "node_modules" / "copied-project"
+            setup.bootstrap_project(generated)
+
+            result = resolver(root)
+
+        self.assertEqual(result["status"], "selected")
+        self.assertEqual(Path(result["project_root"]), root.resolve())
+        self.assertEqual(result["candidates"], [])
+
+    def test_project_resolver_ignores_worktree_containers(self) -> None:
+        resolver = getattr(doctor.runtime_info, "resolve_acc_project", None)
+        self.assertIsNotNone(resolver)
+        if resolver is None:
+            return
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            setup.bootstrap_project(root)
+            workflow_path = root / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["phase"] = "build"
+            workflow["next_step"] = "Continue root"
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            worktree = root / ".worktrees" / "dev-copy"
+            setup.bootstrap_project(worktree)
+            copied_workflow_path = (
+                worktree / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            )
+            copied_workflow = json.loads(copied_workflow_path.read_text(encoding="utf-8"))
+            copied_workflow["phase"] = "build"
+            copied_workflow["next_step"] = "Copied state"
+            copied_workflow_path.write_text(json.dumps(copied_workflow), encoding="utf-8")
+
+            result = resolver(root)
+
+        self.assertEqual(result["status"], "selected")
+        self.assertEqual(Path(result["project_root"]), root.resolve())
+        self.assertEqual(result["reason"], "requested-root-meaningful")
+
+    def test_setup_resolves_nested_project_before_writing_root_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            nested = root / "zenfit-site"
+            setup.bootstrap_project(nested)
+            workflow_path = (
+                nested / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            )
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["phase"] = "build"
+            workflow["next_step"] = "Continue Zenfit"
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            receipt = setup.bootstrap_project(root)
+
+        self.assertFalse((root / ".codex" / "anyone-can-code").exists())
+        self.assertEqual(Path(receipt["project_root"]), nested.resolve())
+
+    def test_setup_blocks_ambiguous_nested_projects_before_writing_root_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ("site-one", "site-two"):
+                candidate = root / name
+                setup.bootstrap_project(candidate)
+                workflow_path = (
+                    candidate / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+                )
+                workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+                workflow["phase"] = "build"
+                workflow["next_step"] = f"Continue {name}"
+                workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            with self.assertRaisesRegex(RuntimeError, "Multiple ACC projects"):
+                setup.bootstrap_project(root)
+
+        self.assertFalse((root / ".codex" / "anyone-can-code").exists())
+
+    def test_update_resolves_nested_project_before_loading_install_state(self) -> None:
+        resolver = getattr(update.runtime_info, "resolve_acc_project", None)
+        self.assertIsNotNone(resolver)
+        if resolver is None:
+            return
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            nested = root / "zenfit-site"
+            setup.bootstrap_project(nested)
+            workflow_path = (
+                nested / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            )
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["phase"] = "build"
+            workflow["next_step"] = "Continue Zenfit"
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            with (
+                mock.patch.object(update, "load_install_state", wraps=update.load_install_state) as load,
+                mock.patch.object(
+                    update.runtime_info,
+                    "build_runtime_info",
+                    return_value={
+                        "plugin_source_version": "1.0.0",
+                        "installed_runtime_version": "1.0.0",
+                        "project_root": str(nested),
+                        "next_action": "same-everywhere",
+                    },
+                ),
+            ):
+                update.migrate(root)
+
+        self.assertEqual(load.call_args.args[0], nested.resolve())
+
+    def test_help_status_and_resume_require_project_resolution(self) -> None:
+        for skill in ("help", "status", "resume"):
+            with self.subTest(skill=skill):
+                text = (
+                    PLUGIN_ROOT / "skills" / skill / "SKILL.md"
+                ).read_text(encoding="utf-8")
+                self.assertIn("--resolve-project", text)
+                self.assertIn("ambiguous", text.lower())
+
+    def test_doctor_reports_and_uses_selected_nested_project(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            setup.bootstrap_project(root)
+            nested = root / "zenfit-site"
+            setup.bootstrap_project(nested)
+            workflow_path = (
+                nested / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            )
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["phase"] = "build"
+            workflow["next_step"] = "Continue Zenfit"
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            old_project_root = doctor.PROJECT_ROOT
+            doctor.PROJECT_ROOT = root
+            try:
+                report = doctor.Doctor(json_mode=True).run_all()
+            finally:
+                doctor.PROJECT_ROOT = old_project_root
+
+        by_check = {item["check"]: item for item in report["results"]}
+        self.assertEqual(by_check["project_selection"]["status"], "WARN")
+        self.assertIn(str(nested.resolve()), by_check["project_selection"]["evidence"])
+        self.assertEqual(by_check["workflow_state"]["status"], "PASS")
+
     def test_usage_budget_estimates_large_reads_and_loops_with_uncertainty(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
@@ -59,6 +291,84 @@ class ProjectStateTests(unittest.TestCase):
         self.assertTrue(budget["large_loop"])
         self.assertIn("exact usage may differ", budget["uncertainty"])
         self.assertGreaterEqual(len(budget["warnings"]), 2)
+
+    def test_high_usage_checkpoint_thresholds_force_split_before_burn(self) -> None:
+        normal = work_visibility.assess_usage_checkpoint(primary_percent=84)
+        checkpoint = work_visibility.assess_usage_checkpoint(primary_percent=85)
+        split = work_visibility.assess_usage_checkpoint(primary_percent=90)
+        stop = work_visibility.assess_usage_checkpoint(primary_percent=94)
+
+        self.assertEqual(normal["action"], "continue")
+        self.assertFalse(normal["checkpoint_required"])
+        self.assertEqual(checkpoint["action"], "checkpoint")
+        self.assertTrue(checkpoint["checkpoint_required"])
+        self.assertFalse(checkpoint["continue_without_user_choice"])
+        self.assertEqual(split["action"], "split")
+        self.assertTrue(split["split_required"])
+        self.assertFalse(split["continue_without_user_choice"])
+        self.assertEqual(stop["action"], "stop-now")
+        self.assertTrue(stop["stop_required"])
+        self.assertFalse(stop["continue_without_user_choice"])
+        self.assertIn("reported percentage", stop["uncertainty"])
+
+    def test_patch_retry_requires_exact_reread_after_failed_patch(self) -> None:
+        first = work_visibility.assess_patch_retry(
+            failed_attempts=0,
+            last_patch_failed=False,
+            exact_target_reread=False,
+        )
+        blocked = work_visibility.assess_patch_retry(
+            failed_attempts=1,
+            last_patch_failed=True,
+            exact_target_reread=False,
+        )
+        retry = work_visibility.assess_patch_retry(
+            failed_attempts=1,
+            last_patch_failed=True,
+            exact_target_reread=True,
+        )
+        exhausted = work_visibility.assess_patch_retry(
+            failed_attempts=2,
+            last_patch_failed=True,
+            exact_target_reread=True,
+        )
+
+        self.assertTrue(first["can_apply_patch"])
+        self.assertEqual(first["action"], "apply")
+        self.assertFalse(blocked["can_apply_patch"])
+        self.assertEqual(blocked["action"], "reread-exact-target")
+        self.assertTrue(blocked["reread_required"])
+        self.assertTrue(retry["can_apply_patch"])
+        self.assertEqual(retry["action"], "retry-once")
+        self.assertFalse(exhausted["can_apply_patch"])
+        self.assertEqual(exhausted["action"], "stop-and-replan")
+
+    def test_docs_first_mechanics_gate_blocks_platform_work_without_brief(self) -> None:
+        normal = work_visibility.assess_mechanics_docs_gate(
+            "Add password reset to the existing app",
+        )
+        blocked = work_visibility.assess_mechanics_docs_gate(
+            "Change Codex Desktop hook launch behavior on Windows",
+        )
+        documented = work_visibility.assess_mechanics_docs_gate(
+            "Change Codex Desktop hook launch behavior on Windows",
+            docs_brief="Official docs and source checked; hook launch boundary recorded.",
+        )
+        controlled = work_visibility.assess_mechanics_docs_gate(
+            "Change telemetry parsing for Codex Desktop logs",
+            controlled_proof=True,
+            uncertainty="Official docs missing; controlled log fixture proves only this boundary.",
+        )
+
+        self.assertTrue(normal["can_change_code"])
+        self.assertFalse(normal["docs_brief_required"])
+        self.assertFalse(blocked["can_change_code"])
+        self.assertTrue(blocked["docs_brief_required"])
+        self.assertEqual(blocked["action"], "write-docs-brief")
+        self.assertTrue(documented["can_change_code"])
+        self.assertEqual(documented["evidence_source"], "docs-brief")
+        self.assertTrue(controlled["can_change_code"])
+        self.assertEqual(controlled["evidence_source"], "controlled-proof-with-uncertainty")
 
     def test_tool_evidence_receipt_compacts_large_output(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -157,6 +467,71 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(receipt["status"], "fail")
         self.assertIn("failed", receipt["plain_result"])
         self.assertTrue(any(item["status"] == "fail" for item in receipt["scenarios"]))
+
+    def test_installed_runtime_qa_proves_memory_write_through(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            runtime = target / ".codex" / "plugins" / "cache" / "market" / "anyone-can-code" / "1.0.0"
+            shutil.copytree(PLUGIN_ROOT, runtime)
+
+            receipt = installed_runtime_qa.run_installed_qa(
+                target,
+                PLUGIN_ROOT,
+                runtime_root=runtime,
+            )
+
+        scenarios = {item["id"]: item for item in receipt["scenarios"]}
+        self.assertEqual(receipt["status"], "pass")
+        self.assertEqual(scenarios["memory_write_through"]["status"], "pass")
+        self.assertIn("setup", scenarios["memory_write_through"]["proof"])
+        self.assertIn("update", scenarios["memory_write_through"]["proof"])
+        self.assertIn("new-thread", scenarios["memory_write_through"]["proof"])
+
+    def test_installed_runtime_qa_proves_visible_response_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            runtime = target / ".codex" / "plugins" / "cache" / "market" / "anyone-can-code" / "1.0.0"
+            shutil.copytree(PLUGIN_ROOT, runtime)
+
+            receipt = installed_runtime_qa.run_installed_qa(
+                target,
+                PLUGIN_ROOT,
+                runtime_root=runtime,
+            )
+
+        scenarios = {item["id"]: item for item in receipt["scenarios"]}
+        visible = scenarios["visible_response_contract"]
+        self.assertEqual(receipt["status"], "pass")
+        self.assertEqual(visible["status"], "pass")
+        self.assertIn("existing-website-route", visible["proof"])
+        self.assertIn("visible-text-required", visible["proof"])
+        self.assertIn("acc-fallback-response", visible["proof"])
+        self.assertIn("rendered-message", visible["proof"])
+        self.assertGreater(len(visible["details"]["displayed_text"]), 20)
+
+    def test_installed_runtime_qa_proves_nested_hook_receipts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            runtime = target / ".codex" / "plugins" / "cache" / "market" / "anyone-can-code" / "1.0.0"
+            shutil.copytree(PLUGIN_ROOT, runtime)
+
+            receipt = installed_runtime_qa.run_installed_qa(
+                target,
+                PLUGIN_ROOT,
+                runtime_root=runtime,
+            )
+
+        scenarios = {item["id"]: item for item in receipt["scenarios"]}
+        hooks = scenarios["hook_nested_root_receipts"]
+        self.assertEqual(receipt["status"], "pass")
+        self.assertEqual(hooks["status"], "pass")
+        self.assertIn("nested-resolution", hooks["proof"])
+        self.assertIn("useful-context", hooks["proof"])
+        self.assertIn("durable-receipt", hooks["proof"])
+        self.assertIn("stop-state-write", hooks["proof"])
+        self.assertIn("ambiguous-skip-receipt", hooks["proof"])
+        self.assertIn("redacted-prompt", hooks["proof"])
+        self.assertIn(".codex/anyone-can-code/state/turn-ledger.jsonl", hooks["details"]["stop_state_paths"])
 
     def test_task_coordination_records_ownership_claims_dependencies_and_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -270,6 +645,200 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(result, {})
         self.assertEqual(health["hooks"]["save_session"]["status"], "fail")
         self.assertEqual(health["hooks"]["save_session"]["consecutive_failures"], 1)
+
+    def test_hook_resolver_selects_single_nested_project_from_non_git_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            nested = workspace / "zenfit-site"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            payload = {
+                "hook_event_name": "SessionStart",
+                "session_id": "s1",
+                "cwd": str(workspace),
+            }
+
+            resolution = hook_state.resolve_hook_project(payload)
+            result = hook_state.run_hook_attempt(
+                resolution,
+                "load_session",
+                payload,
+                lambda: {
+                    "hookSpecificOutput": {
+                        "hookEventName": "SessionStart",
+                        "additionalContext": "Talk: caveman-strict.",
+                    }
+                },
+            )
+            receipt = json.loads(
+                (
+                    nested
+                    / ".codex"
+                    / "anyone-can-code"
+                    / "logs"
+                    / "hook-receipts.jsonl"
+                )
+                .read_text(encoding="utf-8")
+                .splitlines()[-1]
+            )
+
+        self.assertEqual(resolution["status"], "resolved")
+        self.assertEqual(Path(resolution["project_root"]), nested.resolve())
+        self.assertIn("hookSpecificOutput", result)
+        self.assertEqual(receipt["resolution_state"], "resolved")
+        self.assertEqual(receipt["chosen_project"], str(nested.resolve()))
+        self.assertTrue(receipt["context_returned"])
+        self.assertEqual(receipt["final_effectiveness"], "useful")
+
+    def test_hook_resolver_blocks_ambiguous_nested_projects_and_writes_fallback_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            first = workspace / "first"
+            second = workspace / "second"
+            for candidate in (first, second):
+                (candidate / ".git").mkdir(parents=True)
+                hook_state.ensure_project_layout(candidate)
+            payload = {
+                "hook_event_name": "UserPromptSubmit",
+                "prompt": "build this",
+                "cwd": str(workspace),
+            }
+
+            resolution = hook_state.resolve_hook_project(payload)
+            result = hook_state.run_hook_attempt(
+                resolution,
+                "guard",
+                payload,
+                lambda: {"should_not": "run"},
+            )
+            receipt = json.loads(
+                (
+                    workspace
+                    / ".codex"
+                    / "anyone-can-code"
+                    / "logs"
+                    / "hook-receipts.jsonl"
+                )
+                .read_text(encoding="utf-8")
+                .splitlines()[-1]
+            )
+
+        self.assertEqual(result, {})
+        self.assertEqual(resolution["status"], "ambiguous")
+        self.assertEqual(receipt["resolution_state"], "ambiguous")
+        self.assertEqual(receipt["final_effectiveness"], "skipped")
+        self.assertEqual(receipt["skip_reason"], "ambiguous-project")
+        self.assertEqual(len(receipt["resolver_candidates"]), 2)
+
+    def test_hook_receipt_classifies_empty_output_as_noop_not_useful(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            nested = Path(tmp) / "repo"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            payload = {"hook_event_name": "PreToolUse", "cwd": str(nested)}
+
+            resolution = hook_state.resolve_hook_project(payload)
+            result = hook_state.run_hook_attempt(
+                resolution,
+                "guard",
+                payload,
+                lambda: {},
+            )
+            receipt = json.loads(
+                (
+                    nested
+                    / ".codex"
+                    / "anyone-can-code"
+                    / "logs"
+                    / "hook-receipts.jsonl"
+                )
+                .read_text(encoding="utf-8")
+                .splitlines()[-1]
+            )
+
+        self.assertEqual(result, {})
+        self.assertEqual(receipt["output_kind"], "empty")
+        self.assertFalse(receipt["context_returned"])
+        self.assertEqual(receipt["final_effectiveness"], "no-op")
+
+    def test_hook_receipt_redacts_prompt_and_records_output_digest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            nested = Path(tmp) / "repo"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            payload = {
+                "hook_event_name": "UserPromptSubmit",
+                "prompt": "secret token ABC123",
+                "cwd": str(nested),
+            }
+
+            resolution = hook_state.resolve_hook_project(payload)
+            hook_state.run_hook_attempt(
+                resolution,
+                "guard",
+                payload,
+                lambda: {
+                    "hookSpecificOutput": {
+                        "hookEventName": "UserPromptSubmit",
+                        "additionalContext": "Talk: caveman-strict.",
+                    }
+                },
+            )
+            receipt_path = (
+                nested
+                / ".codex"
+                / "anyone-can-code"
+                / "logs"
+                / "hook-receipts.jsonl"
+            )
+            receipt_text = receipt_path.read_text(encoding="utf-8")
+            receipt = json.loads(receipt_text.splitlines()[-1])
+
+        self.assertNotIn("secret token", receipt_text)
+        self.assertNotIn("ABC123", receipt_text)
+        self.assertRegex(receipt["output_digest"], r"^[a-f0-9]{64}$")
+
+    def test_load_session_script_returns_context_from_nested_project_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            nested = workspace / "zenfit-site"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            (nested / "AGENTS.md").write_text("project rules\n", encoding="utf-8")
+            payload = {
+                "hook_event_name": "SessionStart",
+                "source": "startup",
+                "cwd": str(workspace),
+            }
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(PLUGIN_ROOT / "hooks" / "scripts" / "load_session.py"),
+                ],
+                input=json.dumps(payload),
+                text=True,
+                capture_output=True,
+                timeout=10,
+            )
+            output = json.loads(result.stdout)
+            receipt = json.loads(
+                (
+                    nested
+                    / ".codex"
+                    / "anyone-can-code"
+                    / "logs"
+                    / "hook-receipts.jsonl"
+                )
+                .read_text(encoding="utf-8")
+                .splitlines()[-1]
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("hookSpecificOutput", output)
+        self.assertIn("Project rules:", output["hookSpecificOutput"]["additionalContext"])
+        self.assertEqual(receipt["chosen_project"], str(nested.resolve()))
+        self.assertEqual(receipt["final_effectiveness"], "useful")
 
     def test_action_receipt_blocks_risky_work_without_rollback(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -834,14 +1403,14 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(workflow["setup_state"], "ready")
         self.assertEqual(workflow["memory_mode"], "portable-markdown")
         self.assertEqual(workflow["viewer_mode"], "none")
-        self.assertEqual(
-            workflow["status_line"],
-            "Status: build in scope, tests in scope, deploy deferred",
-        )
-        self.assertEqual(workflow["unverified"], ["build", "tests"])
+        self.assertNotIn("status_line", workflow)
+        self.assertNotIn("work_state", workflow)
+        self.assertNotIn("verification_state", workflow)
+        self.assertNotIn("states", workflow)
+        self.assertNotIn("unverified", workflow)
         self.assertEqual(workflow["failures"], [])
-        self.assertEqual(workflow["silent_failures"], [])
         self.assertEqual(workflow["workflow_owner"], "acc")
+        self.assertEqual(workflow["verification"]["level"], "unverified")
         self.assertTrue(workflow["transaction_id"])
         self.assertIn(workflow["transaction_id"], status_text)
         self.assertIn(workflow["transaction_id"], resume_text)
@@ -866,6 +1435,7 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(by_check["persona_settings"]["status"], "PASS")
         self.assertEqual(by_check["workflow_state"]["status"], "PASS")
         self.assertEqual(by_check["workflow_observability"]["status"], "PASS")
+        self.assertEqual(by_check["legacy_state_fields"]["status"], "PASS")
         self.assertEqual(by_check["repo_mode"]["status"], "PASS")
         self.assertEqual(by_check["memory_storage"]["status"], "PASS")
         self.assertEqual(by_check["memory_viewer"]["status"], "PASS")
@@ -891,6 +1461,78 @@ class ProjectStateTests(unittest.TestCase):
         by_check = {item["check"]: item for item in instance.results}
         self.assertEqual(by_check["state_agreement"]["status"], "WARN")
         self.assertIn("Next:", by_check["state_agreement"]["evidence"])
+
+    def test_canonical_state_strips_legacy_truth_fields_from_old_session_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            workflow_path = target / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            workflow_path.parent.mkdir(parents=True)
+            workflow_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "workflow_owner": "acc",
+                        "active_goal": "Refine Zenfit",
+                        "active_task": "Repair truth",
+                        "verification": {
+                            "level": "unverified",
+                            "evidence": [],
+                            "stale": True,
+                        },
+                        "states": {
+                            "build": "verified",
+                            "tests": "verified",
+                            "deploy": "deferred",
+                        },
+                        "status_line": "Status: build verified, tests verified, deploy deferred",
+                        "work_state": "verified",
+                        "verification_state": "verified",
+                        "evidence": ["old stale proof"],
+                        "unverified": [],
+                        "silent_failures": [],
+                        "uncertainty": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            read_state = canonical_state.read_canonical_state(target)
+            rewritten = canonical_state.update_canonical_state(
+                target,
+                {"next_action": "Continue from canonical state"},
+            )
+            saved = json.loads(workflow_path.read_text(encoding="utf-8"))
+
+        for field in canonical_state.LEGACY_TRUTH_FIELDS:
+            self.assertNotIn(field, read_state)
+            self.assertNotIn(field, rewritten)
+            self.assertNotIn(field, saved)
+        self.assertEqual(saved["verification"]["level"], "unverified")
+        self.assertTrue(saved["verification"]["stale"])
+        self.assertEqual(saved["verification"]["evidence"], [])
+
+    def test_doctor_warns_when_raw_workflow_still_has_legacy_truth_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            setup.bootstrap_project(target)
+            workflow_path = target / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+            workflow["status_line"] = "Status: build verified, tests verified"
+            workflow["verification_state"] = "verified"
+            workflow_path.write_text(json.dumps(workflow), encoding="utf-8")
+
+            old_project_root = doctor.PROJECT_ROOT
+            doctor.PROJECT_ROOT = target
+            try:
+                instance = doctor.Doctor(json_mode=True)
+                instance.run_project_state()
+            finally:
+                doctor.PROJECT_ROOT = old_project_root
+
+        by_check = {item["check"]: item for item in instance.results}
+        self.assertEqual(by_check["legacy_state_fields"]["status"], "WARN")
+        self.assertIn("status_line", by_check["legacy_state_fields"]["evidence"])
+        self.assertIn("verification_state", by_check["legacy_state_fields"]["evidence"])
 
     def test_doctor_keeps_storage_healthy_when_selected_viewer_is_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -953,6 +1595,39 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(result["check"], "hook_health")
         self.assertEqual(result["status"], "PASS")
         self.assertIn("Next:", result["evidence"])
+
+    def test_doctor_summarizes_latest_hook_receipt_effectiveness(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            (target / ".git").mkdir()
+            hook_state.ensure_project_layout(target)
+            payload = {"hook_event_name": "SessionStart", "cwd": str(target)}
+            resolution = hook_state.resolve_hook_project(payload)
+            hook_state.run_hook_attempt(
+                resolution,
+                "load_session",
+                payload,
+                lambda: {
+                    "hookSpecificOutput": {
+                        "hookEventName": "SessionStart",
+                        "additionalContext": "Talk: caveman-strict.",
+                    }
+                },
+            )
+
+            old_project_root = doctor.PROJECT_ROOT
+            doctor.PROJECT_ROOT = target
+            try:
+                instance = doctor.Doctor(json_mode=True)
+                instance.run_hook_health()
+            finally:
+                doctor.PROJECT_ROOT = old_project_root
+
+        result = instance.results[0]
+        self.assertEqual(result["check"], "hook_health")
+        self.assertEqual(result["status"], "PASS")
+        self.assertIn("latest receipts", result["evidence"])
+        self.assertIn("useful", result["evidence"])
 
     def test_doctor_blocks_silent_repair_of_incomplete_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1131,6 +1806,35 @@ class ProjectStateTests(unittest.TestCase):
             snapshot_path = target / ".codex" / "anyone-can-code" / "state" / "session-snapshot.md"
             self.assertEqual(agents_path.read_text(encoding="utf-8"), "project rules stay\n")
             self.assertTrue(snapshot_path.exists())
+
+    @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
+    def test_hook_commands_survive_powershell_outer_shell(self) -> None:
+        hooks = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
+        marketplace_repo = PLUGIN_ROOT.parents[1]
+        workspace_root = marketplace_repo.parent
+        env = os.environ.copy()
+        env["PLUGIN_ROOT"] = str(marketplace_repo)
+        env.pop("CLAUDE_PLUGIN_ROOT", None)
+
+        command = hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"]
+        payload = {
+            "hook_event_name": "UserPromptSubmit",
+            "prompt": "test",
+            "cwd": str(workspace_root),
+        }
+
+        result = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-Command", command],
+            input=json.dumps(payload),
+            text=True,
+            capture_output=True,
+            cwd=workspace_root,
+            env=env,
+            timeout=20,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "{}")
 
     @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
     def test_hook_commands_run_from_parent_workspace_without_plugin_env_under_cmd(self) -> None:

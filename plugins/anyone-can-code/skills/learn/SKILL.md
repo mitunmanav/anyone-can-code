@@ -50,6 +50,13 @@ Suggested tiny local files:
 - no raw logs
 - no full chat dump
 - no hidden import of existing session files
+- front door must run `scripts/memory_preflight.py` after active-project
+  resolution and before asking, planning, choosing specialists, browser/server
+  work, or tool work
+- every routed turn must show `Relevant memory used: ...` or
+  `Relevant memory used: none found`
+- update, restart, and new thread must not weaken recall; memory path comes
+  from project preferences
 
 ## Rules
 

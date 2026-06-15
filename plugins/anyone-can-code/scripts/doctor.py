@@ -13,7 +13,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import canonical_state
 import front_door
+import memory_preflight
 import product_intake
 import runtime_info
 import status_model
@@ -34,6 +36,7 @@ ALLOWED_PERSONA_MODES = {"builder", "developer", "mixed"}
 ALLOWED_REPO_MODES = {"new", "existing", "production", "unknown"}
 ACC_HOOK_DISABLE_MARKER = Path(".codex") / "anyone-can-code-hooks.disabled"
 HOOK_HEALTH_FILE = Path(".codex") / PROJECT_NAMESPACE / "logs" / "hook-health.json"
+HOOK_RECEIPTS_FILE = Path(".codex") / PROJECT_NAMESPACE / "logs" / "hook-receipts.jsonl"
 STATE_AGREEMENT_FIELDS = (
     "persona_mode",
     "repo_mode",
@@ -204,6 +207,36 @@ class Doctor:
         else:
             self.check("recovery", "project_layout", "WARN", "warning", "Project bootstrap has not created .codex/anyone-can-code yet")
 
+    def run_project_selection(self, selection: dict) -> None:
+        if selection["status"] == "ambiguous":
+            self.check(
+                "recovery",
+                "project_selection",
+                "FAIL",
+                "blocking",
+                "Multiple ACC projects found. Choose one: "
+                + ", ".join(selection["candidates"]),
+            )
+            return
+        selected = str(selection["project_root"])
+        requested = str(selection["requested_root"])
+        if selected != requested:
+            self.check(
+                "recovery",
+                "project_selection",
+                "WARN",
+                "warning",
+                f"Selected nested ACC project: {selected}",
+            )
+            return
+        self.check(
+            "recovery",
+            "project_selection",
+            "PASS",
+            "info",
+            f"Using requested project root: {selected}",
+        )
+
     def read_project_json(self, path: Path) -> tuple[dict | None, str]:
         try:
             return json.loads(path.read_text(encoding="utf-8")), ""
@@ -243,6 +276,7 @@ class Doctor:
         if workflow is None:
             self.check("recovery", "workflow_state", "WARN", "warning", workflow_error)
             self.check("recovery", "workflow_observability", "WARN", "warning", workflow_error)
+            self.check("recovery", "legacy_state_fields", "WARN", "warning", workflow_error)
         else:
             setup_state = workflow.get("setup_state")
             workflow_persona = workflow.get("persona_mode")
@@ -250,34 +284,49 @@ class Doctor:
                 self.check("recovery", "workflow_state", "PASS", "info", f"{setup_state}, {workflow_persona}")
             else:
                 self.check("recovery", "workflow_state", "WARN", "warning", "Workflow setup state missing or invalid")
-            try:
-                states = status_model.validate_states(workflow.get("states", {}))
-                expected_line = status_model.render_status_line(states)
-                list_fields = ("evidence", "failures", "silent_failures", "unverified", "uncertainty")
-                lists_valid = all(isinstance(workflow.get(field), list) for field in list_fields)
-                if workflow.get("status_line") == expected_line and lists_valid:
-                    self.check(
-                        "recovery",
-                        "workflow_observability",
-                        "PASS",
-                        "info",
-                        expected_line,
-                    )
-                else:
-                    self.check(
-                        "recovery",
-                        "workflow_observability",
-                        "WARN",
-                        "warning",
-                        "Workflow observability shape missing or inconsistent",
-                    )
-            except (TypeError, ValueError):
+            verification = workflow.get("verification")
+            if (
+                isinstance(verification, dict)
+                and str(verification.get("level") or "").strip()
+                and isinstance(verification.get("evidence"), list)
+                and isinstance(verification.get("stale"), bool)
+                and workflow.get("transaction_id")
+                and workflow.get("workflow_owner") == "acc"
+            ):
+                self.check(
+                    "recovery",
+                    "workflow_observability",
+                    "PASS",
+                    "info",
+                    f"Canonical verification: {verification['level']}",
+                )
+            else:
                 self.check(
                     "recovery",
                     "workflow_observability",
                     "WARN",
                     "warning",
-                    "Workflow states use invalid vocabulary",
+                    "Canonical verification shape missing or invalid",
+                )
+            legacy_fields = canonical_state.legacy_truth_fields(workflow)
+            if legacy_fields:
+                self.check(
+                    "recovery",
+                    "legacy_state_fields",
+                    "WARN",
+                    "warning",
+                    self.plain_next(
+                        f"Legacy workflow truth fields remain: {', '.join(legacy_fields)}.",
+                        "run setup or update to rewrite canonical state.",
+                    ),
+                )
+            else:
+                self.check(
+                    "recovery",
+                    "legacy_state_fields",
+                    "PASS",
+                    "info",
+                    "No legacy workflow truth fields.",
                 )
 
         if isinstance(preferences, dict) and isinstance(workflow, dict):
@@ -354,8 +403,21 @@ class Doctor:
 
     def run_hook_health(self) -> None:
         health_path = PROJECT_ROOT / HOOK_HEALTH_FILE
+        receipt_summary = self.latest_hook_receipt_summary()
         health, error = self.read_project_json(health_path)
         if health is None:
+            if receipt_summary:
+                self.check(
+                    "recovery",
+                    "hook_health",
+                    "PASS",
+                    "info",
+                    self.plain_next(
+                        f"No hook health file yet; {receipt_summary}.",
+                        "keep receipts separate from Codex UI or telemetry claims.",
+                    ),
+                )
+                return
             self.check(
                 "recovery",
                 "hook_health",
@@ -405,8 +467,47 @@ class Doctor:
                 "hook_health",
                 "PASS",
                 "info",
-                f"{len(hooks)} hook helper record(s) healthy or skipped.",
+                " ".join(
+                    part
+                    for part in [
+                        f"{len(hooks)} hook helper record(s) healthy or skipped.",
+                        receipt_summary,
+                    ]
+                    if part
+                ),
             )
+
+    def latest_hook_receipt_summary(self) -> str:
+        path = PROJECT_ROOT / HOOK_RECEIPTS_FILE
+        if not path.exists():
+            return ""
+        try:
+            lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        except OSError:
+            return "latest receipts unreadable"
+        rows = []
+        for line in lines[-5:]:
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(value, dict):
+                rows.append(value)
+        if not rows:
+            return "latest receipts unreadable"
+        latest = rows[-1]
+        states = sorted({str(row.get("final_effectiveness") or "unknown") for row in rows})
+        latest_label = "/".join(
+            part
+            for part in [
+                str(latest.get("hook") or "hook"),
+                str(latest.get("hook_event") or "event"),
+                str(latest.get("resolution_state") or "resolution"),
+                str(latest.get("final_effectiveness") or "effectiveness"),
+            ]
+            if part
+        )
+        return f"latest receipts: {len(rows)} sampled; states {', '.join(states)}; latest {latest_label}"
 
     def run_project_config(self) -> None:
         config_path = PROJECT_ROOT / ".codex" / "config.toml"
@@ -497,6 +598,46 @@ class Doctor:
             self.check("verification", "front_door_smoke", "PASS", "info", evidence)
         else:
             self.check("verification", "front_door_smoke", "FAIL", "blocking", evidence)
+
+    def run_command_guard(self) -> None:
+        assessment = front_door.assess_command_guidance(
+            "npm test || git status",
+            {"os": "windows", "shell": "powershell"},
+        )
+        required = {
+            "powershell-npm-ps1",
+            "powershell-bash-or",
+            "git-root-required",
+        }
+        guard = assessment.get("command_guard", {})
+        if (
+            not assessment.get("safe")
+            and required.issubset(set(assessment.get("violations", [])))
+            and guard.get("package_runner") == "npm.cmd"
+            and guard.get("cwd_rule") == "resolve-repo-root-before-git"
+        ):
+            self.check(
+                "verification",
+                "command_guard",
+                "PASS",
+                "info",
+                "Windows guard covers npm.cmd, PowerShell operators, and Git repo root",
+            )
+        else:
+            self.check(
+                "verification",
+                "command_guard",
+                "FAIL",
+                "blocking",
+                "Windows command guard missing or incomplete",
+            )
+
+    def run_memory_preflight(self) -> None:
+        ok, evidence = memory_preflight.smoke_check()
+        if ok:
+            self.check("memory", "memory_preflight", "PASS", "info", evidence)
+        else:
+            self.check("memory", "memory_preflight", "FAIL", "blocking", evidence)
 
     def run_status_model(self) -> None:
         ok, evidence = status_model.smoke_check()
@@ -691,26 +832,37 @@ class Doctor:
         return summary
 
     def run_all(self) -> dict:
+        global PROJECT_ROOT
+        requested_root = PROJECT_ROOT
+        selection = runtime_info.resolve_acc_project(requested_root)
+        self.run_project_selection(selection)
+        if selection["status"] == "selected":
+            PROJECT_ROOT = Path(selection["project_root"])
         self.run_python()
-        self.run_manifest()
-        self.run_hooks_bundle()
-        self.run_hook_scripts()
-        self.run_skills()
-        self.run_mcp()
-        self.run_project_layout()
-        self.run_project_state()
-        self.run_project_config()
-        self.run_hook_health()
-        self.run_default_prompts()
-        self.run_usage_script()
-        self.run_work_visibility()
-        self.run_installed_qa_support()
-        self.run_product_intake()
-        self.run_front_door()
-        self.run_status_model()
-        self.run_runtime_truth()
-        self.run_plugin_conflicts()
-        return {"results": self.results, "summary": self.summary()}
+        try:
+            self.run_manifest()
+            self.run_hooks_bundle()
+            self.run_hook_scripts()
+            self.run_skills()
+            self.run_mcp()
+            self.run_project_layout()
+            self.run_project_state()
+            self.run_project_config()
+            self.run_hook_health()
+            self.run_default_prompts()
+            self.run_usage_script()
+            self.run_work_visibility()
+            self.run_installed_qa_support()
+            self.run_product_intake()
+            self.run_front_door()
+            self.run_command_guard()
+            self.run_memory_preflight()
+            self.run_status_model()
+            self.run_runtime_truth()
+            self.run_plugin_conflicts()
+            return {"results": self.results, "summary": self.summary()}
+        finally:
+            PROJECT_ROOT = requested_root
 
 
 def main() -> None:

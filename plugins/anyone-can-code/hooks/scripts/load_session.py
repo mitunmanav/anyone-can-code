@@ -5,27 +5,11 @@ Load small session context.
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
-
-
-def find_repo_root() -> Path | None:
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-        if result.returncode == 0:
-            return Path(result.stdout.strip())
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        return None
-    return None
 
 
 def read_agents_md(repo_root: Path) -> str:
@@ -68,16 +52,14 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
 
 def main() -> None:
     payload = json.load(sys.stdin)
-    repo_root = find_repo_root()
-    if repo_root is None or state.acc_hooks_disabled(repo_root):
-        print(json.dumps({}))
-        return
+    resolution = state.resolve_hook_project(payload)
     print(
         json.dumps(
-            state.run_optional_hook(
-                repo_root,
+            state.run_hook_attempt(
+                resolution,
                 "load_session",
-                lambda: handle_payload(payload, repo_root),
+                payload,
+                lambda: handle_payload(payload, Path(resolution["project_root"])),
             )
         )
     )

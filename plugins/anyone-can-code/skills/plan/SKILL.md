@@ -35,5 +35,8 @@ For product-intake plans, generate the adapted checklist through `scripts/produc
 - Challenge obviously weak architecture choices before execution begins.
 - Every plan item should have a verification target.
 - Every executable task should have dependencies, owner, status, and evidence target.
+- If `mechanics_docs_gate` marks platform mechanics work, add a docs brief
+  task before implementation. The docs brief must cite official docs/source or
+  record controlled proof plus uncertainty before platform mechanics code.
 - Never write a separate task queue that disagrees with canonical state.
 - Hide low-level tooling from builder-facing plan lines unless the user asks for technical detail.

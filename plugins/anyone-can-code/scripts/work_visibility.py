@@ -18,6 +18,27 @@ DEFAULT_TOKEN_CHAR_RATIO = 4
 DEFAULT_LARGE_READ_TOKENS = 6000
 DEFAULT_LOOP_ITEMS = 25
 MAX_COMPACT_CHARS = 1600
+USAGE_CHECKPOINT_PERCENT = 85
+USAGE_SPLIT_PERCENT = 90
+USAGE_STOP_PERCENT = 94
+PATCH_MAX_FAILED_ATTEMPTS = 2
+PLATFORM_MECHANICS_TERMS = (
+    "codex desktop",
+    "hook",
+    "plugin runtime",
+    "installed cache",
+    "runtime cache",
+    "windows launch",
+    "powershell",
+    "ui lifecycle",
+    "telemetry",
+    "otlp",
+    "log parsing",
+    "logs",
+    "mcp",
+    "tool plumbing",
+    "app-server",
+)
 
 
 def utc_now() -> str:
@@ -122,6 +143,168 @@ def choose_check_depth(
         "depth": depth,
         "reason": risk_reasons or ["small local change"],
         "checks": checks,
+    }
+
+
+def assess_usage_checkpoint(
+    *,
+    primary_percent: int | float | None = None,
+) -> dict[str, Any]:
+    """Return the required session action for reported primary usage."""
+
+    percent = None if primary_percent is None else float(primary_percent)
+    action = "continue"
+    checkpoint_required = False
+    split_required = False
+    stop_required = False
+    continue_without_user_choice = True
+    message = "Usage below checkpoint threshold."
+
+    if percent is None:
+        action = "check-usage"
+        continue_without_user_choice = False
+        message = "Usage percentage unknown; check usage before long work."
+    elif percent >= USAGE_STOP_PERCENT:
+        action = "stop-now"
+        checkpoint_required = True
+        split_required = True
+        stop_required = True
+        continue_without_user_choice = False
+        message = "Stop now, checkpoint, and continue only after explicit user choice."
+    elif percent >= USAGE_SPLIT_PERCENT:
+        action = "split"
+        checkpoint_required = True
+        split_required = True
+        continue_without_user_choice = False
+        message = "Create a checkpoint and split before more work."
+    elif percent >= USAGE_CHECKPOINT_PERCENT:
+        action = "checkpoint"
+        checkpoint_required = True
+        continue_without_user_choice = False
+        message = "Create a checkpoint before continuing long work."
+
+    return {
+        "reported_primary_percent": primary_percent,
+        "checkpoint_threshold_percent": USAGE_CHECKPOINT_PERCENT,
+        "split_threshold_percent": USAGE_SPLIT_PERCENT,
+        "stop_threshold_percent": USAGE_STOP_PERCENT,
+        "action": action,
+        "checkpoint_required": checkpoint_required,
+        "split_required": split_required,
+        "stop_required": stop_required,
+        "continue_without_user_choice": continue_without_user_choice,
+        "message": message,
+        "uncertainty": "Uses reported percentage from Codex usage records; exact live usage may differ.",
+    }
+
+
+def assess_patch_retry(
+    *,
+    failed_attempts: int = 0,
+    last_patch_failed: bool = False,
+    exact_target_reread: bool = False,
+    max_failed_attempts: int = PATCH_MAX_FAILED_ATTEMPTS,
+) -> dict[str, Any]:
+    """Return whether a patch attempt may proceed after prior misses."""
+
+    attempts = max(0, int(failed_attempts))
+    can_apply_patch = True
+    reread_required = False
+    action = "apply"
+    message = "Patch may proceed."
+
+    if attempts >= max_failed_attempts:
+        can_apply_patch = False
+        action = "stop-and-replan"
+        message = "Patch retry limit reached; stop and replan before editing."
+    elif last_patch_failed and not exact_target_reread:
+        can_apply_patch = False
+        reread_required = True
+        action = "reread-exact-target"
+        message = "Reread the exact target block before retrying the patch."
+    elif last_patch_failed and exact_target_reread:
+        action = "retry-once"
+        message = "Exact target was reread; one bounded retry may proceed."
+
+    return {
+        "can_apply_patch": can_apply_patch,
+        "action": action,
+        "failed_attempts": attempts,
+        "max_failed_attempts": max_failed_attempts,
+        "last_patch_failed": bool(last_patch_failed),
+        "exact_target_reread": bool(exact_target_reread),
+        "reread_required": reread_required,
+        "message": message,
+        "rule": "after a failed patch, reread exact target before retry",
+    }
+
+
+def assess_mechanics_docs_gate(
+    request: str,
+    *,
+    docs_brief: str = "",
+    controlled_proof: bool = False,
+    uncertainty: str = "",
+) -> dict[str, Any]:
+    """Gate platform-mechanics changes on docs/source or controlled proof."""
+
+    text = str(request or "").lower()
+    matched_terms = [term for term in PLATFORM_MECHANICS_TERMS if term in text]
+    docs = str(docs_brief or "").strip()
+    uncertainty_text = str(uncertainty or "").strip()
+    platform_mechanics = bool(matched_terms)
+
+    if not platform_mechanics:
+        return {
+            "can_change_code": True,
+            "action": "proceed",
+            "platform_mechanics": False,
+            "docs_brief_required": False,
+            "matched_terms": [],
+            "evidence_source": "not-platform-mechanics",
+            "uncertainty_required": False,
+            "rule": "platform mechanics changes require docs brief before code",
+        }
+    if docs:
+        return {
+            "can_change_code": True,
+            "action": "proceed",
+            "platform_mechanics": True,
+            "docs_brief_required": True,
+            "matched_terms": matched_terms,
+            "evidence_source": "docs-brief",
+            "docs_brief": docs,
+            "uncertainty_required": False,
+            "rule": "platform mechanics changes require docs brief before code",
+        }
+    if controlled_proof and uncertainty_text:
+        return {
+            "can_change_code": True,
+            "action": "proceed-with-uncertainty",
+            "platform_mechanics": True,
+            "docs_brief_required": True,
+            "matched_terms": matched_terms,
+            "evidence_source": "controlled-proof-with-uncertainty",
+            "uncertainty": uncertainty_text,
+            "uncertainty_required": True,
+            "rule": "platform mechanics changes require docs brief before code",
+        }
+    if controlled_proof:
+        action = "record-uncertainty"
+        message = "Controlled proof exists, but uncertainty must be recorded before code changes."
+    else:
+        action = "write-docs-brief"
+        message = "Write a docs brief from official docs/source before code changes."
+    return {
+        "can_change_code": False,
+        "action": action,
+        "platform_mechanics": True,
+        "docs_brief_required": True,
+        "matched_terms": matched_terms,
+        "evidence_source": "missing",
+        "uncertainty_required": True,
+        "message": message,
+        "rule": "platform mechanics changes require docs brief before code",
     }
 
 
@@ -312,8 +495,21 @@ def complete_background_work(
 def smoke_check(repo_root: Path) -> tuple[bool, str]:
     budget = estimate_context_cost(text="x" * 100, loop_items=2)
     depth = choose_check_depth(changed_files=1)
+    high_usage = assess_usage_checkpoint(primary_percent=90)
+    patch_retry = assess_patch_retry(
+        failed_attempts=1,
+        last_patch_failed=True,
+        exact_target_reread=False,
+    )
+    mechanics_gate = assess_mechanics_docs_gate("Change Codex Desktop hook launch")
     if budget["estimated_tokens"] <= 0:
         return False, "usage estimate failed"
     if depth["depth"] != "cheap":
         return False, "cheap check selection failed"
-    return True, "usage budgets, compact receipts, and background bounds available"
+    if high_usage["action"] != "split" or not high_usage["split_required"]:
+        return False, "high usage checkpoint failed"
+    if patch_retry["can_apply_patch"] or not patch_retry["reread_required"]:
+        return False, "patch retry reread discipline failed"
+    if mechanics_gate["can_change_code"] or mechanics_gate["action"] != "write-docs-brief":
+        return False, "mechanics docs gate failed"
+    return True, "usage budgets, compact receipts, background bounds, high-usage split checkpoints, patch retry rereads, and mechanics docs gate available"

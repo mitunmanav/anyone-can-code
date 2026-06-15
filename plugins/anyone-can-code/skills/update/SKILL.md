@@ -20,6 +20,8 @@ Reply rule:
 - Quarantines corrupt workflow files instead of overwriting them silently.
 - Re-runs setup in the previously chosen hook mode and restores MCP-first memory metadata.
 - Migrates only known ACC-owned legacy JSONL memory into linked Markdown.
+- Preserves the chosen memory path so learned mistakes are still recalled by
+  `scripts/memory_preflight.py` after update, restart, or a new thread.
 - Backs up legacy input first, skips duplicate content, verifies Markdown, and
   keeps the legacy file after success.
 - Writes success or rollback receipts under `memory/imports/`.

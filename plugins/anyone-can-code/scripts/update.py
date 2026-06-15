@@ -236,6 +236,13 @@ def run_doctor(target: Path) -> dict | None:
 
 
 def migrate(target: Path) -> None:
+    selection = runtime_info.resolve_acc_project(target)
+    if selection["status"] == "ambiguous":
+        raise RuntimeError(
+            "Multiple ACC projects found. Choose one explicitly: "
+            + ", ".join(selection["candidates"])
+        )
+    target = Path(selection["project_root"])
     before = load_install_state(target)
     before_version = before.get("plugin_version", "0.0.0")
     info = runtime_info.build_runtime_info(target, PLUGIN_ROOT)
@@ -367,7 +374,14 @@ def main() -> None:
 
     target = Path(args.target).resolve()
     if args.check:
-        print(json.dumps(runtime_info.build_runtime_info(target, PLUGIN_ROOT), indent=2))
+        selection = runtime_info.resolve_acc_project(target)
+        if selection["status"] == "ambiguous":
+            print(json.dumps(selection, indent=2))
+            raise SystemExit(2)
+        selected_target = Path(selection["project_root"])
+        info = runtime_info.build_runtime_info(selected_target, PLUGIN_ROOT)
+        info["project_selection"] = selection
+        print(json.dumps(info, indent=2))
         return
 
     migrate(target)

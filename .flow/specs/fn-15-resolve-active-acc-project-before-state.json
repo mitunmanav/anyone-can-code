@@ -1,0 +1,23 @@
+{
+  "branch_name": "fn-15-resolve-active-acc-project-before-state",
+  "created_at": "2026-06-15T04:31:08.968992Z",
+  "depends_on_epics": [],
+  "id": "fn-15-resolve-active-acc-project-before-state",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-15-resolve-active-acc-project-before-state.md",
+  "status": "done",
+  "title": "Resolve active ACC project before state operations",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-15T06:17:21.951422Z"
+}

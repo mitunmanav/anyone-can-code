@@ -5,6 +5,7 @@ Runtime truth helper for Anyone Can Code.
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import tomllib
@@ -13,6 +14,19 @@ from pathlib import Path
 
 PROJECT_NAMESPACE = "anyone-can-code"
 PLUGIN_NAME = "anyone-can-code"
+PROJECT_SCAN_MAX_DEPTH = 3
+PROJECT_SCAN_EXCLUDED_DIRS = {
+    ".git",
+    ".next",
+    ".venv",
+    ".worktrees",
+    "__pycache__",
+    "build",
+    "coverage",
+    "dist",
+    "node_modules",
+    "vendor",
+}
 
 
 def read_json(path: Path) -> dict | None:
@@ -20,6 +34,148 @@ def read_json(path: Path) -> dict | None:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None
+
+
+def workflow_is_meaningful(workflow: dict | None) -> bool:
+    if not workflow:
+        return False
+    phase = str(workflow.get("phase") or "").strip().lower()
+    if phase and phase not in {"idle", "setup"}:
+        return True
+    for field in (
+        "active_goal",
+        "active_spec",
+        "last_task",
+        "next_step",
+        "next_action",
+    ):
+        if str(workflow.get(field) or "").strip():
+            return True
+    capsule = workflow.get("active_task_capsule")
+    if isinstance(capsule, dict):
+        return any(
+            str(capsule.get(field) or "").strip()
+            for field in ("goal", "task", "next_action")
+        )
+    return False
+
+
+def discover_acc_projects(
+    requested_root: Path,
+    *,
+    max_depth: int = PROJECT_SCAN_MAX_DEPTH,
+) -> list[dict]:
+    requested_root = requested_root.resolve()
+    candidates: list[dict] = []
+    pending = [(requested_root, 0)]
+    seen = {requested_root}
+    while pending:
+        current, depth = pending.pop(0)
+        workflow_path = (
+            current
+            / ".codex"
+            / PROJECT_NAMESPACE
+            / "state"
+            / "workflow.json"
+        )
+        workflow = read_json(workflow_path)
+        if workflow is not None:
+            candidates.append(
+                {
+                    "project_root": str(current),
+                    "workflow_path": str(workflow_path),
+                    "meaningful": workflow_is_meaningful(workflow),
+                }
+            )
+        if depth >= max_depth:
+            continue
+        try:
+            children = sorted(current.iterdir(), key=lambda path: path.name.lower())
+        except OSError:
+            continue
+        for child in children:
+            if (
+                not child.is_dir()
+                or child.is_symlink()
+                or child.name in PROJECT_SCAN_EXCLUDED_DIRS
+                or child.name == ".codex"
+            ):
+                continue
+            resolved = child.resolve()
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            pending.append((resolved, depth + 1))
+    return candidates
+
+
+def resolve_acc_project(requested_root: Path) -> dict:
+    requested_root = requested_root.resolve()
+    discovered = discover_acc_projects(requested_root)
+    root_candidate = next(
+        (
+            candidate
+            for candidate in discovered
+            if Path(candidate["project_root"]) == requested_root
+        ),
+        None,
+    )
+    nested = [
+        candidate
+        for candidate in discovered
+        if Path(candidate["project_root"]) != requested_root
+    ]
+    meaningful = [candidate for candidate in discovered if candidate["meaningful"]]
+
+    if len(meaningful) > 1:
+        return {
+            "status": "ambiguous",
+            "requested_root": str(requested_root),
+            "project_root": None,
+            "reason": "multiple-meaningful-acc-projects",
+            "candidates": [candidate["project_root"] for candidate in meaningful],
+        }
+    if len(meaningful) == 1:
+        selected = meaningful[0]
+        selected_root = Path(selected["project_root"])
+        return {
+            "status": "selected",
+            "requested_root": str(requested_root),
+            "project_root": str(selected_root),
+            "reason": (
+                "requested-root-meaningful"
+                if selected_root == requested_root
+                else "single-meaningful-nested-project"
+            ),
+            "candidates": [candidate["project_root"] for candidate in nested],
+        }
+    if len(nested) > 1:
+        return {
+            "status": "ambiguous",
+            "requested_root": str(requested_root),
+            "project_root": None,
+            "reason": "multiple-idle-acc-projects",
+            "candidates": [candidate["project_root"] for candidate in nested],
+        }
+    if len(nested) == 1:
+        return {
+            "status": "selected",
+            "requested_root": str(requested_root),
+            "project_root": nested[0]["project_root"],
+            "reason": "single-nested-project",
+            "candidates": [nested[0]["project_root"]],
+        }
+    return {
+        "status": "selected",
+        "requested_root": str(requested_root),
+        "project_root": str(requested_root),
+        "reason": (
+            "requested-root-state"
+            if root_candidate is not None
+            else "no-existing-acc-state"
+        ),
+        "candidates": [],
+    }
 
 
 def read_toml(path: Path) -> dict | None:
@@ -250,3 +406,19 @@ def build_runtime_info(project_root: Path, plugin_root: Path) -> dict:
         return info
     info["next_action"] = "same-everywhere"
     return info
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Anyone Can Code runtime truth")
+    parser.add_argument(
+        "--resolve-project",
+        metavar="PATH",
+        help="Resolve active ACC project from a workspace root",
+    )
+    args = parser.parse_args()
+    if args.resolve_project:
+        print(json.dumps(resolve_acc_project(Path(args.resolve_project)), indent=2))
+
+
+if __name__ == "__main__":
+    main()

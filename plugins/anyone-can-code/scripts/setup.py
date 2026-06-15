@@ -354,6 +354,13 @@ def bootstrap_project(
         raise ValueError("Viewer action requires explicit consent")
     if confirm_import and import_scope not in IMPORT_SCOPES:
         raise ValueError("Confirmed import requires project, user, or shared scope")
+    selection = runtime_info.resolve_acc_project(target)
+    if selection["status"] == "ambiguous":
+        raise RuntimeError(
+            "Multiple ACC projects found. Choose one explicitly: "
+            + ", ".join(selection["candidates"])
+        )
+    target = Path(selection["project_root"])
     paths = ensure_project_layout(target)
     notes_path = resolve_memory_notes_path(target, memory_path)
     ensure_memory_layout(notes_path)
@@ -486,6 +493,8 @@ def bootstrap_project(
         target,
         notes_path,
         {
+            "project_root": str(target),
+            "project_selection": selection,
             "memory_mode": "portable-markdown",
             "memory_path": str(notes_path),
             "viewer": viewer,
@@ -555,6 +564,11 @@ def main() -> None:
 
     target = Path(args.target).resolve()
     if args.check:
+        selection = runtime_info.resolve_acc_project(target)
+        if selection["status"] == "ambiguous":
+            print(json.dumps(selection, indent=2))
+            raise SystemExit(2)
+        target = Path(selection["project_root"])
         result = run_doctor(target)
         print(json.dumps(result or {"error": "doctor.py not found"}, indent=2))
         return
@@ -571,9 +585,10 @@ def main() -> None:
         import_scope=args.import_scope,
         confirm_import=args.confirm_import,
     )
-    doctor = run_doctor(target)
-    info = runtime_info.build_runtime_info(target, PLUGIN_ROOT)
-    print(f"Setup done: {target}")
+    selected_target = Path(receipt["project_root"])
+    doctor = run_doctor(selected_target)
+    info = runtime_info.build_runtime_info(selected_target, PLUGIN_ROOT)
+    print(f"Setup done: {selected_target}")
     print("Hooks:", "project" if args.project_hooks else "bundled")
     print(f"Memory: portable Markdown at {receipt['memory_path']}")
     print(f"Viewer: {receipt['viewer']['mode']}. {receipt['viewer']['status']}.")

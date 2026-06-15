@@ -1,0 +1,23 @@
+{
+  "branch_name": "fn-19-enforce-learned-memory-before-first",
+  "created_at": "2026-06-15T05:42:37.108595Z",
+  "depends_on_epics": [],
+  "id": "fn-19-enforce-learned-memory-before-first",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-19-enforce-learned-memory-before-first.md",
+  "status": "done",
+  "title": "Enforce learned memory before first action",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-15T06:17:23.670202Z"
+}

@@ -74,6 +74,57 @@ class StatusModelTests(unittest.TestCase):
         self.assertEqual(record["evidence"], ["python -m unittest: OK"])
         self.assertEqual(record["uncertainty"], ["Codex CLI review did not run"])
 
+    def test_interactive_works_claim_requires_interaction_evidence(self):
+        assessment = status_model.assess_success_claim(
+            "Filters, tabs, carousel, pricing toggle, and mobile menu work.",
+            ["build_passed", "dependency_audit", "http_smoke"],
+        )
+
+        self.assertFalse(assessment["supported"])
+        self.assertEqual(assessment["missing_levels"], ["interaction_tested"])
+        self.assertIn("Build passed", assessment["safe_wording"])
+        self.assertIn("HTTP smoke passed", assessment["safe_wording"])
+        self.assertIn("interactions unverified", assessment["safe_wording"])
+
+    def test_visual_quality_claim_requires_visual_qa(self):
+        assessment = status_model.assess_success_claim(
+            "The page is visually polished and demo quality.",
+            ["source_inspected", "build_passed"],
+        )
+
+        self.assertFalse(assessment["supported"])
+        self.assertEqual(assessment["missing_levels"], ["visual_qa"])
+        self.assertIn("visual quality unverified", assessment["safe_wording"])
+
+    def test_perfect_or_proper_claim_requires_user_acceptance(self):
+        assessment = status_model.assess_success_claim(
+            "This is a proper perfect final demo.",
+            ["build_passed", "interaction_tested", "visual_qa"],
+        )
+
+        self.assertFalse(assessment["supported"])
+        self.assertEqual(assessment["missing_levels"], ["user_accepted"])
+        self.assertIn("user acceptance unverified", assessment["safe_wording"])
+
+    def test_verification_record_can_assess_claims_without_breaking_old_callers(self):
+        record = status_model.build_verification_record(
+            checked=["Build", "HTTP smoke"],
+            passed=["Build passed", "HTTP 200"],
+            failed=[],
+            evidence=["npm run build OK", "GET / 200"],
+            uncertainty=[],
+            evidence_levels=["build_passed", "http_smoke"],
+            claims=["The website works perfectly."],
+        )
+
+        self.assertEqual(record["result"], "pass")
+        self.assertEqual(record["evidence_levels"], ["build_passed", "http_smoke"])
+        self.assertFalse(record["claim_assessments"][0]["supported"])
+        self.assertEqual(
+            record["claim_assessments"][0]["missing_levels"],
+            ["interaction_tested", "user_accepted"],
+        )
+
     def test_workflow_file_shape_is_explainable(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "workflow.json"
