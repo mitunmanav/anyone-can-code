@@ -1,4 +1,4 @@
 interface:
   display_name: "Settings"
-  short_description: "Adjust communication, learning, automation, and browser preferences."
+  short_description: "Manages communication mode, learning preference, and automation preference for Anyone Can Code."
   default_prompt: "Use $settings to inspect or change Anyone Can Code preferences."

@@ -1,4 +1,4 @@
 interface:
   display_name: "Clarify"
-  short_description: "Structured intake — up to 5 questions, creates SPEC-DRAFT"
+  short_description: "Structured intake for vague or partial requests. Asks only the questions needed to remove meaningful uncertainty, then writes a local spec draft."
   default_prompt: "Use $clarify to describe your app idea and get a structured spec."

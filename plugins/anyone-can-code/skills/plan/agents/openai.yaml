@@ -1,4 +1,4 @@
 interface:
   display_name: "Plan"
-  short_description: "SPEC decomposition into ordered tasks with dependencies"
+  short_description: "Turns the accepted spec or concrete request into an executable local plan with ordered tasks, dependencies, and verification targets."
   default_prompt: "Use $plan to break down the clarified spec into build tasks."

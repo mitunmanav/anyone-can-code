@@ -1,4 +1,4 @@
 interface:
   display_name: "Usage"
-  short_description: "Live token dashboard — http://localhost:8765, auto-refresh 3s"
+  short_description: "Shows Codex token usage, activity breakdown, and tool patterns — zero tokens spent. Runs codeburn.py for compact inline status or web dashboard. Reads session files from disk, no API calls."
   default_prompt: "Use $usage to start the live token dashboard in your browser."

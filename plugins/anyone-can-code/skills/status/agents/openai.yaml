@@ -1,4 +1,4 @@
 interface:
   display_name: "Status"
-  short_description: "Summarize route, phase, next step, and blockers."
+  short_description: "Summarizes the current workflow state, route, blockers, and next step from local plugin files."
   default_prompt: "Use $status to see where the workflow currently stands."

@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code",
   "version": "1.0.0",
-  "description": "Docs-native Codex Windows build workflow from any starting point to a verified result.",
+  "description": "Front-door Codex workflow router with local state, portable Markdown memory, optional hooks, and evidence-first verification.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -22,8 +22,8 @@
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Anyone Can Code",
-    "shortDescription": "One front door for idea, repo, bug, polish, and ship workflows.",
-    "longDescription": "Anyone Can Code is a Windows-first Codex plugin that routes vague ideas, existing repos, features, bugs, reviews, and ship requests into the right workflow. It now uses a bundled MCP memory server for reinforced learning, keeps local project state thin, uses bundled hooks when enabled, supports optional project bootstrap, tracks resumable state, enforces evidence-first verification, and keeps visible communication configurable with normal or caveman modes.",
+    "shortDescription": "Front door for ideas, repos, bugs, reviews, setup, memory, and verification workflows.",
+    "longDescription": "Anyone Can Code routes vague ideas, existing repos, feature requests, bugs, reviews, setup, learning, status, resume, and ship requests into explicit Codex workflows. It stores project-owned state and artifacts under .codex/anyone-can-code, uses portable Markdown memory with tiny fallback ledgers, supports optional bundled or repo-local hooks, keeps routing in the orchestrator, and separates implemented work from verified evidence.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [

@@ -1,4 +1,4 @@
 interface:
   display_name: "Govern"
-  short_description: "SPEC authority — impact analysis, atomic promotion, version history"
+  short_description: "Controls meaningful scope changes by comparing the draft change against the current local plan, verification state, and active workflow route."
   default_prompt: "Use $govern to promote a new spec draft after reviewing its impact."
