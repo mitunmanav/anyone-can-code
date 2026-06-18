@@ -107,30 +107,15 @@ def handle_user_prompt_submit(payload: dict, repo_root: Path) -> None:
         )
         return
 
-    phase, explicit_route = state.detect_phase(prompt)
-    entry_mode = state.detect_entry_mode(prompt)
     uncertainty = state.classify_uncertainty(prompt)
     preferences = state.read_preferences(repo_root)
-
-    current = state.write_state(
-        repo_root,
-        {
-            "phase": phase or "route",
-            "route": explicit_route or entry_mode,
-            "entry_mode": entry_mode,
-            "communication_mode": preferences.get("communication_mode", "normal"),
-            "memory_mode": preferences.get("memory_mode", "portable-markdown"),
-            "viewer_mode": preferences.get("viewer_mode", "none"),
-        },
-    )
 
     for signal_type, detail in detect_prompt_signals(prompt):
         log_signal(repo_root, signal_type, detail, payload)
 
     context = (
-        f"Talk: {current.get('communication_mode', 'caveman-strict')}. "
-        f"Path: {entry_mode}/{current.get('phase', 'route')}. "
-        f"Memory: {current.get('memory_mode', 'portable-markdown')}. "
+        f"Talk: {preferences.get('communication_mode', 'caveman-strict')}. "
+        f"Memory: {preferences.get('memory_mode', 'portable-markdown')}. "
         f"Unclear: {uncertainty}. Talk short."
     )
 
@@ -178,27 +163,13 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                 "reason": f"Guard stop. Found '{blocked_pattern}'.",
             }
 
-        phase, explicit_route = state.detect_phase(prompt)
-        entry_mode = state.detect_entry_mode(prompt)
         uncertainty = state.classify_uncertainty(prompt)
         preferences = state.read_preferences(repo_root)
-        current = state.write_state(
-            repo_root,
-            {
-                "phase": phase or "route",
-                "route": explicit_route or entry_mode,
-                "entry_mode": entry_mode,
-                "communication_mode": preferences.get("communication_mode", "normal"),
-                "memory_mode": preferences.get("memory_mode", "portable-markdown"),
-                "viewer_mode": preferences.get("viewer_mode", "none"),
-            },
-        )
         for signal_type, detail in detect_prompt_signals(prompt):
             log_signal(repo_root, signal_type, detail, payload)
         context = (
-            f"Talk: {current.get('communication_mode', 'caveman-strict')}. "
-            f"Path: {entry_mode}/{current.get('phase', 'route')}. "
-            f"Memory: {current.get('memory_mode', 'portable-markdown')}. "
+            f"Talk: {preferences.get('communication_mode', 'caveman-strict')}. "
+            f"Memory: {preferences.get('memory_mode', 'portable-markdown')}. "
             f"Unclear: {uncertainty}. Talk short."
         )
         return {
