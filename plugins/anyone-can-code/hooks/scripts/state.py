@@ -512,15 +512,13 @@ def run_hook_attempt(
     failure_class = ""
     skip_reason = ""
     status = str(resolution.get("status") or "unresolved")
-    project_root_value = (
-        resolution.get("project_root")
-        or resolution.get("fallback_root")
-        or resolution.get("cwd")
-    )
-    if project_root_value and "project_root" not in resolution:
-        resolution["project_root"] = str(project_root_value)
+    project_root_value = resolution.get("project_root")
 
-    if hook_circuit_open(Path(str(project_root_value)), hook_name):
+    if status != "resolved":
+        # Per D-039/D-044: ambiguous or unresolved project cannot be chosen
+        # silently. Hook skips; orchestrator surfaces the ambiguity to the user.
+        skip_reason = str(resolution.get("reason") or status)
+    elif hook_circuit_open(Path(str(project_root_value)), hook_name):
         skip_reason = "circuit-open"
         record_hook_result(Path(str(project_root_value)), hook_name, "skipped", reason=skip_reason)
     else:
