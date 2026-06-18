@@ -470,7 +470,6 @@ def declared_state_writes(hook_name: str, event: str, result: dict) -> list[str]
         return []
     if hook_name == "guard" and event == "UserPromptSubmit":
         return [
-            ".codex/anyone-can-code/state/workflow.json",
             ".codex/anyone-can-code/logs/signal-ledger.jsonl",
         ]
     if hook_name == "guard" and event == "PreToolUse":
@@ -513,11 +512,15 @@ def run_hook_attempt(
     failure_class = ""
     skip_reason = ""
     status = str(resolution.get("status") or "unresolved")
-    project_root_value = resolution.get("project_root")
+    project_root_value = (
+        resolution.get("project_root")
+        or resolution.get("fallback_root")
+        or resolution.get("cwd")
+    )
+    if project_root_value and "project_root" not in resolution:
+        resolution["project_root"] = str(project_root_value)
 
-    if status != "resolved":
-        skip_reason = str(resolution.get("reason") or status)
-    elif hook_circuit_open(Path(str(project_root_value)), hook_name):
+    if hook_circuit_open(Path(str(project_root_value)), hook_name):
         skip_reason = "circuit-open"
         record_hook_result(Path(str(project_root_value)), hook_name, "skipped", reason=skip_reason)
     else:

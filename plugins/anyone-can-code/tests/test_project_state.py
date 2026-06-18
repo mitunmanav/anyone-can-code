@@ -37,6 +37,7 @@ doctor = load_script("doctor")
 update = load_script("update")
 save_session = load_hook_script("save_session")
 hook_state = load_hook_script("state")
+guard = load_hook_script("guard")
 canonical_state = load_script("canonical_state")
 task_coordination = load_script("task_coordination")
 safety_receipts = load_script("safety_receipts")
@@ -690,7 +691,7 @@ class ProjectStateTests(unittest.TestCase):
         self.assertTrue(receipt["context_returned"])
         self.assertEqual(receipt["final_effectiveness"], "useful")
 
-    def test_hook_resolver_blocks_ambiguous_nested_projects_and_writes_fallback_receipt(self) -> None:
+    def test_hook_resolver_runs_ambiguous_nested_projects_with_fallback_receipt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
             first = workspace / "first"
@@ -704,12 +705,13 @@ class ProjectStateTests(unittest.TestCase):
                 "cwd": str(workspace),
             }
 
-            resolution = hook_state.resolve_hook_project(payload)
+            with mock.patch.object(hook_state, "git_root_from_ancestors", return_value=None):
+                resolution = hook_state.resolve_hook_project(payload)
             result = hook_state.run_hook_attempt(
                 resolution,
                 "guard",
                 payload,
-                lambda: {"should_not": "run"},
+                lambda: {"ran": True},
             )
             receipt = json.loads(
                 (
@@ -723,12 +725,64 @@ class ProjectStateTests(unittest.TestCase):
                 .splitlines()[-1]
             )
 
-        self.assertEqual(result, {})
+        self.assertEqual(result, {"ran": True})
         self.assertEqual(resolution["status"], "ambiguous")
         self.assertEqual(receipt["resolution_state"], "ambiguous")
-        self.assertEqual(receipt["final_effectiveness"], "skipped")
-        self.assertEqual(receipt["skip_reason"], "ambiguous-project")
+        self.assertEqual(receipt["final_effectiveness"], "useful")
+        self.assertEqual(receipt["skip_reason"], "")
         self.assertEqual(len(receipt["resolver_candidates"]), 2)
+
+    def test_ambiguous_hook_root_writes_workflow_to_fallback_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            first = workspace / "first"
+            second = workspace / "second"
+            for candidate in (first, second):
+                (candidate / ".git").mkdir(parents=True)
+                hook_state.ensure_project_layout(candidate)
+            payload = {
+                "hook_event_name": "Stop",
+                "cwd": str(workspace),
+            }
+
+            with mock.patch.object(hook_state, "git_root_from_ancestors", return_value=None):
+                resolution = hook_state.resolve_hook_project(payload)
+            hook_state.run_hook_attempt(
+                resolution,
+                "save_session",
+                payload,
+                lambda: hook_state.write_state(
+                    Path(resolution["project_root"]),
+                    {"phase": "build", "route": "fallback"},
+                ),
+            )
+            workflow_path = workspace / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+            workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(resolution["status"], "ambiguous")
+        self.assertEqual(workflow["workflow_owner"], "acc")
+        self.assertEqual(workflow["schema_version"], 5)
+
+    def test_guard_prompt_submit_does_not_run_routing_or_write_workflow_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            payload = {
+                "hook_event_name": "UserPromptSubmit",
+                "prompt": "fix the failing build",
+                "turn_id": "turn-1",
+            }
+
+            with (
+                mock.patch.object(guard.state, "detect_phase", side_effect=AssertionError),
+                mock.patch.object(guard.state, "detect_entry_mode", side_effect=AssertionError),
+                mock.patch.object(guard.state, "write_state", side_effect=AssertionError),
+            ):
+                result = guard.handle_payload(payload, target)
+
+            workflow_path = target / ".codex" / "anyone-can-code" / "state" / "workflow.json"
+
+        self.assertIn("hookSpecificOutput", result)
+        self.assertFalse(workflow_path.exists())
 
     def test_hook_receipt_classifies_empty_output_as_noop_not_useful(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
