@@ -1,5 +1,9 @@
 # Anyone Can Code
 
+<p align="center">
+  <img src="assets/logo.png" alt="Anyone Can Code" width="300"/>
+</p>
+
 Docs-native Codex Windows plugin for taking a user from any starting point to a verified result.
 
 ## What changed
