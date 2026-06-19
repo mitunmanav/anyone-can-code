@@ -1,0 +1,23 @@
+{
+  "tests": [
+    "python -m unittest plugins\\anyone-can-code\\tests\\test_product_intake.py",
+    "python -m unittest discover plugins\\anyone-can-code\\tests",
+    "python plugins\\anyone-can-code\\scripts\\product_intake.py",
+    "python plugins\\anyone-can-code\\scripts\\doctor.py --json",
+    "python -m py_compile plugins\\anyone-can-code\\mcp\\server.py plugins\\anyone-can-code\\scripts\\setup.py plugins\\anyone-can-code\\scripts\\doctor.py plugins\\anyone-can-code\\scripts\\product_intake.py",
+    "python .flow\\bin\\flowctl.py validate --spec fn-1-define-project-direction --json"
+  ],
+  "review": {
+    "backend": "codex",
+    "status": "blocked",
+    "error": "flowctl codex impl-review failed on Windows with PermissionError [WinError 5] / Access is denied launching Codex CLI"
+  },
+  "doctor": {
+    "summary": "18 PASS, 2 WARN, 0 FAIL",
+    "warnings": [
+      "managed_marketplace not in Codex managed marketplace list",
+      "no installed runtime found in Codex cache"
+    ]
+  },
+  "smoke": "Plan: website + auth + deploy. Payments later."
+}
