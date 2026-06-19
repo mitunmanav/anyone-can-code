@@ -186,6 +186,9 @@ WORKFLOW_CONTRACT = {
     "browser_server_visual_actions": "acc-and-user-permission-only",
 }
 
+DEFAULT_GIT_MODE = "auto"
+VALID_GIT_MODES = {"auto", "manual"}
+
 SPECIALIST_INTENTS = (
     {
         "requested": "brainstorming",
@@ -561,6 +564,35 @@ def build_mechanics_docs_gate(
     }
 
 
+def resolve_git_mode(context: dict[str, Any] | None = None) -> str:
+    context = context or {}
+    git_mode = normalize_text(context.get("git_mode") or DEFAULT_GIT_MODE)
+    return git_mode if git_mode in VALID_GIT_MODES else DEFAULT_GIT_MODE
+
+
+def session_audit_checklist(
+    context: dict[str, Any] | None = None,
+    result: dict[str, Any] | None = None,
+) -> dict[str, bool]:
+    context = context or {}
+    result = result or {}
+    return {
+        "active_project_resolved": bool(
+            str(
+                context.get("repo_root")
+                or context.get("git_root")
+                or context.get("project_root")
+                or ""
+            ).strip()
+        ),
+        "memory_preflighted": bool((result.get("memory_preflight") or {}).get("required")),
+        "canonical_state_loaded": bool(
+            (result.get("workflow_contract") or {}).get("workflow_owner") == "acc"
+        ),
+        "git_mode_present": resolve_git_mode(context) in VALID_GIT_MODES,
+    }
+
+
 def uses_plain_npm(command: str) -> bool:
     return bool(re.search(r"(?<![\w.-])npm(?![\w.-])", command))
 
@@ -819,7 +851,7 @@ def route_request(
         ("actually", "instead", "change", "new requirement", "also add", "remove "),
     ):
         resume_step = normalize_text(context.get("resume_step")) or "resume"
-        return {
+        result = {
             "entry_mode": "requirement-change",
             "product_type": "unknown",
             "banner": "Detected: requirement change",
@@ -838,6 +870,9 @@ def route_request(
                 "reason": "resume-active-workflow",
             },
         }
+        result["session_audit_checklist"] = session_audit_checklist(context, result)
+        result["git_mode"] = resolve_git_mode(context)
+        return result
 
     entry_mode = classify_entry_mode(request)
     intake = None
@@ -883,7 +918,9 @@ def route_request(
         "patch_retry": build_patch_retry_policy(context),
         "mechanics_docs_gate": build_mechanics_docs_gate(request, context),
         "bridge": bridge,
+        "git_mode": resolve_git_mode(context),
     }
+    result["session_audit_checklist"] = session_audit_checklist(context, result)
     if requested_specialists:
         result["requested_specialists"] = requested_specialists
     if fallback_route is not None:

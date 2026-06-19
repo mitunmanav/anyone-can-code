@@ -468,6 +468,19 @@ def recover_from_canonical_state(
     }
 
 
+def recover_from_compaction(repo_root: Path) -> dict[str, Any]:
+    repaired_before_transition = recover_from_canonical_state(repo_root, repair=True)
+    prepare_context_transition(repo_root, transition="compaction")
+    recovery = recover_from_canonical_state(repo_root, repair=True)
+    capsule = recovery.get("capsule") if isinstance(recovery.get("capsule"), dict) else {}
+    return {
+        **recovery,
+        "repaired": bool(repaired_before_transition.get("repaired") or recovery.get("repaired")),
+        "transition": "compaction",
+        "next_action": str(capsule.get("next_action") or ""),
+    }
+
+
 def apply_scope_change(
     repo_root: Path,
     *,

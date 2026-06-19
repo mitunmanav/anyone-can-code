@@ -104,6 +104,45 @@ class FrontDoorTests(unittest.TestCase):
         self.assertIn("route-specialist", preflight["required_before"])
         self.assertIn("tool-action", preflight["required_before"])
 
+    def test_every_route_returns_session_audit_checklist(self) -> None:
+        requests = (
+            "I want to build a website",
+            "Fix the login crash",
+            "Ship this release",
+        )
+
+        for request in requests:
+            with self.subTest(request=request):
+                result = front_door.route_request(request, plugins=[])
+
+                self.assertIn("session_audit_checklist", result)
+                self.assertIsInstance(result["session_audit_checklist"], dict)
+
+    def test_audit_checklist_has_active_project_resolved_field(self) -> None:
+        result = front_door.route_request(
+            "Add password reset to this existing repo",
+            {"repo_root": "C:/project"},
+            plugins=[],
+        )
+
+        checklist = result["session_audit_checklist"]
+        self.assertIn("active_project_resolved", checklist)
+        self.assertIsInstance(checklist["active_project_resolved"], bool)
+
+    def test_audit_checklist_has_git_mode_present_field(self) -> None:
+        result = front_door.route_request("Fix the login crash", plugins=[])
+
+        checklist = result["session_audit_checklist"]
+        self.assertIn("git_mode_present", checklist)
+        self.assertIsInstance(checklist["git_mode_present"], bool)
+
+    def test_audit_checklist_has_memory_preflighted_field(self) -> None:
+        result = front_door.route_request("Improve the existing website", plugins=[])
+
+        checklist = result["session_audit_checklist"]
+        self.assertIn("memory_preflighted", checklist)
+        self.assertIsInstance(checklist["memory_preflighted"], bool)
+
     def test_requirement_change_still_requires_memory_preflight(self) -> None:
         result = front_door.route_request(
             "Actually update the plugin and reuse the mistake",

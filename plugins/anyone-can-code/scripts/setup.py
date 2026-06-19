@@ -63,6 +63,7 @@ DEFAULT_PREFERENCES = {
     "import_scope": "ask",
     "production_repo_caution": True,
     "repo_mode": "unknown",
+    "git_mode": "auto",
 }
 
 
@@ -87,6 +88,8 @@ def resolve_memory_notes_path(target: Path, memory_path: Path | str | None) -> P
 
 
 def ensure_memory_layout(notes_path: Path) -> None:
+    if notes_path.exists() and not notes_path.is_dir():
+        raise FileExistsError(f"Memory path exists and is not a directory: {notes_path}")
     for name in ("project", "user", "shared", "lessons", "failures", "decisions", "evidence", "archive"):
         (notes_path / name).mkdir(parents=True, exist_ok=True)
     (notes_path.parent / "index").mkdir(parents=True, exist_ok=True)

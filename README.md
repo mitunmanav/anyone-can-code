@@ -142,6 +142,10 @@ For plugin behavior and implementation details, see:
 - `./plugins/anyone-can-code/IMPLEMENTATION-SOURCE-OF-TRUTH.md`
 - `./plugins/anyone-can-code/VALIDATION.md`
 
+## Acknowledgments
+
+- Core git workflow pattern credit is recorded in `CREDITS.md`.
+
 ## License
 
 MIT. See `LICENSE`.

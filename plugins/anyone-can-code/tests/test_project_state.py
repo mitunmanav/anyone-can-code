@@ -1128,6 +1128,34 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(repaired["status"], "ready")
         self.assertIn(repaired["transaction_id"], status_text)
 
+    def test_recover_from_compaction_reanchors_and_repairs_views(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            canonical_state.update_canonical_state(
+                target,
+                {
+                    "active_goal": "Build compaction recovery",
+                    "active_task": "Re-anchor session",
+                    "next_action": "Continue from capsule",
+                },
+            )
+            status_path = (
+                target
+                / ".codex"
+                / "anyone-can-code"
+                / "state"
+                / "state-current.md"
+            )
+            status_path.write_text("stale transaction\n", encoding="utf-8")
+
+            recovery = canonical_state.recover_from_compaction(target)
+
+        self.assertEqual(recovery["status"], "ready")
+        self.assertTrue(recovery["repaired"])
+        self.assertEqual(recovery["transition"], "compaction")
+        self.assertEqual(recovery["capsule"]["task"], "Re-anchor session")
+        self.assertEqual(recovery["next_action"], "Continue from capsule")
+
     def test_recovery_reports_missing_context_without_guessing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
@@ -1454,6 +1482,7 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(preferences["import_sources"], [])
         self.assertEqual(preferences["import_scope"], "ask")
         self.assertTrue(preferences["production_repo_caution"])
+        self.assertEqual(preferences["git_mode"], "auto")
         self.assertEqual(workflow["persona_mode"], "builder")
         self.assertEqual(workflow["repo_mode"], "unknown")
         self.assertEqual(workflow["setup_state"], "ready")

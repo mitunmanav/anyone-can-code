@@ -391,7 +391,14 @@ def resolve_hook_project(payload: dict) -> dict:
         }
 
     direct = git_root_from_ancestors(location)
-    candidates = [direct] if direct is not None else discover_nested_hook_projects(location)
+    nested = discover_nested_hook_projects(location)
+    meaningful_nested = [candidate for candidate in nested if is_meaningful_hook_project(candidate)]
+    if meaningful_nested:
+        candidates = meaningful_nested
+    elif nested:
+        candidates = nested
+    else:
+        candidates = [direct] if direct is not None else []
     candidates = list(dict.fromkeys(candidate.resolve() for candidate in candidates))
     meaningful = [candidate for candidate in candidates if is_meaningful_hook_project(candidate)]
     selectable = meaningful or candidates
