@@ -1,4 +1,6 @@
 <p align="center">
+  <img src="plugins/anyone-can-code/assets/icon.png" alt="Anyone Can Code" width="120"/>
+  <br/>
   <img src="plugins/anyone-can-code/assets/logo.png" alt="Anyone Can Code" width="320"/>
 </p>
 

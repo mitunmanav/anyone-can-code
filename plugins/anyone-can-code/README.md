@@ -1,4 +1,6 @@
 <p align="center">
+  <img src="assets/icon.png" alt="Anyone Can Code icon" width="96"/>
+  <br/>
   <img src="assets/logo.png" alt="Anyone Can Code" width="320"/>
 </p>
 
@@ -76,7 +78,11 @@ $setup
 
 ## Test results
 
-**158 tests · 3 skipped (Windows shell, run on Windows) · 0 failures**
+**158 tests · 3 skipped (Windows shell) · 0 failures**
+
+<p align="center">
+  <img src="assets/test-comparison.png" alt="With vs Without Anyone Can Code" width="100%"/>
+</p>
 
 | Suite | Tests | What it covers |
 |-------|-------|----------------|
