@@ -11,6 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
 import first_run as _first_run
+import model_ledger as _model_ledger
 
 
 def read_agents_md(repo_root: Path) -> str:
@@ -27,12 +28,15 @@ def build_context(repo_root: Path, source: str) -> str:
     workflow = state.read_state(repo_root)
     prefs = state.read_preferences(repo_root)
     agents = read_agents_md(repo_root)
+    task_type = workflow.get("active_task") or workflow.get("route") or "plan"
+    rec = _model_ledger.recommend_model(task_type)
     context_lines = [
         f"State: {workflow.get('phase', 'idle')} / {workflow.get('route', 'unknown')}.",
         f"Next: {workflow.get('next_step', 'N/A')}.",
         f"Talk: {prefs.get('communication_mode', 'caveman-strict')}.",
         f"Memory: {workflow.get('memory_mode', 'portable-markdown')}.",
         f"From: {source}.",
+        f"Model: {rec['model']} ({rec['reason']}).",
     ]
     if agents:
         context_lines.append("")
