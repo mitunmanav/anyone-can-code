@@ -303,6 +303,53 @@ def git_workflow_auto(task_slug: str, summary: str) -> dict[str, Any]:
     return {"status": "merged", "branch": branch, "commits": commits, "receipt": receipt}
 
 
+def check_ci_status(branch: str, path: Path | str = ".") -> dict[str, Any]:
+    """Check CI status for a branch using gh CLI."""
+    work_path = Path(path).resolve()
+    result = run_command(
+        ["gh", "run", "list", "--branch", branch, "--limit", "1", "--json", "status,conclusion"],
+        work_path,
+    )
+    if result.returncode != 0:
+        return {"status": "unknown", "reason": "gh not found or error: " + (result.stderr or "")[:80]}
+    try:
+        runs = json.loads(result.stdout)
+        if not runs:
+            return {"status": "unknown", "reason": "No CI runs found."}
+        run = runs[0]
+        conclusion = run.get("conclusion") or ""
+        status = run.get("status") or ""
+        if conclusion == "success":
+            return {"status": "passing"}
+        if conclusion in {"failure", "cancelled"}:
+            return {"status": "failing", "conclusion": conclusion}
+        return {"status": "pending", "run_status": status}
+    except Exception as exc:
+        return {"status": "unknown", "reason": str(exc)}
+
+
+def full_git_pipeline(path: Path | str, task_slug: str, summary: str) -> dict[str, Any]:
+    """Run tests → commit → push → create PR. Return receipt dict with all step results."""
+    work_path = Path(path).resolve()
+    steps: dict[str, Any] = {}
+
+    test_result = run_tests(work_path)
+    steps["tests"] = test_result
+    if not test_result["passed"]:
+        return {"status": "blocked", "reason": "tests-failed", "steps": steps}
+
+    commit_result = commit_work(work_path, summary, "feat")
+    steps["commit"] = commit_result
+    if commit_result.get("status") != "committed":
+        return {"status": "blocked", "reason": "commit-failed", "steps": steps}
+
+    branch = str(commit_result.get("branch", task_slug))
+    pr_result = push_and_create_pr(branch, summary, "")
+    steps["pr"] = pr_result
+
+    return {"status": "done", "steps": steps}
+
+
 def git_workflow_manual(task_slug: str, summary: str) -> dict[str, Any]:
     created = create_worktree(task_slug)
     result = {
