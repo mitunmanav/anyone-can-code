@@ -124,6 +124,22 @@ This is the front door.
   top-level `evidence` appear, rewrite through canonical state and trust
   canonical verification.
 
+## Docs gate
+
+Before any hook, plugin runtime, MCP, Windows launch, or Codex-specific mechanics change:
+1. Run `python "$PLUGIN_ROOT/scripts/docs_gate.py" "<request>"`.
+2. If `web_needed` is true, call WebSearch with the returned `search_query`.
+3. Read local reference docs if `local_docs` is not empty.
+4. Never write code before reading the relevant official docs.
+
+## Mid-work requirement discovery
+
+After running product intake and generating checklist:
+1. Call `docs_gate.discover_missing_requirements(checklist, original_request)`.
+2. If any items returned, surface them immediately: "Found missing: [items]. Add to plan?"
+3. Do not silently add them — always surface and ask.
+4. Update canonical state with user's decision before continuing.
+
 ## Mode banner format
 
 Use a short banner such as:
