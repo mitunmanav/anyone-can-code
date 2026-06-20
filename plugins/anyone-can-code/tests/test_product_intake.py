@@ -80,7 +80,7 @@ class ProductIntakeTests(unittest.TestCase):
         self.assertEqual(by_area["theme"]["decision"], "unknown")
         self.assertEqual(by_area["responsive"]["decision"], "include")
         self.assertEqual(by_area["loading states"]["decision"], "include")
-        self.assertLess(len(checklist), 18)
+        self.assertLess(len(checklist), 22)
         self.assertTrue({item["decision"] for item in checklist} <= product_intake.ALLOWED_DECISIONS)
 
     def test_plan_line_is_concise_builder_readable(self) -> None:

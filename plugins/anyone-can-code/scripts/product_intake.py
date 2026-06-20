@@ -197,6 +197,31 @@ def generate_engineering_checklist(intake: dict[str, Any], persona_config: dict[
         ]
     )
 
+    # Analytics — web-facing products need usage tracking
+    if product_type in {"website", "app", "dashboard"}:
+        items.append(checklist_item("analytics", "include", "Web products need usage tracking"))
+
+    # CI — every product type needs automated test runs
+    items.append(checklist_item("ci", "include", "All products need automated test runs"))
+
+    # Game-specific
+    if product_type == "game":
+        items.append(checklist_item("game-loop", "include", "Core game loop must be defined before building"))
+
+    # Native app-specific
+    if product_type == "native app":
+        items.append(checklist_item("platform", "include", "Native apps target specific OS — define platform first"))
+        items.append(checklist_item("installer", "include", "Native apps need an installer or package"))
+
+    # Data tool-specific
+    if product_type == "data tool":
+        items.append(checklist_item("data-pipeline", "include", "Data tools need defined input/output flow"))
+
+    # Script/automation-specific
+    if product_type in {"script", "automation"}:
+        items.append(checklist_item("error-handling", "include", "Scripts need clear failure modes and exit codes"))
+        items.append(checklist_item("logging", "include", "Automation needs audit logs"))
+
     seen = set()
     deduped = []
     for item in items:
