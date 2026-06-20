@@ -15,6 +15,7 @@ from typing import Any
 NAMESPACE = Path(".codex") / "anyone-can-code"
 REMOTE_ACTIONS = {"push", "pull-request", "merge", "publish", "release", "tag", "deploy"}
 RISKY_ACTIONS = {"delete", "overwrite", "migration", "install", "external-share", "remote"}
+PRODUCTION_EXTRA_RISKY = {"install", "migrate", "seed", "deploy", "release", "tag"}
 
 
 class SafetyGateError(RuntimeError):
@@ -47,19 +48,23 @@ def _write_text_atomic(path: Path, text: str) -> None:
     Path(temp_name).replace(path)
 
 
-def classify_action(action: dict[str, Any]) -> dict[str, Any]:
+def classify_action(action: dict[str, Any], production_mode: bool = False) -> dict[str, Any]:
     action_type = str(action.get("type") or "").strip()
     command = str(action.get("command") or "").lower()
     remote = bool(action.get("remote")) or action_type in REMOTE_ACTIONS
     remote = remote or any(token in command for token in ("git push", "gh pr", "npm publish"))
     risky = bool(action.get("risky")) or action_type in RISKY_ACTIONS or remote
     risky = risky or any(token in command for token in ("remove-item", "rm -rf", "git reset --hard"))
+    force_blocked = production_mode and "--force" in command
+    production_caution = production_mode and (action_type in PRODUCTION_EXTRA_RISKY or risky)
     return {
         "remote": remote,
         "risky": risky,
-        "approval_required": risky or remote,
+        "approval_required": risky or remote or production_caution,
         "rollback_required": risky and not remote,
         "sandbox_required": True,
+        "production_caution": production_caution,
+        "force_blocked": force_blocked,
     }
 
 
