@@ -5,6 +5,11 @@ description: "Front door for Anyone Can Code. Detects the user's starting point,
 
 # Orchestrator
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 This is the front door.
 
 ## Responsibilities

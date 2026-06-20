@@ -5,6 +5,11 @@ description: "Detects whether the user is starting from an idea, a spec, an exis
 
 # Onboard
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$onboard` when the plugin needs to understand the starting point before planning or building.
 
 ## Entry modes

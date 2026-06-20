@@ -5,6 +5,11 @@ description: "Builds from the current task queue, follows the chosen route, and 
 
 # Execute
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$execute` when the work is planned or concrete enough to implement.
 
 ## Inputs

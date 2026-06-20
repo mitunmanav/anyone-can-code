@@ -5,6 +5,11 @@ description: "Structured intake for vague or partial requests. Asks only the que
 
 # Clarify
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$clarify` when the request is still too vague to plan or build safely.
 
 ## Rules

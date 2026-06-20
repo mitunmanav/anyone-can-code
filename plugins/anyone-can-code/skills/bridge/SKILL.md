@@ -5,6 +5,11 @@ description: "Installed plugin detection. Reads installed manifests, routes conf
 
 # Bridge
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Detect and route to other installed plugins.
 
 ## How it works

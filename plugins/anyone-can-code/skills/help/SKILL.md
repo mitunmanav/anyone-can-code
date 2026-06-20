@@ -5,6 +5,11 @@ description: "Reads the local workflow files and explains where the project stan
 
 # Help
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$help` when the user asks what is happening, what is next, or what is blocked.
 
 Before reading state, run:

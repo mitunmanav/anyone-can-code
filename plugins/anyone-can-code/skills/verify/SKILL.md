@@ -5,6 +5,11 @@ description: "Evidence-first verification for code, plans, and repairs. Distingu
 
 # Verify
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$verify` before saying the work is complete.
 
 ## Verification goals

@@ -5,6 +5,11 @@ description: "Turns the accepted spec or concrete request into an executable loc
 
 # Plan
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$plan` after the request is clear enough to break into real work.
 
 ## Inputs

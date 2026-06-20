@@ -5,6 +5,11 @@ description: "Controls meaningful scope changes by comparing the draft change ag
 
 # Govern
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$govern` when a proposed change could materially alter the accepted scope.
 
 ## Inputs

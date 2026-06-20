@@ -5,6 +5,11 @@ description: "Explicit-only recording of decisions, blockers, and insights into 
 
 # Capture
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$capture` when you want to persist an important decision or blocker.
 
 ## Output

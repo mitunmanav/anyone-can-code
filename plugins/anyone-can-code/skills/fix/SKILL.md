@@ -5,6 +5,11 @@ description: "Recovery workflow for repeated failures. Uses local turn history, 
 
 # Fix
 
+Reply rule:
+
+- talk strict caveman only
+- keep answer short
+
 Use `$fix` when verification keeps failing or the current route needs controlled recovery.
 
 ## Inputs
