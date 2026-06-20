@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
+import first_run as _first_run
 
 
 def read_agents_md(repo_root: Path) -> str:
@@ -42,10 +43,13 @@ def build_context(repo_root: Path, source: str) -> str:
 
 def handle_payload(payload: dict, repo_root: Path) -> dict:
     source = payload.get("source", "startup")
+    ctx = build_context(repo_root, source)
+    if not _first_run.is_configured(repo_root):
+        ctx += "\n\nFIRST RUN: Ask user one question only: builder, developer, or mixed? Then call $setup."
     return {
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": build_context(repo_root, source),
+            "additionalContext": ctx,
         }
     }
 
