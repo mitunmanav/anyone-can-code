@@ -2,3 +2,6 @@ interface:
   display_name: "Bridge"
   short_description: "Installed plugin detection. Reads installed manifests, routes confident capability matches, and falls back to ACC when coverage is missing or unusable."
   default_prompt: "Use $bridge to read installed plugin manifests, route only confident matches, and fall back to ACC when coverage is missing or returns no result."
+
+policy:
+  allow_implicit_invocation: false
