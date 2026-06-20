@@ -13,7 +13,7 @@
   <a href="https://anyone-can-code.vercel.app/"><img src="https://img.shields.io/badge/website-anyone--can--code.vercel.app-10A37F?style=flat-square" alt="Website"/></a>
   <a href="https://discord.gg/6EcuDzJS"><img src="https://img.shields.io/badge/Discord-join%20community-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord"/></a>
   <a href="https://anyone-can-code.vercel.app/#waitlist"><img src="https://img.shields.io/badge/waitlist-join%20now-FF6B35?style=flat-square" alt="Waitlist"/></a>
-  <img src="https://img.shields.io/badge/tests-158%20passing-brightgreen?style=flat-square" alt="Tests"/>
+  <img src="https://img.shields.io/badge/tests-207%20passing-brightgreen?style=flat-square" alt="Tests"/>
   <img src="https://img.shields.io/badge/platform-Codex%20Windows-0078D4?style=flat-square" alt="Platform"/>
   <img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/>
 </p>
@@ -78,7 +78,7 @@ $setup
 
 ## Test results
 
-**158 tests · 3 skipped (Windows shell) · 0 failures**
+**207 tests · 3 skipped (Windows shell) · 0 failures**
 
 <p align="center">
   <img src="assets/test-comparison.png" alt="With vs Without Anyone Can Code" width="100%"/>
@@ -93,6 +93,7 @@ $setup
 | `test_git_workflow` | 7 | Git guardrails, branch/commit/PR rules |
 | `test_product_intake` | 6 | Intake questions, checklist generation, plan line |
 | `test_memory_preflight` | 4 | Memory recall before first action |
+| `test_domain_router` | 8 | Domain routing, UX coverage, skip/defer filtering, fallback instructions |
 
 Run locally:
 
@@ -121,6 +122,10 @@ python -m unittest discover -s plugins/anyone-can-code/tests
 | 📋 Waitlist | [Join the waitlist](https://anyone-can-code.vercel.app/#waitlist) |
 
 ---
+
+## Safeguards
+
+ACC enforces `mechanics_docs_gate` before any platform mechanics work — hooks, plugin runtime, Windows launch, MCP, or tool-plumbing changes require a docs brief from official docs/source before code is written. When official docs are missing, controlled proof plus recorded uncertainty is required. This blocks silent assumptions about platform mechanics.
 
 ## Reference
 

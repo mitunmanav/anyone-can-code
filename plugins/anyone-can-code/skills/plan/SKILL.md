@@ -33,6 +33,15 @@ For product-intake plans, generate the adapted checklist through `scripts/produc
 - `decision`: include, defer, skip, or unknown
 - `state`: in scope, designed, approved, implemented, verified, blocked, deferred
 
+## Domain routing
+
+After generating the engineering checklist, route included domains to execution instructions:
+
+1. Call `python "$PLUGIN_ROOT/scripts/domain_router.py" --checklist <path>` or invoke `route_domains(checklist, product_type)` directly.
+2. Each returned domain has `instructions` — use them when building that area.
+3. All UX domains (theme, responsive, accessibility, loading states, error states) are automatically included for web/app/dashboard products.
+4. Never skip a domain marked `include` without recording it as `deferred` in canonical state with reason.
+
 ## Rules
 
 - Fast path: keep the plan lean for concrete repo work.
