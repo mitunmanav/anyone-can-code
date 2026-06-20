@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-12-fix-acc-hook-launcher-powershell-quoting",
   "spec_path": ".flow/tasks/fn-12-fix-acc-hook-launcher-powershell-quoting.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Fix bundled hook launch under PowerShell outer shell",
-  "updated_at": "2026-06-14T13:59:10.449871Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

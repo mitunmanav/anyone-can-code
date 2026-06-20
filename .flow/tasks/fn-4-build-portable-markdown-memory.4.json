@@ -13,8 +13,8 @@
   "review": null,
   "spec": "fn-4-build-portable-markdown-memory",
   "spec_path": ".flow/tasks/fn-4-build-portable-markdown-memory.4.md",
-  "status": "todo",
+  "status": "done",
   "sync": null,
   "title": "Migrate JSONL memory and update prior ACC surfaces",
-  "updated_at": "2026-06-13T07:51:02.840364Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

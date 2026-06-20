@@ -11,7 +11,7 @@
   "priority": 5,
   "spec": "fn-11-build-acc-codex-desktop-reliability-and",
   "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.5.md",
-  "status": "todo",
+  "status": "done",
   "title": "Build capability registry health and fallbacks",
-  "updated_at": "2026-06-14T11:28:02.161469Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

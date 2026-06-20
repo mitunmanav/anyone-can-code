@@ -10,7 +10,7 @@
   "priority": 2,
   "spec": "fn-13-fix-acc-silent-visual-response-after",
   "spec_path": ".flow/tasks/fn-13-fix-acc-silent-visual-response-after.2.md",
-  "status": "todo",
+  "status": "done",
   "title": "Prove installed Codex Desktop visible response",
-  "updated_at": "2026-06-15T06:16:20.569709Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

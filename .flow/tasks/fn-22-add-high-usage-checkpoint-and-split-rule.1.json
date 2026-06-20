@@ -8,7 +8,7 @@
   "priority": 1,
   "spec": "fn-22-add-high-usage-checkpoint-and-split-rule",
   "spec_path": ".flow/tasks/fn-22-add-high-usage-checkpoint-and-split-rule.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Implement high usage checkpoint and split rule",
-  "updated_at": "2026-06-15T06:35:32.198116Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

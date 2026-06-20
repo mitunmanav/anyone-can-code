@@ -8,7 +8,7 @@
   "priority": 1,
   "spec": "fn-23-require-reread-after-failed-patch",
   "spec_path": ".flow/tasks/fn-23-require-reread-after-failed-patch.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Implement patch retry reread discipline",
-  "updated_at": "2026-06-15T06:40:49.139307Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

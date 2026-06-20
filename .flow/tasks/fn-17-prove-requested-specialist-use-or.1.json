@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-17-prove-requested-specialist-use-or",
   "spec_path": ".flow/tasks/fn-17-prove-requested-specialist-use-or.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Account for requested specialist use and fallback",
-  "updated_at": "2026-06-15T05:24:04.455765Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

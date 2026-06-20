@@ -12,7 +12,7 @@
   "priority": 8,
   "spec": "fn-11-build-acc-codex-desktop-reliability-and",
   "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.8.md",
-  "status": "todo",
+  "status": "done",
   "title": "Add receipts learning security and rollback",
-  "updated_at": "2026-06-14T11:28:03.955722Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

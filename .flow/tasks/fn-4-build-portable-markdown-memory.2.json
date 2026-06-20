@@ -12,8 +12,8 @@
   "review": null,
   "spec": "fn-4-build-portable-markdown-memory",
   "spec_path": ".flow/tasks/fn-4-build-portable-markdown-memory.2.md",
-  "status": "todo",
+  "status": "done",
   "sync": null,
   "title": "Build Markdown memory backend and rebuildable index",
-  "updated_at": "2026-06-13T07:51:02.821018Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

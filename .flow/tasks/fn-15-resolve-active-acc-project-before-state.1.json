@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-15-resolve-active-acc-project-before-state",
   "spec_path": ".flow/tasks/fn-15-resolve-active-acc-project-before-state.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Discover and enforce active ACC project selection",
-  "updated_at": "2026-06-15T04:31:34.662376Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

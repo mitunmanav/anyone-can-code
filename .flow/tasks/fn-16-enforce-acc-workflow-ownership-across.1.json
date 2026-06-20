@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-16-enforce-acc-workflow-ownership-across",
   "spec_path": ".flow/tasks/fn-16-enforce-acc-workflow-ownership-across.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Contain specialist workflow takeover before and after use",
-  "updated_at": "2026-06-15T04:42:36.382435Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

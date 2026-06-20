@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-2-harden-acc-development-system",
   "spec_path": ".flow/tasks/fn-2-harden-acc-development-system.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Define change-impact matrix",
-  "updated_at": "2026-06-13T04:24:06.420343Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

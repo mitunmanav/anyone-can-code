@@ -10,7 +10,7 @@
   "priority": 4,
   "spec": "fn-11-build-acc-codex-desktop-reliability-and",
   "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.4.md",
-  "status": "todo",
+  "status": "done",
   "title": "Build restart and compaction recovery",
-  "updated_at": "2026-06-14T11:28:01.580016Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

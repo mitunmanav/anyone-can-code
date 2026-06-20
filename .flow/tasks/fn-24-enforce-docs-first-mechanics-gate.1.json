@@ -8,7 +8,7 @@
   "priority": 1,
   "spec": "fn-24-enforce-docs-first-mechanics-gate",
   "spec_path": ".flow/tasks/fn-24-enforce-docs-first-mechanics-gate.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Implement docs-first mechanics gate",
-  "updated_at": "2026-06-15T06:52:16.071501Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-6-disable-acc-hooks-in-plugin-development",
   "spec_path": ".flow/tasks/fn-6-disable-acc-hooks-in-plugin-development.2.md",
-  "status": "todo",
+  "status": "done",
   "title": "Handle repository-level plugin root",
-  "updated_at": "2026-06-13T14:42:59.274777Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

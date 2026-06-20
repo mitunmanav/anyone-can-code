@@ -8,7 +8,7 @@
   "priority": 1,
   "spec": "fn-21-guard-windows-command-execution-in-acc",
   "spec_path": ".flow/tasks/fn-21-guard-windows-command-execution-in-acc.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Implement Windows command guard and verification",
-  "updated_at": "2026-06-15T06:19:42.740738Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-20-clean-canonical-legacy-state-conflicts",
   "spec_path": ".flow/tasks/fn-20-clean-canonical-legacy-state-conflicts.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Remove stale legacy workflow truth",
-  "updated_at": "2026-06-15T05:53:41.710804Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

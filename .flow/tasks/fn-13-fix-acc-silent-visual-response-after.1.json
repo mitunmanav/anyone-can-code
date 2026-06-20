@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-13-fix-acc-silent-visual-response-after",
   "spec_path": ".flow/tasks/fn-13-fix-acc-silent-visual-response-after.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Reproduce and fix silent routed response",
-  "updated_at": "2026-06-15T04:28:43.738737Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

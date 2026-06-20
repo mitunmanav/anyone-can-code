@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-1-define-project-direction",
   "spec_path": ".flow/tasks/fn-1-define-project-direction.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Bootstrap persona and project state",
-  "updated_at": "2026-06-12T10:45:15.422044Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

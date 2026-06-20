@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-2-harden-acc-development-system",
   "spec_path": ".flow/tasks/fn-2-harden-acc-development-system.5.md",
-  "status": "todo",
+  "status": "done",
   "title": "Fix post-audit setup drift",
-  "updated_at": "2026-06-13T05:52:51.628897Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

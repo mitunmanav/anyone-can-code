@@ -8,7 +8,7 @@
   "priority": 1,
   "spec": "fn-14-make-acc-hooks-effective-from-non-git",
   "spec_path": ".flow/tasks/fn-14-make-acc-hooks-effective-from-non-git.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Repair nested project hook resolution and prove useful effects",
-  "updated_at": "2026-06-14T19:44:15.531069Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

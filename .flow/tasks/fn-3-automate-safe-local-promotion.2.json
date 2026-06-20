@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-3-automate-safe-local-promotion",
   "spec_path": ".flow/tasks/fn-3-automate-safe-local-promotion.2.md",
-  "status": "todo",
+  "status": "done",
   "title": "Allow Flow usage docs in setup promotion guard",
-  "updated_at": "2026-06-13T06:07:38.336582Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

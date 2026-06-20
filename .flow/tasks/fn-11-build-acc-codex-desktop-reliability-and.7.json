@@ -11,7 +11,7 @@
   "priority": 7,
   "spec": "fn-11-build-acc-codex-desktop-reliability-and",
   "spec_path": ".flow/tasks/fn-11-build-acc-codex-desktop-reliability-and.7.md",
-  "status": "todo",
+  "status": "done",
   "title": "Redesign hooks as optional measured helpers",
-  "updated_at": "2026-06-14T11:28:03.415966Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

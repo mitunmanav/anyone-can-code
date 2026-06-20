@@ -12,8 +12,8 @@
   "review": null,
   "spec": "fn-4-build-portable-markdown-memory",
   "spec_path": ".flow/tasks/fn-4-build-portable-markdown-memory.5.md",
-  "status": "todo",
+  "status": "done",
   "sync": null,
   "title": "Verify fresh install upgrade rollback and no-Obsidian paths",
-  "updated_at": "2026-06-13T07:51:43.058355Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

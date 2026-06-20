@@ -5,7 +5,8 @@
 - Route: Flow-Next local development
 - Entry mode: existing project
 - Last task: `fn-12-fix-acc-hook-launcher-powershell-quoting.1` completed
-- Current task: none; `fn-12`, `fn-11`, and `fn-1` are done
+- Current task: none; active captured follow-up is
+  `fn-25-build-acc-core-everything-workflow-from`
 - Communication mode: caveman-strict
 - Development memory mode: Obsidian project brain first
 - Product memory target: portable linked Markdown through bundled MCP, with JSONL as migration input only
@@ -39,20 +40,13 @@
   the user explicitly reverses this decision.
 
 ## Current Goal
-- Current reliability work:
-  `fn-13-fix-acc-silent-visual-response-after`,
-  `fn-14-make-acc-hooks-effective-from-non-git`, and
-  `fn-15-resolve-active-acc-project-before-state`.
-- Hook audit proved current hooks can launch and still return `{}` before useful
-  work when Codex starts at a non-Git workspace root above a nested ACC project.
-- `fn-14` is captured only. Do not implement until user directs work.
-- `fn-13` source-side repair is verified; real Codex Desktop rendering proof
-  remains pending.
-- `fn-15` core active-project resolver is done and verified locally. It is
-  separate from deferred hook-specific `fn-14`.
-- `fn-16` workflow takeover containment is done and verified locally.
-  Specialist mention is not handoff; foreign process controls are advisory and
-  recursively contained.
+- Reliability line `fn-13` through `fn-24` is completed and verified locally.
+- New real-use follow-up captured from the Zenfit ACC runtime trial:
+  `fn-25-build-acc-core-everything-workflow-from`.
+- `fn-25` is not started. It owns the product gap where ACC should absorb the
+  Zenfit git-manager workaround into plugin-owned workflow, plus mandatory
+  audit checklist use, canonical state updates, learning evidence, and
+  compaction re-anchor.
 - ACC remains disabled as helper inside this Plugin development project.
 
 ## Project Delivery Model

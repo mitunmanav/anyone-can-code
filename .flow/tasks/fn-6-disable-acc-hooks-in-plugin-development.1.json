@@ -8,7 +8,7 @@
   "priority": null,
   "spec": "fn-6-disable-acc-hooks-in-plugin-development",
   "spec_path": ".flow/tasks/fn-6-disable-acc-hooks-in-plugin-development.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Implement ACC-only tree hook disable",
-  "updated_at": "2026-06-13T14:09:13.642237Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }

@@ -1,0 +1,23 @@
+{
+  "branch_name": "fn-25-build-acc-core-everything-workflow-from",
+  "created_at": "2026-06-16T08:17:48.435950Z",
+  "depends_on_epics": [],
+  "id": "fn-25-build-acc-core-everything-workflow-from",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-25-build-acc-core-everything-workflow-from.md",
+  "status": "open",
+  "title": "Build ACC core everything workflow from real use",
+  "tracker": {
+    "baseHashFlow": null,
+    "baseHashTracker": null,
+    "id": null,
+    "identifier": null,
+    "lastSyncedAt": null,
+    "mergeBaseFlow": null,
+    "mergeBaseTracker": null,
+    "url": null
+  },
+  "updated_at": "2026-06-16T08:18:51.263149Z"
+}

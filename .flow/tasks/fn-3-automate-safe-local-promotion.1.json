@@ -5,7 +5,7 @@
   "priority": null,
   "spec": "fn-3-automate-safe-local-promotion",
   "spec_path": ".flow/tasks/fn-3-automate-safe-local-promotion.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Add scoped promotion guard",
-  "updated_at": "2026-06-13T05:00:09.464826Z"
+  "updated_at": "2026-06-19T04:44:31.000000Z"
 }
