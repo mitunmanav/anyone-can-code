@@ -137,7 +137,9 @@ def run_product_intake(initial_request: str, existing_context: dict[str, Any] | 
         value = intake[field]
         if value == "unknown" or value == []:
             questions.append({"field": field, "question": text})
-    intake["questions"] = questions[:5]
+    # When the request already provides product type + must-haves, ask only the 2 most blocking questions.
+    limit = 2 if (intake["product_type"] != "unknown" and intake["must_haves"]) else 5
+    intake["questions"] = questions[:limit]
     return intake
 
 
