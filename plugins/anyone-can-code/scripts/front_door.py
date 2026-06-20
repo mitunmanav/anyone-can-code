@@ -1024,6 +1024,16 @@ def smoke_check() -> tuple[bool, str]:
     )
 
 
+def handle_null_specialist_result(specialist: str, result: dict[str, Any]) -> dict[str, Any]:
+    """When specialist returns null/empty, ACC takes back control."""
+    return {
+        "owner": "acc",
+        "fallback": True,
+        "specialist": specialist,
+        "reason": "Specialist returned no usable result; ACC fallback activated.",
+    }
+
+
 def run_front_door(
     request: str,
     context: dict[str, Any] | None = None,

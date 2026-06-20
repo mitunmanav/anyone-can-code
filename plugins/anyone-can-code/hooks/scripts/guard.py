@@ -12,6 +12,30 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
 
 
+GUARD_TAKEOVER_KEYS = {
+    "workflow_owner", "workflow_state", "plan", "tracker",
+    "commit_required", "approval_gate", "response_style", "route",
+}
+
+
+def check_workflow_takeover(payload: dict) -> dict:
+    """Block any tool call that tries to set ACC-owned workflow control keys."""
+    tool_input = payload.get("tool_input") or {}
+    command = ""
+    if isinstance(tool_input, dict):
+        command = tool_input.get("command", "")
+    elif isinstance(tool_input, str):
+        command = tool_input
+
+    for key in GUARD_TAKEOVER_KEYS:
+        if f'"{key}"' in command or f"'{key}'" in command:
+            return {
+                "blocked": True,
+                "reason": f"Foreign plugin tried to set ACC control key: {key}",
+            }
+    return {"blocked": False, "reason": ""}
+
+
 INJECTION_PATTERNS = [
     "ignore previous instructions",
     "ignore all previous",
