@@ -11,6 +11,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+import silent_failure_detector
+
 
 SAFE_PERMISSION_TOOLS = ["Read", "Write", "Edit", "MultiEdit", "Bash"]
 
@@ -88,6 +91,12 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
             log_signal(repo_root, "verified_failure", f"{tool_name} looked bad.", payload)
         if any(token in lower for token in ["success", "passed", "ready", "\"stored\": true"]):
             log_signal(repo_root, "verified_success", f"{tool_name} looked good.", payload)
+        scan = silent_failure_detector.scan_tool_response({"output": response_preview, "exit_code": 0})
+        if scan["silent_failures"]:
+            detail = "; ".join(scan["silent_failures"])
+            log_signal(repo_root, "silent_failure", f"{tool_name}: {detail}", payload)
+            return {"hookSpecificOutput": {"hookEventName": "PostToolUse",
+                                          "additionalContext": f"Silent failure detected: {detail}"}}
         return {}
     if hook_event == "PermissionRequest":
         log_tool_call(repo_root, payload)
