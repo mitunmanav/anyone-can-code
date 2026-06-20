@@ -515,3 +515,24 @@ def apply_scope_change(
             "new_task": str(new_task).strip(),
         },
     )
+
+
+def write_state(
+    repo_root: Path,
+    *,
+    active_goal: str = "",
+    active_task: str = "",
+    next_action: str = "",
+    **kwargs: Any,
+) -> dict[str, Any]:
+    updates: dict[str, Any] = {
+        "active_goal": str(active_goal).strip(),
+        "active_task": str(active_task).strip(),
+        "next_action": str(next_action).strip(),
+        **kwargs,
+    }
+    return update_canonical_state(repo_root, updates)
+
+
+def read_state(repo_root: Path) -> dict[str, Any]:
+    return read_canonical_state(repo_root)

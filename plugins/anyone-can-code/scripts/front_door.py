@@ -1024,6 +1024,16 @@ def smoke_check() -> tuple[bool, str]:
     )
 
 
+def run_front_door(
+    request: str,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Public entry point: route a request and return a result with 'mode' key."""
+    result = route_request(request, context)
+    result["mode"] = result.get("entry_mode", "idea")
+    return result
+
+
 if __name__ == "__main__":
     request = " ".join(sys.argv[1:]).strip() or "I want to build something"
     print(json.dumps(route_request(request), indent=2))
