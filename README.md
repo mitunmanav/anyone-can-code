@@ -100,20 +100,24 @@ More skills (plan, execute, memory, settings…): [plugin README](plugins/anyone
 
 ## For contributors
 
+Full map: **[docs/README.md](docs/README.md)**
+
 | Path | What it is |
 |------|------------|
 | `plugins/anyone-can-code/` | Plugin (skills, hooks, scripts, tests) |
 | `.agents/plugins/` | Marketplace definition |
 | `.github/` | Issues, PR template, CI, community docs |
-| `docs/` | Privacy, terms, credits |
+| `docs/` | Privacy, terms, credits, contracts |
 | `CHANGELOG.md` | Release history |
 
 ```bash
 python -m pytest plugins/anyone-can-code/tests -q
 ```
 
+Privacy · Terms: [docs/PRIVACY.md](docs/PRIVACY.md) · [docs/TERMS.md](docs/TERMS.md)
+
 ---
 
 <p align="center">
-  <sub>MIT · Built by <a href="https://github.com/mitunmanav">Mitun</a></sub>
+  <sub>MIT · Built by <a href="https://github.com/mitunmanav">Mitun</a> · <a href="https://anyone-can-code.vercel.app/">anyone-can-code.vercel.app</a></sub>
 </p>

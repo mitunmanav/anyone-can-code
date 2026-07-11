@@ -1,1 +1,48 @@
-{"name":"anyone-can-code","version":"1.1.0-beta.3","description":"Front-door Codex workflow router with local state, portable Markdown memory, optional hooks, and evidence-first verification.","author":{"name":"Mitun","email":"238927830+mitunmanav@users.noreply.github.com","url":"https://github.com/mitunmanav"},"homepage":"https://github.com/mitunmanav/anyone-can-code","repository":"https://github.com/mitunmanav/anyone-can-code","license":"MIT","keywords":["codex","windows","workflow","verification","plugin"],"skills":"./skills/","mcpServers":"./.mcp.json","hooks":"./hooks/hooks.json","websiteURL":"https://github.com/mitunmanav/anyone-can-code","privacyPolicyURL":"https://github.com/mitunmanav/anyone-can-code/blob/main/docs/PRIVACY.md","termsOfServiceURL":"https://github.com/mitunmanav/anyone-can-code/blob/main/docs/TERMS.md","screenshots":["./assets/screenshot-1.png"],"interface":{"displayName":"Anyone Can Code","shortDescription":"Front door for ideas, repos, bugs, reviews, setup, memory, and verification workflows.","longDescription":"Anyone Can Code routes vague ideas, existing repos, feature requests, bugs, reviews, setup, learning, status, resume, and ship requests into explicit Codex workflows. It stores project-owned state and artifacts under .codex/anyone-can-code, uses portable Markdown memory with tiny fallback ledgers, supports optional bundled or repo-local hooks, keeps routing in the orchestrator, and separates implemented work from verified evidence.","developerName":"Mitun","category":"Productivity","capabilities":["Read","Write"],"defaultPrompt":["I want to build something, but I may be starting from an idea, a repo, or a bug.","Resume my last workflow and tell me the next best step.","Verify what changed and tell me what is still uncertain."],"brandColor":"#10A37F","composerIcon":"./assets/icon.png","logo":"./assets/logo.png"}}
+{
+  "name": "anyone-can-code",
+  "version": "1.1.0-beta.3",
+  "description": "Front-door Codex workflow router with local state, portable Markdown memory, optional hooks, and evidence-first verification.",
+  "author": {
+    "name": "Mitun",
+    "email": "238927830+mitunmanav@users.noreply.github.com",
+    "url": "https://github.com/mitunmanav"
+  },
+  "homepage": "https://anyone-can-code.vercel.app/",
+  "repository": "https://github.com/mitunmanav/anyone-can-code",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "windows",
+    "workflow",
+    "verification",
+    "plugin"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "websiteURL": "https://anyone-can-code.vercel.app/",
+  "privacyPolicyURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/PRIVACY.md",
+  "termsOfServiceURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/TERMS.md",
+  "screenshots": [
+    "./assets/screenshot-1.png"
+  ],
+  "interface": {
+    "displayName": "Anyone Can Code",
+    "shortDescription": "Front door for ideas, repos, bugs, reviews, setup, memory, and verification workflows.",
+    "longDescription": "Anyone Can Code routes vague ideas, existing repos, feature requests, bugs, reviews, setup, learning, status, resume, and ship requests into explicit Codex workflows. It stores project-owned state and artifacts under .codex/anyone-can-code, uses portable Markdown memory with tiny fallback ledgers, supports optional bundled or repo-local hooks, keeps routing in the orchestrator, and separates implemented work from verified evidence.",
+    "developerName": "Mitun",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "I want to build something, but I may be starting from an idea, a repo, or a bug.",
+      "Resume my last workflow and tell me the next best step.",
+      "Verify what changed and tell me what is still uncertain."
+    ],
+    "brandColor": "#10A37F",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
+}

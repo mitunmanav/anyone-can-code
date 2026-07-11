@@ -38,7 +38,13 @@ Fix-round release. Beta: rough edges expected — please report failures via Git
 
 ### Tests
 
-- 194 tests passing (3 skipped on non-Windows shells).
+- Full pytest suite green in CI (`python -m pytest plugins/anyone-can-code/tests -q`). Do not hardcode pass counts in docs.
+
+### Install
+
+```powershell
+codex plugin marketplace add mitunmanav/anyone-can-code --ref main
+```
 
 ## 1.1.0-beta.2 - 2026-07-07
 
@@ -67,9 +73,11 @@ Improvement-loop release. Beta: rough edges expected — please report failures 
 
 ### Install
 
+```powershell
+codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
-codex plugin marketplace add https://github.com/mitunmanav/anyone-can-code
-```
+
+(Older notes may show a full GitHub URL; the short marketplace form above is preferred.)
 
 ## 1.1.0-beta.1 - 2026-07-06
 

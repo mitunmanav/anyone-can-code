@@ -4,6 +4,9 @@ Thanks for helping Anyone Can Code.
 
 Goal: practical, Windows-friendly, evidence-first — easier to install, understand, use, recover, or verify.
 
+Product site: [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/)  
+Docs map: [docs/README.md](../docs/README.md)
+
 ## Who can contribute
 
 | Who | Policy |
@@ -19,7 +22,7 @@ When the open issue labeled `maintainer-working` exists (or `MAINTAINER_WORKING=
 - Outside **AI agents / coding bots** must not open or update PRs — they are auto-closed.
 - Outside **humans** may still open small PRs (review may be slower).
 
-Focus is temporary so Mitun can work without agent noise.
+Focus is temporary so Mitun can work without agent noise. Details: [MAINTAINER.md](MAINTAINER.md).
 
 ## Help we want
 
@@ -40,7 +43,7 @@ AI reviews every issue/PR and posts a maintainer brief — write so that brief s
 - Open a PR. Wait for **Validate** CI (and the AI maintainer brief).  
 - No local runtime state, user memory, logs, or secrets in commits.  
 - Validate before claiming done.  
-- Full workflow: `DEVELOPMENT-WORKFLOW.md`.
+- Full workflow: [DEVELOPMENT-WORKFLOW.md](../DEVELOPMENT-WORKFLOW.md).
 
 ## Checks before a PR
 
@@ -63,7 +66,7 @@ If you used an AI agent to write the PR, say so in the description (one line).
 
 - Bugs / features: GitHub Issues (templates).  
 - Questions: [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) or [Discord](https://discord.gg/qgS29y7TqP).  
-- Security: private advisory only — see `SECURITY.md`.
+- Security: private advisory only — see [SECURITY.md](SECURITY.md).
 
 Every issue gets an automatic plain-language AI brief for the maintainer.  
 Re-run: comment `/ai-review`.
@@ -71,7 +74,11 @@ Re-run: comment `/ai-review`.
 ## Releases (maintainers)
 
 1. Bump `plugins/anyone-can-code/.codex-plugin/plugin.json` version.  
-2. Update `CHANGELOG.md`.  
+2. Update [CHANGELOG.md](../CHANGELOG.md).  
 3. Tag matching version (e.g. `v1.1.0-beta.3`).  
 
-Release CI checks tag ↔ manifest version.
+Release CI checks tag ↔ manifest version. Install line for users:
+
+```powershell
+codex plugin marketplace add mitunmanav/anyone-can-code --ref main
+```

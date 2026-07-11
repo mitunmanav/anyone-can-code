@@ -1,8 +1,9 @@
 # ACC Operating Contract
 
-Status: approved contract  
-Date: 2026-06-14  
-Applies to: shipped ACC product for Codex Desktop on Windows
+Status: approved contract (living)  
+Date: 2026-06-14 · reviewed 2026-07-11  
+Applies to: shipped ACC product for Codex Desktop on Windows  
+Public product: https://anyone-can-code.vercel.app/ · install via root README
 
 ## Purpose
 

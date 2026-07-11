@@ -1,5 +1,7 @@
 # Development Workflow
 
+> Maintainer / contributor delivery process. User install lives in the [root README](README.md). Docs map: [docs/README.md](docs/README.md).
+
 This project separates tracking, development, testing, publishing, and release.
 
 ## Tool Roles

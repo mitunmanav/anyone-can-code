@@ -1,7 +1,9 @@
 # Ready-Made Automations
 
-Codex Desktop runs these on a schedule in the background. Results land in the
+Optional. Codex Desktop runs these on a schedule in the background. Results land in the
 **Triage** inbox in the sidebar; runs with nothing to report auto-archive.
+
+Plugin install first: see the [root README](../../../README.md).
 
 **Setup (once per automation):** Codex app sidebar → Automations → New →
 paste a prompt below → pick the schedule → choose your project.

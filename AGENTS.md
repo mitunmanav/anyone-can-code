@@ -1,13 +1,15 @@
 # Anyone Can Code - Project Context
 
 ## Workflow Snapshot
-- Phase: build
+- Phase: build / polish
 - Route: local development, Obsidian-tracked
 - Entry mode: existing project
-- Current task: none; v1.1.0-beta.2 released, item 20 user trial gates v1.1.0 final
+- Current task: none; **v1.1.0-beta.3** is latest prerelease (fix-round). Public site live at https://anyone-can-code.vercel.app/
+- Install: `codex plugin marketplace add mitunmanav/anyone-can-code --ref main`
 - Communication mode: caveman-strict
 - Development memory mode: Obsidian project brain first
 - Product memory target: portable linked Markdown through bundled MCP, with JSONL as migration input only
+- Docs map: `docs/README.md` (historical handoffs/plans are not current truth)
 
 ## Expectations
 - User-visible replies must use caveman-full style across this project at all times.
@@ -38,10 +40,10 @@
   the user explicitly reverses this decision.
 
 ## Current Goal
-- v1.1.0-beta.2 released (prerelease). Improvement loop complete except item 20
-  (user runs real trial 3, gates v1.1.0 final).
-- Next direction: one-line install with guided setup modes (non-technical /
-  dev / mixed) and ACC as a Codex harness for automated development.
+- v1.1.0-beta.3 released (prerelease). Product GitHub + website + community/CI
+  setup in place (AI issue/PR briefs, agent guard, Validate CI).
+- Next direction: real user trials toward a stable 1.1.0; keep docs accurate;
+  one-line install + guided setup modes still on the roadmap.
 - ACC remains disabled as helper inside this Plugin development project.
 
 ## Project Delivery Model
