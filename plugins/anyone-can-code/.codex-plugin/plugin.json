@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code",
   "version": "1.1.0-beta.3",
-  "description": "Codex Desktop plugin for non-technical people: plan, build, and verify in plain English. Not an engineering toolkit.",
+  "description": "Native Codex Desktop plugin for non-technical people: plan, build, and verify in plain English. Built from the ground up with Codex official docs \u2014 not migrated from other AI coding agents.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -28,8 +28,8 @@
   ],
   "interface": {
     "displayName": "Anyone Can Code",
-    "shortDescription": "Plain-English plan \u2192 build \u2192 verify for non-technical people on Codex Desktop (Windows).",
-    "longDescription": "Anyone Can Code is a Codex Desktop plugin made by a non-technical person for non-technical people. It helps you describe what you want, make a plan, build, remember decisions, and check work before claiming done. It is unique, inspired by other tools, and still open beta \u2014 not a finished all-in-one forever.",
+    "shortDescription": "Native Codex plugin for non-technical people: plain-English plan \u2192 build \u2192 verify (Windows).",
+    "longDescription": "Anyone Can Code is a native Codex Desktop plugin made by a non-technical person for non-technical people. It helps you describe what you want, make a plan, build, remember decisions, and check work before claiming done. Built from the ground up using Codex official docs and the Codex plugin model \u2014 not migrated from Claude Code, Cursor, Copilot, or any other AI coding agent. Open beta; still improving.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [

@@ -50,6 +50,16 @@ A practical plugin when other plugins and workflows feel too hard.
 
 **Open beta** (v1.1.0-beta.3) · MIT · still improving
 
+### Built for Codex (from the ground up)
+
+ACC is a **native Codex Desktop plugin**.
+
+- Built **from the ground up** using **Codex official docs** and the Codex plugin model  
+- **Not** migrated or ported from Claude Code, Cursor, Copilot, or any other AI coding agent  
+- Designed around how **Codex** plugins, marketplaces, and hooks actually work  
+
+Other tools and write-ups may have inspired *ideas* — the product itself was written for Codex, not converted from somewhere else.
+
 ### Why it exists
 
 Mitun is non-technical. For **more than a year** he tried many AI tools. Most were confusing, scattered, or made for engineers.
