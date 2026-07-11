@@ -2,15 +2,24 @@
 
 ## Report a vulnerability
 
-Use a **private** [GitHub security advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new).
+**Private only** — [open a GitHub security advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new).
 
-Do **not** post exploits or sensitive details in public issues.
+Do **not** post exploits, tokens, or sensitive details in public Issues or Discussions.
 
-Include:
+### What to include
 
-- Plugin version (from `plugins/anyone-can-code/.codex-plugin/plugin.json` or Releases)
+- Plugin version (`plugins/anyone-can-code/.codex-plugin/plugin.json` or [Releases](https://github.com/mitunmanav/anyone-can-code/releases))
 - Steps to reproduce
+- Impact (what an attacker could do)
 - Logs with secrets removed
+
+### Response path
+
+1. Advisory is private by default.  
+2. Maintainer acknowledges when possible.  
+3. Fix ships in a release when ready; credit if you want it.
+
+Not a security issue? Use [Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose), [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions), or [Discord](https://discord.gg/qgS29y7TqP) instead.
 
 ## Local data
 

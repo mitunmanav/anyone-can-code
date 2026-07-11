@@ -12,6 +12,9 @@ contact_links:
   - name: Start here — install
     url: https://github.com/mitunmanav/anyone-can-code/discussions/5
     about: 3-step install path.
+  - name: FAQ — install & $setup
+    url: https://github.com/mitunmanav/anyone-can-code/discussions/9
+    about: Read before filing — many answers already live here.
   - name: Product website
     url: https://anyone-can-code.vercel.app/
     about: Product home and install overview.

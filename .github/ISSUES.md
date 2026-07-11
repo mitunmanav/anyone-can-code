@@ -18,11 +18,11 @@ Open → **[New issue](https://github.com/mitunmanav/anyone-can-code/issues/new/
 
 | Need | Go here |
 |------|---------|
-| How do I…? | [Discussions Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
+| How do I…? | [Discussions Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) · [FAQ #9](https://github.com/mitunmanav/anyone-can-code/discussions/9) |
 | Soft brainstorm | [Discussions Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
 | Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
 | Security | [Private advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new) |
-| Discussions map | [DISCUSSIONS.md](DISCUSSIONS.md) |
+| Discussions map | [DISCUSSIONS.md](DISCUSSIONS.md) · [Start here #5](https://github.com/mitunmanav/anyone-can-code/discussions/5) |
 
 ## Easy bug checklist
 

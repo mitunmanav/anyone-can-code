@@ -19,7 +19,10 @@ Simple map. Use the right place so Mitun and the community can help fast.
 
 ## Start here
 
-Pinned-style intro: [Start here — install in 3 steps](https://github.com/mitunmanav/anyone-can-code/discussions/5)
+1. [Start here — install in 3 steps](https://github.com/mitunmanav/anyone-can-code/discussions/5)  
+2. [FAQ — install, $setup, bug vs question](https://github.com/mitunmanav/anyone-can-code/discussions/9)
+
+**Maintainer:** pin #5 and #9 in the GitHub Discussions UI (API cannot pin). Order: Q&A → Ideas → Show and tell → General.
 
 ## Tips (non-technical OK)
 

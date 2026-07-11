@@ -31,7 +31,15 @@
 
 ## Quick start
 
-**Need:** [Codex Desktop](https://openai.com/codex/) · Windows · Python
+**Need:** [Codex Desktop](https://openai.com/codex/) · Windows · Python · current: **[v1.1.0-beta.3](https://github.com/mitunmanav/anyone-can-code/releases/tag/v1.1.0-beta.3)**
+
+<p align="center">
+  <img src="plugins/anyone-can-code/assets/screenshot-1.png" alt="Anyone Can Code plugin icon" width="120"/>
+</p>
+
+```text
+  Codex Desktop  →  marketplace command  →  Install plugin  →  $setup  →  say what you want
+```
 
 **1. Add the marketplace** (paste in terminal):
 
@@ -57,6 +65,16 @@ You:  "I want a website with login and payments"
 ACC:  Detected idea · website
       Plan: site + auth + Stripe. SEO later.
 ```
+
+**Stuck?** [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) · [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)
+
+### Common install fixes
+
+| Symptom | Try this |
+|---------|----------|
+| Marketplace not found | Paste the full command, restart Codex |
+| Plugin missing | Plugin browser → search **Anyone Can Code** → Install → restart |
+| `$setup` no reply | New chat inside a project folder |
 
 ---
 
@@ -93,11 +111,13 @@ More skills (plan, execute, memory, settings…): [plugin README](plugins/anyone
 | Product site | [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/) |
 | How-to / questions | [Discussions → Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
 | Soft ideas | [Discussions → Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
-| Discussions map | [DISCUSSIONS.md](.github/DISCUSSIONS.md) · [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) |
+| Discussions map | [DISCUSSIONS.md](.github/DISCUSSIONS.md) · [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) · [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) |
 | Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
 | Bugs / install / features | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) · map: [ISSUES.md](.github/ISSUES.md) — each issue gets an AI plain-language brief |
+| Changelog | [CHANGELOG.md](CHANGELOG.md) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases) |
 | Security | [SECURITY.md](.github/SECURITY.md) — private reports only |
 | Contributing | [CONTRIBUTING.md](.github/CONTRIBUTING.md) — humans welcome; outside AI agents pause when maintainer is working |
+| Good first tasks | Issues labeled [`good first issue`](https://github.com/mitunmanav/anyone-can-code/labels/good%20first%20issue) |
 
 ---
 
