@@ -1,23 +1,23 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Discussions map
-    url: https://github.com/mitunmanav/anyone-can-code/blob/main/.github/DISCUSSIONS.md
-    about: Which category? Q&A, Ideas, Show and tell, or General.
+  - name: "Not a bug? Read this first"
+    url: https://github.com/mitunmanav/anyone-can-code/blob/main/.github/ISSUES.md
+    about: Bug vs question vs idea — pick the right place in 10 seconds.
   - name: "Ask a question (Discussions Q&A)"
     url: https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a
-    about: Install, $setup, how-to — not for bugs.
-  - name: "Share an idea (Discussions)"
+    about: Install how-to, $setup help — not for crashes.
+  - name: "Soft idea (Discussions)"
     url: https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas
-    about: Soft feature ideas before they become issues.
+    about: Brainstorm before filing a tracked feature issue.
   - name: Start here — install
     url: https://github.com/mitunmanav/anyone-can-code/discussions/5
-    about: 3-step install path and welcome thread.
+    about: 3-step install path.
   - name: Product website
     url: https://anyone-can-code.vercel.app/
-    about: Install guide, overview, and product home.
-  - name: Discord community
+    about: Product home and install overview.
+  - name: Discord
     url: https://discord.gg/qgS29y7TqP
     about: Live chat with other builders.
-  - name: Security reports
+  - name: Security (private only)
     url: https://github.com/mitunmanav/anyone-can-code/security/advisories/new
-    about: Report vulnerabilities privately — never in public issues.
+    about: Never post exploits or secrets in public issues.

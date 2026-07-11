@@ -24,7 +24,7 @@
   <a href="#quick-start">Install</a> ·
   <a href="https://github.com/mitunmanav/anyone-can-code/discussions">Discussions</a> ·
   <a href="https://discord.gg/qgS29y7TqP">Discord</a> ·
-  <a href="https://github.com/mitunmanav/anyone-can-code/issues/new/choose">Report a bug</a>
+  <a href="https://github.com/mitunmanav/anyone-can-code/issues/new/choose">Report a problem</a>
 </p>
 
 ---
@@ -95,7 +95,7 @@ More skills (plan, execute, memory, settings…): [plugin README](plugins/anyone
 | Soft ideas | [Discussions → Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
 | Discussions map | [DISCUSSIONS.md](.github/DISCUSSIONS.md) · [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) |
 | Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Bugs / tracked work | [GitHub Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) — each issue gets an AI plain-language brief |
+| Bugs / install / features | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) · map: [ISSUES.md](.github/ISSUES.md) — each issue gets an AI plain-language brief |
 | Security | [SECURITY.md](.github/SECURITY.md) — private reports only |
 | Contributing | [CONTRIBUTING.md](.github/CONTRIBUTING.md) — humans welcome; outside AI agents pause when maintainer is working |
 

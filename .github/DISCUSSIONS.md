@@ -11,7 +11,9 @@ Simple map. Use the right place so Mitun and the community can help fast.
 | Show a project you built | [**Show and tell**](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=show-and-tell) |
 | Casual chat / intro | [**General**](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=general) |
 | Something is broken | [**Bug issue**](https://github.com/mitunmanav/anyone-can-code/issues/new?template=bug_report.yml) |
+| Install / `$setup` failed | [**Install issue**](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) |
 | Concrete feature for the backlog | [**Feature issue**](https://github.com/mitunmanav/anyone-can-code/issues/new?template=feature_request.yml) |
+| Full issues map | [**ISSUES.md**](ISSUES.md) |
 | Live chat | [**Discord**](https://discord.gg/qgS29y7TqP) |
 | Security problem | [**Private advisory**](https://github.com/mitunmanav/anyone-can-code/security/advisories/new) only |
 

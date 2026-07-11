@@ -1,0 +1,40 @@
+name: Docs or website problem
+description: Wrong, missing, or confusing docs / product site.
+title: "[Docs]: "
+labels: ["documentation", "docs", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fix the words so the next person succeeds faster.
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where?
+      options:
+        - Root README
+        - Plugin README
+        - Website (anyone-can-code.vercel.app)
+        - Privacy / Terms
+        - Discussions / Issues templates
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or confusing?
+      placeholder: The install step says… but actually…
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix (optional)
+      description: Exact wording if you have it.
+  - type: input
+    id: link
+    attributes:
+      label: Link (optional)
+      description: URL or file path
+      placeholder: https://github.com/mitunmanav/anyone-can-code#quick-start

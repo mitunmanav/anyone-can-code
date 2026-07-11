@@ -13,12 +13,14 @@ Stuck? Pick the **smallest** path that fits.
 | Show what you built | [Discussions → Show and tell](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=show-and-tell) |
 | Full Discussions map | [DISCUSSIONS.md](DISCUSSIONS.md) |
 | Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Bug / crash | [GitHub Issues — Bug](https://github.com/mitunmanav/anyone-can-code/issues/new?template=bug_report.yml) |
-| Tracked feature | [GitHub Issues — Feature](https://github.com/mitunmanav/anyone-can-code/issues/new?template=feature_request.yml) |
+| Bug / crash | [Something is broken](https://github.com/mitunmanav/anyone-can-code/issues/new?template=bug_report.yml) |
+| Install failed | [Install / setup problem](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) |
+| Tracked feature | [Feature request](https://github.com/mitunmanav/anyone-can-code/issues/new?template=feature_request.yml) |
+| Issues map | [ISSUES.md](ISSUES.md) · [choose a template](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
 | Security | [SECURITY.md](SECURITY.md) — **not** public issues or Discussions |
 | Docs map | [docs/README.md](../docs/README.md) |
 
-**Rule of thumb:** question or idea → **Discussions**. Something broken → **Issues**.
+**Rule of thumb:** question or soft idea → **Discussions**. Something broken → **Issues** (guided forms).
 
 ## Discussions (easiest first)
 
@@ -30,14 +32,15 @@ Guide: [DISCUSSIONS.md](DISCUSSIONS.md) · Browse: [all discussions](https://git
 
 ## Before opening a **bug** issue
 
-1. Read the [README](../README.md) install steps.  
-2. Run (remove secrets before sharing):
+1. Pick a template: [ISSUES.md](ISSUES.md) or [New issue](https://github.com/mitunmanav/anyone-can-code/issues/new/choose).  
+2. Read the [README](../README.md) install steps if it is install-related.  
+3. Run (optional; remove secrets before sharing):
 
 ```powershell
 python plugins\anyone-can-code\scripts\doctor.py --json
 ```
 
-3. Include: OS, plugin version (Releases or `plugin.json`), what you ran, expected vs actual.
+4. Forms ask for: what you wanted · what you did · what happened · Windows/Codex.
 
 Every **issue** gets an automatic **AI maintainer brief** (plain English). Re-run: comment `/ai-review`.
 

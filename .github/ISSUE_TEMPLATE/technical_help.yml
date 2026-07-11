@@ -1,29 +1,41 @@
-name: Technical help
-description: Offer engineering help or a technical improvement.
+name: Technical contribution idea
+description: For engineers — propose a technical change or offer help.
 title: "[Technical]: "
-labels:
-  - help wanted
+labels: ["help wanted", "needs-triage"]
 body:
-  - type: textarea
+  - type: markdown
+    attributes:
+      value: |
+        For **code / architecture** proposals. Explain so a **non-technical maintainer** can decide.
+
+        Product how-to → [Discussions Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a).  
+        User-facing feature → [Feature request](https://github.com/mitunmanav/anyone-can-code/issues/new?template=feature_request.yml).
+  - type: dropdown
     id: area
     attributes:
       label: Area
-      description: Which part of the project?
-      placeholder: "MCP memory, Windows setup, tests, release, prompts, docs..."
+      options:
+        - Skills / prompts
+        - Hooks / Python scripts
+        - Memory / MCP
+        - Windows setup / doctor
+        - Tests / CI
+        - Release
+        - Docs tooling
+        - Other
     validations:
       required: true
   - type: textarea
     id: suggestion
     attributes:
-      label: Suggestion
-      description: What should change, and why?
+      label: What should change, and why?
     validations:
       required: true
   - type: textarea
     id: explanation
     attributes:
-      label: Plain-language explanation
-      description: So a non-technical maintainer can decide.
+      label: Plain-language summary
+      description: One paragraph a non-expert can understand.
     validations:
       required: true
   - type: textarea
@@ -31,3 +43,9 @@ body:
     attributes:
       label: Risks or tradeoffs
       description: What could break or get more complex?
+  - type: checkboxes
+    id: agent
+    attributes:
+      label: Authorship
+      options:
+        - label: An AI coding agent helped write this issue (optional honesty check)

@@ -4,10 +4,13 @@ Short. For you. Not for users.
 
 ## When someone opens an issue
 
+Templates: bug · install · feature · docs · technical — map [ISSUES.md](ISSUES.md).
+
 1. Wait ~1 minute — **AI issue review** posts a **Maintainer brief**.
 2. Read only that brief first (plain English).
-3. Decide: fix / ask questions / close / Discussions.
-4. Re-run AI: comment `/ai-review` on the issue.
+3. Decide: fix / ask questions / close / move to Discussions.
+4. How-to filed as bug → close + link [Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a).
+5. Re-run AI: comment `/ai-review` on the issue.
 
 ## When someone opens a PR
 

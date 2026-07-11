@@ -67,17 +67,18 @@ If you used an AI agent to write the PR, say so in the description (one line).
 | Path | Use for |
 |------|---------|
 | [Discussions](DISCUSSIONS.md) | Questions, soft ideas, show-and-tell |
-| [Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) | Bugs and tracked work |
+| [Issues](ISSUES.md) | Bugs, install failures, tracked features |
 | [Discord](https://discord.gg/qgS29y7TqP) | Live chat |
 | [SECURITY.md](SECURITY.md) | Vulnerabilities (private only) |
 
-Quick open:
+**Issues — pick a form:** [New issue](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)
 
-- [Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a)  
-- [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas)  
-- [Show and tell](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=show-and-tell)  
+- [Something is broken](https://github.com/mitunmanav/anyone-can-code/issues/new?template=bug_report.yml)  
+- [Install / setup problem](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml)  
+- [Feature request](https://github.com/mitunmanav/anyone-can-code/issues/new?template=feature_request.yml)  
+- [Docs problem](https://github.com/mitunmanav/anyone-can-code/issues/new?template=docs.yml)  
 
-Full map: [DISCUSSIONS.md](DISCUSSIONS.md)
+Maps: [ISSUES.md](ISSUES.md) · [DISCUSSIONS.md](DISCUSSIONS.md)
 
 Every **issue** gets an automatic plain-language AI brief for the maintainer.  
 Re-run: comment `/ai-review`.

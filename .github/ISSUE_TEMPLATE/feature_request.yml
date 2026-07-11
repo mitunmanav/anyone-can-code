@@ -1,30 +1,55 @@
 name: Feature request
-description: Suggest an improvement.
+description: Ask for a concrete change you want tracked in the backlog.
 title: "[Feature]: "
-labels:
-  - enhancement
+labels: ["enhancement", "needs-triage"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        **Soft brainstorming?** Prefer [Discussions → Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas).
+
+        Use **this form** when you want a tracked request (issue) the maintainer can accept or close.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Install / first run
+        - Planning
+        - Building / execute
+        - Memory
+        - Verify / recovery
+        - Docs / website
+        - Community / GitHub
+        - Other
+    validations:
+      required: true
   - type: textarea
     id: problem
     attributes:
-      label: Problem
-      description: What is hard or missing today?
+      label: What is hard or missing today?
+      description: Describe the pain in plain English.
+      placeholder: When I try to… I get stuck because…
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Idea
-      description: What should change?
+      label: What should ACC do instead?
+      description: Your idea. Rough is fine.
+      placeholder: ACC should…
     validations:
       required: true
   - type: textarea
     id: nontechnical
     attributes:
       label: Who does this help?
-      description: Especially useful for non-technical users?
-  - type: textarea
-    id: alternatives
+      description: Especially useful for people who are not engineers?
+      placeholder: Someone who only uses plain English with Codex…
+  - type: checkboxes
+    id: scope
     attributes:
-      label: Alternatives
-      description: Simpler options or tradeoffs?
+      label: Before submit
+      options:
+        - label: I understand not every request ships, and that is OK
+          required: true
