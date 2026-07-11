@@ -127,3 +127,7 @@ Privacy · Terms: [docs/PRIVACY.md](docs/PRIVACY.md) · [docs/TERMS.md](docs/TER
 <p align="center">
   <sub>MIT · Built by <a href="https://github.com/mitunmanav">Mitun</a> · <a href="https://anyone-can-code.vercel.app/">anyone-can-code.vercel.app</a></sub>
 </p>
+
+## Star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)
