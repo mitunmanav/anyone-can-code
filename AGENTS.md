@@ -5,8 +5,15 @@
 - Route: local development, Obsidian-tracked
 - Entry mode: existing project
 - Current task: none; **v1.1.0-beta.3** is latest prerelease (fix-round). Public site live at https://anyone-can-code.vercel.app/
-- Install: `codex plugin marketplace add mitunmanav/anyone-can-code --ref main`
+- Install (primary): Codex Plugins → Add marketplace with repo URL → Install ACC → **trust all hooks** → restart → `$setup`. Terminal marketplace add is optional only.
 - Communication mode: caveman-strict
+
+## User preferences (public product docs — do not regress)
+- README: **short, clear, pitch-like** (not long essay). GIF in README; MP4 optional download.
+- Non-technical first. Mitun voice OK if concise. No engineering-first framing.
+- Native Codex from official docs — **not** migrated from other AI coding agents.
+- Hooks trust is mandatory and must stay loud in install docs.
+- Small polish only on site/docs — never redesign; never re-clutter with link walls.
 - Development memory mode: Obsidian project brain first
 - Product memory target: portable linked Markdown through bundled MCP, with JSONL as migration input only
 - Docs map: `docs/README.md` (historical handoffs/plans are not current truth)
