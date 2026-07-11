@@ -238,7 +238,7 @@ def find_free_port(start=8765, max_attempts=10):
     for port in range(start, start + max_attempts):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
-                s.bind(("", port))
+                s.bind(("127.0.0.1", port))
                 return port
             except OSError:
                 continue
@@ -310,7 +310,7 @@ def run_server(port):
     print(f"  Sessions: {SESSION_DIR}")
     print(f"  Tool log: {TOOL_LOG_PATH}")
     print(f"  Press Ctrl+C to stop\n")
-    server = socketserver.TCPServer(("", port), DashboardHandler)
+    server = socketserver.TCPServer(("127.0.0.1", port), DashboardHandler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
