@@ -16,7 +16,7 @@ jobs:
       PLUGIN_MANIFEST: plugins/anyone-can-code/.codex-plugin/plugin.json
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Validate tag matches plugin version
         shell: bash
