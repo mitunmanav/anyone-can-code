@@ -20,7 +20,10 @@
 </p>
 
 **New here?** Full install (with hooks): [root README — How to install](../../README.md#how-to-install)  
-**Video:** [anyone-can-code.vercel.app/#install](https://anyone-can-code.vercel.app/#install)  
+
+**Install video (in this repo):** [docs/media/install-setup.mp4](../../docs/media/install-setup.mp4) · captions: [install-setup.vtt](../../docs/media/install-setup.vtt)  
+**Also on the website:** [anyone-can-code.vercel.app/#install](https://anyone-can-code.vercel.app/#install)  
+
 **Stuck?** [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) · [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)
 
 ### Install (short)

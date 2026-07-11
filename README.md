@@ -5,8 +5,8 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>A Codex Desktop plugin for non-technical people.</strong><br/>
-  Say what you want in plain English. ACC helps plan, build, and check the work.
+  <strong>I’m not a programmer. I still wanted to build with AI.</strong><br/>
+  So I made a Codex Desktop plugin for people like me.
 </p>
 
 <p align="center">
@@ -20,9 +20,9 @@
 </p>
 
 <p align="center">
-  <a href="#how-to-install">How to install</a>
+  <a href="#how-to-install">Install</a>
   ·
-  <a href="https://anyone-can-code.vercel.app/#install">Video guide</a>
+  <a href="#watch-the-install">Video</a>
   ·
   <a href="https://github.com/mitunmanav/anyone-can-code/discussions/5">Start here</a>
   ·
@@ -33,157 +33,176 @@
 
 ---
 
-## What is this?
+## What this is
 
 **Anyone Can Code (ACC)** is a free **plugin** for **[Codex Desktop](https://openai.com/codex/)** on **Windows**.
 
-It is for people who are **not** technical — including the person who built it.
+You talk like a normal person. ACC helps you plan, build, and check the work before calling it done.
 
-| You do this | ACC helps with |
-|-------------|----------------|
-| Say what you want in normal words | A clear plan |
-| Work on your idea or project | Building step by step |
-| Ask “is this done?” | Checking work before “done” |
+| You | ACC |
+|-----|-----|
+| Say what you want in plain English | Helps make a plan |
+| Work on an idea or a folder | Helps build step by step |
+| Wonder if it’s actually finished | Helps check before “done” |
 
-**Not** a coding class. **Not** an engineering product.  
-A practical plugin when other plugins and workflows feel too hard.
+This is **not** a coding course.  
+This is **not** built for engineers first.  
+It’s for people who tried other plugins and workflows and felt lost.
 
-**Open beta** (v1.1.0-beta.3) · MIT · still improving
+**Open beta** right now (v1.1.0-beta.3). Things can still break. Tell me when they do.
 
-### Built for Codex (from the ground up)
+---
 
-ACC is a **native Codex Desktop plugin**.
+## Why I built it
 
-- Built **from the ground up** using **Codex official docs** and the Codex plugin model  
-- **Not** migrated or ported from Claude Code, Cursor, Copilot, or any other AI coding agent  
-- Designed around how **Codex** plugins, marketplaces, and hooks actually work  
+I’m **Mitun**. I’m non-technical.
 
-Other tools and write-ups may have inspired *ideas* — the product itself was written for Codex, not converted from somewhere else.
+For **more than a year** I tried a lot of AI tools. Most of them felt hard, messy, or made for people who already think like programmers. I never found one perfect “final system.” I just found a way I could actually **work** day to day.
 
-### Why it exists
+I built ACC for that — for me, and for people like me.
 
-Mitun is non-technical. For **more than a year** he tried many AI tools. Most were confusing, scattered, or made for engineers.
+While I was testing ACC, I used it to help ship real work, including **[Everything AI](https://github.com/mitunmanav/everything-ai)** toward **[v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2)**. That project has its own life. The point is: a non-technical person can use ACC and still ship something.
 
-He still does not claim a perfect “final system.” He found a path that **works for him** — and he is building ACC so people like him can use AI without engineering knowledge.
+### Built for Codex from the ground up
 
-**Real example:** while testing ACC, he used it to help ship **[Everything AI](https://github.com/mitunmanav/everything-ai)** toward **[v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2)**.
+ACC is a **native Codex plugin**.
+
+I built it using **Codex official docs** and how Codex plugins, marketplaces, and hooks actually work.
+
+It is **not** a migration from Claude Code, Cursor, Copilot, or any other agent. I didn’t port something else into Codex. I started from Codex.
+
+Other tools and write-ups may have given me *ideas*. The product itself was written for Codex.
 
 ---
 
 ## Before you install
 
-1. **Windows** computer  
-2. **[Codex Desktop](https://openai.com/codex/)** installed and opening normally  
+You need:
+
+1. A **Windows** PC  
+2. **[Codex Desktop](https://openai.com/codex/)** installed and opening fine  
 3. **Python** available (Codex often needs this for plugins)
 
-Install Codex first if you do not have it yet.
+If you don’t have Codex yet, install that first.
+
+---
+
+## Watch the install
+
+Silent screen recording. Captions follow the steps on screen.
+
+**In this repo (download / open):**
+
+- Video: [`docs/media/install-setup.mp4`](docs/media/install-setup.mp4)  
+- Captions: [`docs/media/install-setup.vtt`](docs/media/install-setup.vtt)  
+
+**Also on the website:** [anyone-can-code.vercel.app/#install](https://anyone-can-code.vercel.app/#install)
+
+https://github.com/mitunmanav/anyone-can-code/raw/main/docs/media/install-setup.mp4
 
 ---
 
 ## How to install
 
-> **Watch first (recommended):** [Install video on the website](https://anyone-can-code.vercel.app/#install)  
-> Same steps are written below.
+Same steps as the video.
 
-### Step 1 — Copy this repo’s URL
+### 1. Copy this repo URL
 
-On this GitHub page, click the green **Code** button and copy the HTTPS URL:
+On this page, click green **Code**, or copy:
 
 ```text
 https://github.com/mitunmanav/anyone-can-code
 ```
 
-(Or copy that line as-is.)
+### 2. Add the marketplace in Codex
 
-### Step 2 — Add the marketplace in Codex
+1. Open **Codex**  
+2. Go to **Plugins**  
+3. Click the **+** in the top-right  
+4. Open the small **dropdown**  
+5. Choose **Add a Marketplace** (wording may look like “Add plugin marketplace”)  
+6. Paste the GitHub URL  
+7. Add it  
 
-1. Open the **Codex** app  
-2. Click **Plugins**  
-3. Click the **+** (plus) in the **top-right**  
-4. Open the small **dropdown** next to it  
-5. Choose **Add a Marketplace**  
-6. Paste the GitHub URL into the field at the top  
-7. Confirm / add  
+If it says the marketplace is already added, that’s fine.
 
-Codex now knows where ACC lives.
-
-### Step 3 — Install the plugin
+### 3. Install Anyone Can Code
 
 1. Stay in **Plugins**  
-2. **Scroll down** to the marketplace list  
-3. Find **Anyone Can Code**  
-4. Click **Install**
+2. Scroll and find **Anyone Can Code**  
+3. Click **Install**
 
-### Step 4 — Trust hooks (required)
+### 4. Trust the hooks (you must do this yourself)
 
-**This step is mandatory.** Hooks cannot be auto-trusted for you. There is **no** automatic bypass.
+**This part is required.**  
+Hooks cannot be auto-trusted. There is no skip. If you skip this, ACC will not work properly.
 
-1. In Plugins / ACC, open **Hooks**  
-2. Open **Settings**  
-3. **Enable** every ACC hook  
+1. Open **Hooks** (from the plugin page / settings)  
+2. Open **Anyone Can Code** hooks  
+3. **Turn on** every ACC hook  
 4. **Trust** every ACC hook  
 
-If hooks are off or untrusted, the plugin **will not work properly**.
+### 5. Restart Codex
 
-### Step 5 — Restart and check tools
+1. Fully quit Codex and open it again  
+2. Check ACC is still installed  
+3. Check hooks are still on and trusted  
+4. Check tools/skills for the plugin are enabled  
 
-1. **Fully quit** Codex and open it again  
-2. Confirm ACC is installed  
-3. Confirm **hooks** are still enabled and trusted  
-4. Confirm related **tools** for the plugin are enabled  
+### 6. Start using it
 
-### Step 6 — Start using it
-
-1. Open a **project folder** in Codex  
-2. Start a **new chat**  
+1. Open a project folder  
+2. Start a new chat  
 3. Type:
 
 ```
 $setup
 ```
 
-4. Then say what you want in plain English, for example:
+4. Then say what you want, for example:
 
 ```
 I want a simple website with a contact form
 ```
 
-Or type `$orchestrator` and follow the prompts.
+Or type `$orchestrator` and follow along.
+
+That’s the loop. You can keep talking in normal English after that.
 
 ---
 
-### Optional: terminal marketplace command
+### Optional: terminal command
 
-If you prefer the command line instead of the Plugins UI:
+If you like the terminal better for the marketplace part:
 
 ```powershell
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
-Then still do **Steps 3–6** in Codex (install plugin, **trust hooks**, restart, `$setup`).
+You still need to **install the plugin**, **trust hooks**, **restart**, then run `$setup`. The terminal does **not** skip hooks.
 
 ---
 
 ## If something goes wrong
 
-| Problem | What to try |
-|---------|-------------|
-| Marketplace will not add | Paste the full GitHub URL: `https://github.com/mitunmanav/anyone-can-code` |
-| Plugin not listed | Add marketplace again, scroll the list, restart Codex |
-| Plugin installed but “does nothing” | Open Hooks → Settings → **enable + trust all** → restart |
-| `$setup` no reply | New chat **inside** a project folder; check hooks again |
-| Tools missing | After restart, open plugin settings and enable tools |
+| Problem | Try this |
+|---------|----------|
+| Marketplace won’t add | Paste the full URL: `https://github.com/mitunmanav/anyone-can-code` |
+| Can’t find the plugin | Add marketplace again, scroll the list, restart Codex |
+| Installed but nothing happens | Hooks → enable + trust **all** → restart |
+| `$setup` does nothing | New chat **inside** a project folder; check hooks again |
+| Tools missing | After restart, open plugin settings and turn tools on |
 
-Still stuck?
+Still stuck? That’s okay.
 
 - [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)  
 - [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5)  
 - [Discord](https://discord.gg/qgS29y7TqP)  
-- [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) (plain English is fine)
+- [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) — plain English is fine  
 
 ---
 
-## Commands you’ll use most
+## Commands I use most
 
 Type these in the Codex chat:
 
@@ -191,54 +210,56 @@ Type these in the Codex chat:
 |-----------|----------------|
 | `$setup` | First-time setup for this project |
 | `$orchestrator` | Front door — helps pick the next step |
-| `$help` | Where you are, in plain language |
+| `$help` | Where am I? (plain language) |
 | `$status` | Current task and what’s next |
 | `$resume` | Continue after a break |
 | `$verify` | Check work with proof |
-| `$fix` | Help when the same thing keeps failing |
+| `$fix` | When the same thing keeps failing |
 
-You can also just **talk normally**. Commands are shortcuts.
+You can also just talk. Commands are shortcuts when you want them.
 
 More detail: [plugin README](plugins/anyone-can-code/README.md)
 
 ---
 
-## What ACC tries to do well
+## What I’m aiming for
 
 - Plan first, then build  
-- Ask only the questions that unblock you  
-- Remember important decisions on **your** computer  
-- Avoid saying “done” without checking  
+- Only ask questions that actually unblock you  
+- Keep notes on **your** computer  
+- Don’t say “done” without checking  
 - Stay usable for non-technical people  
 
 Privacy: [docs/PRIVACY.md](docs/PRIVACY.md)
 
 ---
 
-## Get help
+## Help
 
-| I want to… | Open this |
-|------------|-----------|
-| Watch install | [Website install section](https://anyone-can-code.vercel.app/#install) |
-| Read install again | [How to install](#how-to-install) |
-| Ask a question | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) |
-| Chat live | [Discord](https://discord.gg/qgS29y7TqP) |
-| Report something broken | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
+| I need… | Go here |
+|---------|---------|
+| Install video (repo) | [docs/media/install-setup.mp4](docs/media/install-setup.mp4) |
+| Install video (website) | [anyone-can-code.vercel.app/#install](https://anyone-can-code.vercel.app/#install) |
+| Written install steps | [How to install](#how-to-install) |
+| A question | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) |
+| Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
+| Something broken | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
 
-**Simple rule:** questions → Discussions/Discord · broken → Report a problem.
+**Simple rule:** question → Discussions / Discord · broken → Report a problem.
 
 ---
 
-## For people who change the code
+## If you want to change the code
 
-Most users can skip this.
+Most people can ignore this.
 
 | Path | What |
 |------|------|
-| `plugins/anyone-can-code/` | Plugin |
+| `plugins/anyone-can-code/` | The plugin |
+| `docs/media/` | Install video + captions |
 | `.github/` | Issues, CI, community docs |
 | `docs/` | Privacy, terms — [map](docs/README.md) |
-| `CHANGELOG.md` | Release notes |
+| `CHANGELOG.md` | What changed |
 
 ```bash
 python -m pytest plugins/anyone-can-code/tests -q
@@ -253,5 +274,5 @@ python -m pytest plugins/anyone-can-code/tests -q
 [![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)
 
 <p align="center">
-  <sub>MIT License · <a href="https://github.com/mitunmanav">Mitun</a> · <a href="https://anyone-can-code.vercel.app/">Website</a></sub>
+  <sub>MIT · <a href="https://github.com/mitunmanav">Mitun</a> · <a href="https://anyone-can-code.vercel.app/">Website</a></sub>
 </p>
