@@ -4,13 +4,13 @@ What changed, and why (**plain language**).
 
 ## User impact
 
-Who notices? Install · setup · daily use · docs · only contributors?
+Who notices? Install · daily use · docs · contributors only?
 
 ## Checks
 
-- [ ] `python plugins\anyone-can-code\scripts\doctor.py --json` (if relevant)
-- [ ] `python -m pytest plugins\anyone-can-code\tests -q` (or targeted tests)
-- [ ] JSON valid for any changed manifests (`plugin.json`, marketplace, hooks)
+- [ ] `python -m pytest plugins/anyone-can-code/tests -q` (or targeted tests)
+- [ ] `python plugins/anyone-can-code/scripts/doctor.py --json` (if install/runtime touched)
+- [ ] JSON valid if you changed `plugin.json`, marketplace, or hooks
 
 ## Notes
 
@@ -18,4 +18,4 @@ Limits, follow-ups, or risks.
 
 ## AI / authorship
 
-- [ ] An AI coding agent helped write this PR (say so in one line if yes)
+- [ ] An AI coding agent helped write this PR (one line if yes)

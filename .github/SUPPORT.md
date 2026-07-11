@@ -1,47 +1,39 @@
 # Support
 
-Stuck? Pick the **smallest** path that fits.
+Stuck? Pick the **smallest** path.
 
 ## Where to go
 
 | Need | Where |
 |------|--------|
-| Install overview | [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/) |
-| Install steps | [README](../README.md) · [plugin README](../plugins/anyone-can-code/README.md) |
-| How-to question | [Discussions → Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
-| Soft idea | [Discussions → Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
-| Show what you built | [Discussions → Show and tell](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=show-and-tell) |
-| Full Discussions map | [DISCUSSIONS.md](DISCUSSIONS.md) |
+| Install overview | [Website](https://anyone-can-code.vercel.app/) |
+| Install steps | [README](../README.md) |
+| How-to question | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
+| Soft idea | [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
 | Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Bug / crash | [Something is broken](https://github.com/mitunmanav/anyone-can-code/issues/new?template=bug_report.yml) |
-| Install failed | [Install / setup problem](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) |
-| Tracked feature | [Feature request](https://github.com/mitunmanav/anyone-can-code/issues/new?template=feature_request.yml) |
-| Issues map | [ISSUES.md](ISSUES.md) · [choose a template](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
-| Security | [SECURITY.md](SECURITY.md) — **not** public issues or Discussions |
-| Docs map | [docs/README.md](../docs/README.md) |
+| Bug / install / feature | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
+| Security | [SECURITY.md](SECURITY.md) — **private only** |
 
-**Rule of thumb:** question or soft idea → **Discussions**. Something broken → **Issues** (guided forms).
+**Rule:** question or soft idea → **Discussions**. Something broken → **Issues**.
 
-## Discussions (easiest first)
+## Easy path
 
-1. Read [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5).  
-2. Open the matching category form (Q&A, Ideas, …).  
-3. Answer the short prompts — plain language is enough.
+1. [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5)  
+2. [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) if still stuck  
+3. Else [open an issue](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) with a guided form  
 
-Guide: [DISCUSSIONS.md](DISCUSSIONS.md) · Browse: [all discussions](https://github.com/mitunmanav/anyone-can-code/discussions)
+Maps: [DISCUSSIONS.md](DISCUSSIONS.md) · [ISSUES.md](ISSUES.md)
 
-## Before opening a **bug** issue
+## Before a bug report
 
-1. Pick a template: [ISSUES.md](ISSUES.md) or [New issue](https://github.com/mitunmanav/anyone-can-code/issues/new/choose).  
-2. Read the [README](../README.md) install steps if it is install-related.  
-3. Run (optional; remove secrets before sharing):
+1. Use a guided form (plain English is fine).  
+2. Say what you wanted · what you did · what happened.  
+3. Optional doctor output (strip secrets):
 
 ```powershell
 python plugins\anyone-can-code\scripts\doctor.py --json
 ```
 
-4. Forms ask for: what you wanted · what you did · what happened · Windows/Codex.
-
-Every **issue** gets an automatic **AI maintainer brief** (plain English). Re-run: comment `/ai-review`.
+Every **issue** gets an automatic **AI maintainer brief**. Re-run: comment `/ai-review`.
 
 **Do not paste:** tokens, private paths, full memory notes, personal data.

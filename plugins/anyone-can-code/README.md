@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Anyone Can Code" width="260"/>
+  <img src="assets/logo.png" alt="Anyone Can Code" width="420"/>
 </p>
 
 <h1 align="center">Anyone Can Code</h1>

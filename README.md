@@ -26,10 +26,10 @@
 **Need:** [Codex Desktop](https://openai.com/codex/) · Windows · Python · **v1.1.0-beta.3**
 
 ```text
-  Codex Desktop  →  marketplace command  →  Install plugin  →  $setup  →  say what you want
+Codex Desktop → marketplace command → Install plugin → $setup → say what you want
 ```
 
-**1. Add the marketplace** (paste in terminal):
+**1. Add the marketplace** (paste in a terminal):
 
 ```powershell
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
@@ -45,7 +45,7 @@ Open a folder, start a chat, run:
 $setup
 ```
 
-Then say what you want in plain English, or run `$orchestrator`.
+Then say what you want in plain English (or run `$orchestrator`).
 
 ```
 You:  "I want a website with login and payments"
@@ -54,15 +54,15 @@ ACC:  Detected idea · website
       Plan: site + auth + Stripe. SEO later.
 ```
 
-**Stuck?** See common fixes below, or open the [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9).
-
-### Common install fixes
+### If install fails
 
 | Symptom | Try this |
 |---------|----------|
 | Marketplace not found | Paste the full command, restart Codex |
-| Plugin missing | Plugin browser → search **Anyone Can Code** → Install → restart |
+| Plugin missing | Plugin browser → **Anyone Can Code** → Install → restart |
 | `$setup` no reply | New chat inside a project folder |
+
+Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)
 
 ---
 
@@ -78,43 +78,40 @@ ACC:  Detected idea · website
 | `$verify` | Check work with evidence |
 | `$fix` | Recover when something keeps failing |
 
-More skills (plan, execute, memory, settings…): [plugin README](plugins/anyone-can-code/README.md).
+More skills: [plugin README](plugins/anyone-can-code/README.md)
 
 ---
 
 ## What you get
 
-- Routes idea / bug / feature / review / ship automatically
-- Asks only questions that unblock you
-- Remembers decisions in portable Markdown
-- Verifies before claiming “done”
-- Optional background automations: [automations/](plugins/anyone-can-code/automations/README.md)
+- Routes idea / bug / feature / review / ship automatically  
+- Asks only questions that unblock you  
+- Remembers decisions in portable Markdown  
+- Verifies before claiming “done”  
+- Optional background automations: [automations](plugins/anyone-can-code/automations/README.md)
 
 ---
 
 ## Help
 
-| Need | Link |
-|------|------|
-| Website / install | [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/) |
-| Questions | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) |
+| Need | Go here |
+|------|---------|
+| Website | [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/) |
+| Questions | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) |
 | Something broken | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
 | Chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Safety (you) | [SAFETY.md](.github/SAFETY.md) — plain English |
-| Contributing | [CONTRIBUTING.md](.github/CONTRIBUTING.md) · [SECURITY.md](.github/SECURITY.md) |
+| Safety | [SAFETY.md](.github/SAFETY.md) |
+| Contribute | [CONTRIBUTING.md](.github/CONTRIBUTING.md) |
 
 ---
 
 ## For contributors
 
-Full map: **[docs/README.md](docs/README.md)**
-
 | Path | What it is |
 |------|------------|
 | `plugins/anyone-can-code/` | Plugin (skills, hooks, scripts, tests) |
-| `.agents/plugins/` | Marketplace definition |
-| `.github/` | Issues, PR template, CI, community docs |
-| `docs/` | Privacy, terms, credits, contracts |
+| `.github/` | Issues, PRs, CI, community docs |
+| `docs/` | Privacy, terms, credits — [map](docs/README.md) |
 | `CHANGELOG.md` | Release history |
 
 ```bash
