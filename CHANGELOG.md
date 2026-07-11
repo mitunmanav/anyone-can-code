@@ -2,6 +2,35 @@
 
 All notable public changes to Anyone Can Code will be documented here.
 
+## 1.1.0-beta.3 - 2026-07-11
+
+Fix-round release. Beta: rough edges expected — please report failures via GitHub Issues.
+
+### Fixed
+
+- `entry_mode` stickiness now survives via an atomic JSON write helper (`canonical_state.atomic_write_json`), fixing a case where the field was silently stripped.
+- `audit.py` failure detection now requires a strong signal (non-zero exit code/status, a real traceback, or a timeout) instead of tripping on plain text like "error" or "failed" appearing in command output (e.g. `grep error log.txt`).
+- `guard.py`: hard deny checks now always run before the repeat-failure warning, so a denied command can never be downgraded to a warning.
+- Doctor rejects being pointed at a file instead of a project root; `build_handoff` catches subprocess errors instead of crashing.
+- CLI error paths print to stderr, not stdout.
+- Handoff skill uses the `$PLUGIN_ROOT` convention instead of a literal `<plugin>` placeholder.
+- Orchestrator skill trimmed to fit the token budget doctor gate.
+- Repeat-failure window filters to `command_result` events only; unbounded signal ledger now rotates.
+- Per-session style enforcement without hardcoded counts; loop gate text matches spec verbatim.
+
+### Added
+
+- Handoff skill + `build_handoff` script for structured session handoffs.
+- Stop-after-2-identical-failures guard, wired into `audit.py`'s real `PostToolUse` handler.
+
+### Housekeeping
+
+- Repo history squashed to a single commit to remove a personal email address that had been committed into history; old `v1.0.0` / `v1.1.0-beta.1` / `v1.1.0-beta.2` tags recreated fresh where still relevant. No file content changed as a result.
+
+### Tests
+
+- 194 tests passing (3 skipped on non-Windows shells).
+
 ## 1.1.0-beta.2 - 2026-07-07
 
 Improvement-loop release. Beta: rough edges expected — please report failures via GitHub Issues.
