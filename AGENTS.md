@@ -8,12 +8,48 @@
 - Install (primary): Codex Plugins → Add marketplace with repo URL → Install ACC → **trust all hooks** → restart → `$setup`. Terminal marketplace add is optional only.
 - Communication mode: caveman-strict
 
-## User preferences (public product docs — do not regress)
-- README: **short, clear, pitch-like** (not long essay). GIF in README; MP4 optional download.
-- Non-technical first. Mitun voice OK if concise. No engineering-first framing.
-- Native Codex from official docs — **not** migrated from other AI coding agents.
-- Hooks trust is mandatory and must stay loud in install docs.
-- Small polish only on site/docs — never redesign; never re-clutter with link walls.
+## HARD PREFS — public product (never regress)
+
+User taught these the hard way. **Do not make him re-point them out.**
+
+### README / GitHub public face
+- **Short, clear, pitch-like** (concise; not a long essay or biography dump).
+- GIF **in** README for install preview (`docs/media/install-setup.gif`).
+- MP4 optional download only — **GitHub does not support video well in README**.
+- Non-technical first. Mitun voice OK if **concise**. No engineering-first framing.
+- Native Codex from **official Codex docs** — **not** migrated/ported from Claude/Cursor/Copilot/other agents.
+- Do not call ACC a “harness” as branding (plugin is correct).
+- Do not claim finished all-in-one forever; open beta honesty is OK.
+- Star history / footer: keep light; no link walls at the top.
+
+### Install truth (loud in README)
+1. Copy repo URL  
+2. Codex Plugins → **+** → Add marketplace → paste  
+3. Install Anyone Can Code  
+4. **Trust every ACC hook** (mandatory; cannot auto-trust)  
+5. Restart · tools on  
+6. `$setup` → plain English  
+
+Terminal marketplace add = optional only.
+
+### Docs / community
+- Prefer fewer, clearer maps over more contact links.
+- Issues/Discussions: plain English, guided forms.
+- Safety/security for maintainer: keep separate from main user path.
+
+### Site + docs joint
+- Small polish only — never redesign.
+- Never re-clutter with link walls when “making it better.”
+- When changing public story, keep website + README + discussion #5 aligned and **short**.
+
+### Media captions
+- Silent screen recordings: caption cues must match **on-screen timeline**, not guessed speech length.
+
+### Ship
+- Product repo is public `main`. Prefer accurate install + short README over more sections.
+- Website: development → testing → main, then verify Vercel live (prod deploy may need `vercel --prod`).
+
+## Workflow extras
 - Development memory mode: Obsidian project brain first
 - Product memory target: portable linked Markdown through bundled MCP, with JSONL as migration input only
 - Docs map: `docs/README.md` (historical handoffs/plans are not current truth)
