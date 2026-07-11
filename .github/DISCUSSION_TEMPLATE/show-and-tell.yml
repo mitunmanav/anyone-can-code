@@ -10,7 +10,7 @@ body:
     id: project-name
     attributes:
       label: Project name
-      placeholder: My waitlist site / small game / …
+      placeholder: My small app / game / personal tool / …
     validations:
       required: true
   - type: textarea

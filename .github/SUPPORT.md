@@ -4,9 +4,11 @@ You do **not** need to be technical. Pick the smallest option that fits.
 
 ## Start here (recommended)
 
-1. **[Start here — install in 3 steps](https://github.com/mitunmanav/anyone-can-code/discussions/5)**  
-2. If you’re still confused → **[FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)**  
-3. If something is broken → **[Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)**  
+1. **Install:** [Website](https://anyone-can-code.vercel.app/#install) or [README Install](../README.md#install)  
+2. **Start here discussion:** [Discussion #5](https://github.com/mitunmanav/anyone-can-code/discussions/5)  
+3. Still confused → **[FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)**  
+4. Something broken → **[Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)**  
+
 
 ## Where should I go?
 

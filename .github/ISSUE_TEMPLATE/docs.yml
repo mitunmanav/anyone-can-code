@@ -37,4 +37,4 @@ body:
     attributes:
       label: Link (optional)
       description: URL or file path
-      placeholder: https://github.com/mitunmanav/anyone-can-code#quick-start
+      placeholder: https://github.com/mitunmanav/anyone-can-code#install

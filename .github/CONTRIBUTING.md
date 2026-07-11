@@ -42,8 +42,8 @@ AI reviews every issue/PR and posts a maintainer brief — write so that brief s
 - Small, focused changes. Feature branch — never force-push `main`.  
 - Open a PR. Wait for **Validate** CI (and the AI maintainer brief).  
 - No local runtime state, user memory, logs, or secrets in commits.  
-- Validate before claiming done.  
-- Full workflow: [DEVELOPMENT-WORKFLOW.md](../DEVELOPMENT-WORKFLOW.md).
+- Validate before claiming done (doctor + pytest for plugin changes).  
+- Security problems: private advisory only — never public Issues with exploit detail.
 
 ## Checks before a PR
 

@@ -21,19 +21,18 @@ function Get-AllowedPatterns {
                 '^\.flow/specs/fn-2-harden-acc-development-system\.(json|md)$',
                 '^\.flow/tasks/fn-2-harden-acc-development-system\.[0-9]+\.(json|md)$',
                 '^\.flow/usage\.md$',
-                '^AGENTS\.md$',
-                '^DEVELOPMENT-WORKFLOW\.md$'
+                '^AGENTS\.md$'
             )
         }
         "docs-only" {
             return @(
                 '^AGENTS\.md$',
-                '^DEVELOPMENT-WORKFLOW\.md$',
                 '^README\.md$',
-                '^CONTRIBUTING\.md$',
                 '^CHANGELOG\.md$',
-                '^SECURITY\.md$',
-                '^SUPPORT\.md$',
+                '^\.github/CONTRIBUTING\.md$',
+                '^\.github/SECURITY\.md$',
+                '^\.github/SUPPORT\.md$',
+                '^docs/',
                 '^\.flow/usage\.md$',
                 '^\.flow/(specs|tasks)/.*\.(md|json)$'
             )
@@ -41,7 +40,6 @@ function Get-AllowedPatterns {
         "development-system" {
             return @(
                 '^AGENTS\.md$',
-                '^DEVELOPMENT-WORKFLOW\.md$',
                 '^scripts/check-promotion-scope\.ps1$',
                 '^tests/test_check_promotion_scope\.py$',
                 '^\.flow/(specs|tasks)/fn-3-automate-safe-local-promotion(\.[0-9]+)?\.(md|json)$'
@@ -51,7 +49,6 @@ function Get-AllowedPatterns {
             return @(
                 '^plugins/anyone-can-code/',
                 '^AGENTS\.md$',
-                '^DEVELOPMENT-WORKFLOW\.md$',
                 '^README\.md$',
                 '^\.flow/(specs|tasks)/.*\.(md|json)$'
             )

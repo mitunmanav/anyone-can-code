@@ -69,7 +69,6 @@ class PromotionScopeGuardTests(unittest.TestCase):
                 ".flow/specs/fn-2-harden-acc-development-system.md": "spec\n",
                 ".flow/tasks/fn-2-harden-acc-development-system.1.md": "task\n",
                 "AGENTS.md": "agents\n",
-                "DEVELOPMENT-WORKFLOW.md": "workflow\n",
             }
         )
 
@@ -112,7 +111,6 @@ class PromotionScopeGuardTests(unittest.TestCase):
                 "scripts/check-promotion-scope.ps1": "script\n",
                 "tests/test_check_promotion_scope.py": "test\n",
                 "AGENTS.md": "agents\n",
-                "DEVELOPMENT-WORKFLOW.md": "workflow\n",
             }
         )
 

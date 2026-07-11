@@ -9,12 +9,10 @@
 | [PRIVACY.md](PRIVACY.md) | What the plugin stores; no telemetry |
 | [TERMS.md](TERMS.md) | License, warranty, responsibilities |
 | [CREDITS.md](CREDITS.md) | Attribution |
-| [ACC-OPERATING-CONTRACT.md](ACC-OPERATING-CONTRACT.md) | Operating rules for shipped product |
 | [plugin README](../plugins/anyone-can-code/README.md) | Skills, memory, tests |
 | [CHANGELOG](../CHANGELOG.md) | Release history |
-| [media/install-setup.gif](media/install-setup.gif) | Install walkthrough (shows in GitHub README) |
-| [media/install-setup.mp4](media/install-setup.mp4) | Full install video (download) |
-| [media/install-setup.vtt](media/install-setup.vtt) | Captions for the MP4 on the website |
+| [media/install-setup.gif](media/install-setup.gif) | Install walkthrough (GitHub README) |
+| [media/install-setup.mp4](media/install-setup.mp4) | Full install video |
 
 ## Community (GitHub)
 
@@ -36,4 +34,3 @@
 | [VALIDATION](../plugins/anyone-can-code/VALIDATION.md) | Acceptance checklist |
 | [IMPLEMENTATION-SOURCE-OF-TRUTH](../plugins/anyone-can-code/IMPLEMENTATION-SOURCE-OF-TRUTH.md) | What shipped |
 | [automations](../plugins/anyone-can-code/automations/README.md) | Optional scheduled prompts |
-| [AGENTS.md](../AGENTS.md) | Agent context for this repo |
