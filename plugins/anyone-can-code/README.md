@@ -81,6 +81,10 @@ python -m pytest plugins/anyone-can-code/tests -q
 
 ---
 
+## Safeguards
+
+ACC enforces `mechanics_docs_gate` before any platform mechanics work — hooks, plugin runtime, Windows launch, MCP, or tool-plumbing changes require a docs brief from official docs/source before code is written. When official docs are missing, controlled proof plus recorded uncertainty is required. This blocks silent assumptions about platform mechanics.
+
 ## Deeper docs
 
 | Doc | For |
