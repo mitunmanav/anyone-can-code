@@ -89,22 +89,25 @@ If you don’t have Codex yet, install that first.
 
 ## Watch the install
 
-Silent screen recording. Captions follow the steps on screen.
+GitHub shows GIFs well (not MP4). This is the install walkthrough:
 
-**In this repo (download / open):**
+<p align="center">
+  <img src="docs/media/install-setup.gif" alt="Install Anyone Can Code on Codex Desktop" width="720"/>
+</p>
 
-- Video: [`docs/media/install-setup.mp4`](docs/media/install-setup.mp4)  
-- Captions: [`docs/media/install-setup.vtt`](docs/media/install-setup.vtt)  
+Silent screen recording — same steps written below.
 
-**Also on the website:** [anyone-can-code.vercel.app/#install](https://anyone-can-code.vercel.app/#install)
-
-https://github.com/mitunmanav/anyone-can-code/raw/main/docs/media/install-setup.mp4
+| File | What |
+|------|------|
+| [`docs/media/install-setup.gif`](docs/media/install-setup.gif) | Preview in this README |
+| [`docs/media/install-setup.mp4`](docs/media/install-setup.mp4) | Full video (download if you want) |
+| [Website player](https://anyone-can-code.vercel.app/#install) | Video + step labels on the site |
 
 ---
 
 ## How to install
 
-Same steps as the video.
+Same steps as the GIF / video.
 
 ### 1. Copy this repo URL
 

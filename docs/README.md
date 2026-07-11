@@ -12,8 +12,9 @@
 | [ACC-OPERATING-CONTRACT.md](ACC-OPERATING-CONTRACT.md) | Operating rules for shipped product |
 | [plugin README](../plugins/anyone-can-code/README.md) | Skills, memory, tests |
 | [CHANGELOG](../CHANGELOG.md) | Release history |
-| [media/install-setup.mp4](media/install-setup.mp4) | Install walkthrough video (silent + captions) |
-| [media/install-setup.vtt](media/install-setup.vtt) | Captions for the install video |
+| [media/install-setup.gif](media/install-setup.gif) | Install walkthrough (shows in GitHub README) |
+| [media/install-setup.mp4](media/install-setup.mp4) | Full install video (download) |
+| [media/install-setup.vtt](media/install-setup.vtt) | Captions for the MP4 on the website |
 
 ## Community (GitHub)
 
