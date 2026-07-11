@@ -1,26 +1,35 @@
 WEBVTT
 
-NOTE Silent screen recording — captions follow what is on screen, not speech.
+NOTE Silent video. Captions switch with the screen, not speech.
 
-00:00:00.000 --> 00:00:02.800
+00:00:00.000 --> 00:00:02.400
 Add plugin marketplace — paste https://github.com/mitunmanav/anyone-can-code
-Git ref: main · then click Add marketplace.
+Then click Add marketplace.
 
-00:00:02.800 --> 00:00:05.200
-Marketplace added (toast: anyone-can-code-marketplace is already added is OK).
+00:00:02.400 --> 00:00:05.000
+Done — toast may say “anyone-can-code-marketplace is already added.”
 
-00:00:05.200 --> 00:00:07.800
-Plugins list / settings — find Anyone Can Code after install.
+00:00:05.000 --> 00:00:06.600
+Click Manage (gear) next to Installed plugins.
 
-00:00:07.800 --> 00:00:10.500
-Open Anyone Can Code — scroll to Hooks on the plugin page.
+00:00:06.600 --> 00:00:07.600
+Find Anyone Can Code in the list — keep it ON.
 
-00:00:10.500 --> 00:00:17.500
-Hooks settings — turn ON and trust every ACC hook.
-This is required. Codex will not auto-trust hooks.
+00:00:07.600 --> 00:00:08.700
+Open the Anyone Can Code plugin page.
 
-00:00:17.500 --> 00:00:21.500
-Confirm skills/tools are enabled on the plugin page.
+00:00:08.700 --> 00:00:12.800
+Hooks settings — turn every ACC hook ON and trust them.
+Required. Not automatic.
 
-00:00:21.500 --> 00:00:27.200
-Start a chat with Anyone Can Code selected — describe what you want in plain English.
+00:00:12.800 --> 00:00:14.200
+Hooks overview: anyone-can-code shows 9 hooks.
+
+00:00:14.200 --> 00:00:18.800
+Skills stay enabled (all toggles on).
+
+00:00:18.800 --> 00:00:22.400
+Plugin home — use Try now when ready.
+
+00:00:22.400 --> 00:00:27.200
+Chat with Anyone Can Code selected — say what you want in plain English.
