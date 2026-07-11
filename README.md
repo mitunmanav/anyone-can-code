@@ -82,9 +82,11 @@ More skills (plan, execute, memory, settings…): [plugin README](plugins/anyone
 |---|---|
 | Website | [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/) |
 | Discord | [discord.gg/qgS29y7TqP](https://discord.gg/qgS29y7TqP) |
-| Bugs / ideas | [GitHub Issues](https://github.com/mitunmanav/anyone-can-code/issues) |
+| Bugs / ideas | [GitHub Issues](https://github.com/mitunmanav/anyone-can-code/issues) — each gets an AI plain-language brief for the maintainer |
+| Discussions | [Q&A / ideas](https://github.com/mitunmanav/anyone-can-code/discussions) |
 | Security | [SECURITY.md](.github/SECURITY.md) — private reports only |
-| Contributing | [CONTRIBUTING.md](.github/CONTRIBUTING.md) |
+| Contributing | [CONTRIBUTING.md](.github/CONTRIBUTING.md) — humans always welcome; outside AI agents pause when maintainer is working |
+
 
 ---
 

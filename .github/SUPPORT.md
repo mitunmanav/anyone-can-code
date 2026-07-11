@@ -7,7 +7,10 @@ Stuck? Use one of these:
 | Install / how-to | [README](../README.md) · [plugin README](../plugins/anyone-can-code/README.md) |
 | Chat with people | [Discord](https://discord.gg/qgS29y7TqP) |
 | Bug or idea | [GitHub Issues](https://github.com/mitunmanav/anyone-can-code/issues) |
+| Soft questions | [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) |
 | Security | [SECURITY.md](SECURITY.md) — **not** public issues |
+
+Every issue gets an automatic **AI maintainer brief** (plain English) so the non-technical owner can act. Re-run with comment `/ai-review`.
 
 ## Before opening an issue
 

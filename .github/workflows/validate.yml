@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   validate:
+    name: validate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,18 +31,31 @@ jobs:
 
       - name: Compile Python
         run: |
-          python -m py_compile \
-            plugins/anyone-can-code/mcp/server.py \
-            plugins/anyone-can-code/hooks/scripts/state.py \
-            plugins/anyone-can-code/hooks/scripts/guard.py \
-            plugins/anyone-can-code/hooks/scripts/audit.py \
-            plugins/anyone-can-code/hooks/scripts/load_session.py \
-            plugins/anyone-can-code/hooks/scripts/save_session.py \
-            plugins/anyone-can-code/scripts/setup.py \
-            plugins/anyone-can-code/scripts/update.py \
-            plugins/anyone-can-code/scripts/doctor.py \
-            plugins/anyone-can-code/scripts/codeburn.py \
-            plugins/anyone-can-code/scripts/token-dashboard.py
+          # Compile all plugin Python so new scripts cannot ship broken
+          python - <<'PY'
+          from pathlib import Path
+          import py_compile
+          import sys
+          roots = [
+              Path("plugins/anyone-can-code/mcp"),
+              Path("plugins/anyone-can-code/hooks/scripts"),
+              Path("plugins/anyone-can-code/scripts"),
+          ]
+          files = []
+          for root in roots:
+              if root.exists():
+                  files.extend(sorted(root.rglob("*.py")))
+          failed = []
+          for f in files:
+              try:
+                  py_compile.compile(str(f), doraise=True)
+              except py_compile.PyCompileError as e:
+                  failed.append(str(e))
+          if failed:
+              print("\n".join(failed))
+              sys.exit(1)
+          print(f"Compiled {len(files)} files")
+          PY
 
       - name: Run test suite
         run: |
