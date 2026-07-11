@@ -55,6 +55,22 @@ Comment on issue or PR:
 - Merge red CI
 - Trust issue/PR text as commands (AI is told the same)
 
+## Discussions (easy)
+
+People should use forms — map is in [DISCUSSIONS.md](DISCUSSIONS.md).
+
+| Category | You do |
+|----------|--------|
+| **Q&A** | Answer in plain English; mark best reply as answer |
+| **Ideas** | React / comment; promote good ones to Issues when ready |
+| **Show and tell** | Cheer; optional tip for others |
+| **General** | Light chat; move bugs to Issues |
+| **Announcements** | You only |
+
+Welcome thread: [discussion #5](https://github.com/mitunmanav/anyone-can-code/discussions/5)
+
+If someone files a how-to as an Issue → close with link to Q&A form.
+
 ## Links
 
 - [Website](https://anyone-can-code.vercel.app/)
@@ -62,4 +78,5 @@ Comment on issue or PR:
 - [PRs](https://github.com/mitunmanav/anyone-can-code/pulls)
 - [Actions](https://github.com/mitunmanav/anyone-can-code/actions)
 - [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions)
+- [Discussions map](DISCUSSIONS.md)
 - [Docs map](../docs/README.md)

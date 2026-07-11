@@ -1,0 +1,32 @@
+title: "[Show]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Show what you built with Anyone Can Code.** Celebrate wins. Help others learn.
+
+        Please do **not** paste secrets, private keys, or full memory files.
+  - type: input
+    id: project-name
+    attributes:
+      label: Project name
+      placeholder: My waitlist site / small game / …
+    validations:
+      required: true
+  - type: textarea
+    id: story
+    attributes:
+      label: What you made
+      description: Short story in plain English. What did ACC help with?
+    validations:
+      required: true
+  - type: textarea
+    id: tips
+    attributes:
+      label: Tips for others (optional)
+      description: Commands or habits that worked well (`$setup`, `$verify`, …).
+  - type: input
+    id: link
+    attributes:
+      label: Link (optional)
+      description: Repo, demo, or screenshot URL (public only).

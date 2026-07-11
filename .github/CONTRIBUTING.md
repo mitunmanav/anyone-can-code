@@ -62,13 +62,24 @@ Include: what changed for users, why, checks you ran, known limits.
 
 If you used an AI agent to write the PR, say so in the description (one line).
 
-## Issues
+## Issues vs Discussions
 
-- Bugs / features: GitHub Issues (templates).  
-- Questions: [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) or [Discord](https://discord.gg/qgS29y7TqP).  
-- Security: private advisory only — see [SECURITY.md](SECURITY.md).
+| Path | Use for |
+|------|---------|
+| [Discussions](DISCUSSIONS.md) | Questions, soft ideas, show-and-tell |
+| [Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) | Bugs and tracked work |
+| [Discord](https://discord.gg/qgS29y7TqP) | Live chat |
+| [SECURITY.md](SECURITY.md) | Vulnerabilities (private only) |
 
-Every issue gets an automatic plain-language AI brief for the maintainer.  
+Quick open:
+
+- [Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a)  
+- [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas)  
+- [Show and tell](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=show-and-tell)  
+
+Full map: [DISCUSSIONS.md](DISCUSSIONS.md)
+
+Every **issue** gets an automatic plain-language AI brief for the maintainer.  
 Re-run: comment `/ai-review`.
 
 ## Releases (maintainers)

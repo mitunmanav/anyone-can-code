@@ -24,6 +24,7 @@ Install and everyday use: [root README](../README.md)
 |-----|------|
 | [CONTRIBUTING](../.github/CONTRIBUTING.md) | How to help; humans vs AI agents |
 | [SUPPORT](../.github/SUPPORT.md) | Where to get help |
+| [DISCUSSIONS](../.github/DISCUSSIONS.md) | Q&A / Ideas / Show and tell map |
 | [SECURITY](../.github/SECURITY.md) | Private vulnerability reports |
 | [MAINTAINER](../.github/MAINTAINER.md) | Maintainer cheat sheet (Mitun) |
 | [CODE_OF_CONDUCT](../.github/CODE_OF_CONDUCT.md) | Community norms |

@@ -22,6 +22,7 @@
 <p align="center">
   <a href="https://anyone-can-code.vercel.app/">Website</a> ·
   <a href="#quick-start">Install</a> ·
+  <a href="https://github.com/mitunmanav/anyone-can-code/discussions">Discussions</a> ·
   <a href="https://discord.gg/qgS29y7TqP">Discord</a> ·
   <a href="https://github.com/mitunmanav/anyone-can-code/issues/new/choose">Report a bug</a>
 </p>
@@ -90,9 +91,11 @@ More skills (plan, execute, memory, settings…): [plugin README](plugins/anyone
 | Need | Link |
 |------|------|
 | Product site | [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/) |
-| Chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Bugs / ideas | [GitHub Issues](https://github.com/mitunmanav/anyone-can-code/issues) — each gets an AI plain-language brief |
-| Q&A | [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) |
+| How-to / questions | [Discussions → Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
+| Soft ideas | [Discussions → Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
+| Discussions map | [DISCUSSIONS.md](.github/DISCUSSIONS.md) · [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) |
+| Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
+| Bugs / tracked work | [GitHub Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) — each issue gets an AI plain-language brief |
 | Security | [SECURITY.md](.github/SECURITY.md) — private reports only |
 | Contributing | [CONTRIBUTING.md](.github/CONTRIBUTING.md) — humans welcome; outside AI agents pause when maintainer is working |
 
