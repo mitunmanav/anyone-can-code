@@ -19,16 +19,19 @@
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
-**New here?** Use the simple install guide: [root README](../../README.md)  
+**New here?** Full install (with hooks): [root README — How to install](../../README.md#how-to-install)  
+**Video:** [anyone-can-code.vercel.app/#install](https://anyone-can-code.vercel.app/#install)  
 **Stuck?** [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) · [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)
 
-Short install:
+### Install (short)
 
-```powershell
-codex plugin marketplace add mitunmanav/anyone-can-code --ref main
-```
+1. Copy `https://github.com/mitunmanav/anyone-can-code`  
+2. Codex → **Plugins** → **+** → **Add a Marketplace** → paste URL  
+3. Scroll → **Anyone Can Code** → **Install**  
+4. **Hooks → Settings → enable + trust every ACC hook** (required; not automatic)  
+5. Restart Codex · enable tools · open a project · `$setup` · say what you want  
 
-Then in Codex: plugins → **Anyone Can Code** → Install → restart → open a project → type `$setup` → say what you want in normal words.
+Optional terminal: `codex plugin marketplace add mitunmanav/anyone-can-code --ref main` — then still do steps 3–5.
 
 **Current version:** [plugin.json](.codex-plugin/plugin.json) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
 
