@@ -1,5 +1,7 @@
 # Security
 
+Maintainer checklist (plain English): [SAFETY.md](SAFETY.md)
+
 ## Report a vulnerability
 
 **Private only** — [open a GitHub security advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new).

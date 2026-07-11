@@ -100,6 +100,7 @@ More skills (plan, execute, memory, settings…): [plugin README](plugins/anyone
 | Questions | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) |
 | Something broken | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
 | Chat | [Discord](https://discord.gg/qgS29y7TqP) |
+| Safety (you) | [SAFETY.md](.github/SAFETY.md) — plain English |
 | Contributing | [CONTRIBUTING.md](.github/CONTRIBUTING.md) · [SECURITY.md](.github/SECURITY.md) |
 
 ---

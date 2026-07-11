@@ -22,6 +22,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Secret hygiene (no committed secrets)
+        run: |
+          set -euo pipefail
+          # Fail if common secret-looking patterns appear outside docs/examples.
+          # GitHub secret scanning still runs on push; this is a second belt.
+          if git grep -nI -E \
+            '(AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|-----BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY-----)' \
+            -- \
+            ':!*.md' \
+            ':!.github/workflows/validate.yml' \
+            ':!**/fixtures/**' \
+            ':!**/testdata/**' \
+            ; then
+            echo "::error::Possible secret pattern found in tracked files. Remove it and rotate the key."
+            exit 1
+          fi
+          echo "Secret hygiene scan clean"
+
       - name: Validate JSON
         run: |
           python -m json.tool plugins/anyone-can-code/.codex-plugin/plugin.json >/dev/null
