@@ -5,8 +5,8 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>You describe what you want.</strong><br/>
-  Idea → plan → build → verify. Codex plugin for Windows. No engineering background required.
+  <strong>You describe what you want in plain English.</strong><br/>
+  Idea → plan → build → verify. Codex plugin for Windows. No programming background required.
 </p>
 
 <p align="center">
@@ -19,42 +19,54 @@
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
-Full install guide: [root README](../../README.md). Short version:
+**New here?** Use the simple install guide: [root README](../../README.md)  
+**Stuck?** [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) · [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)
+
+Short install:
 
 ```powershell
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
-Then: Codex → plugin browser → **Anyone Can Code** → Install → restart → open a project → `$setup`.
+Then in Codex: plugins → **Anyone Can Code** → Install → restart → open a project → type `$setup` → say what you want in normal words.
 
-**Current version:** see [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) (also on [Releases](https://github.com/mitunmanav/anyone-can-code/releases)).
+**Current version:** [plugin.json](.codex-plugin/plugin.json) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
 
 ---
 
-## Skills
+## Everyday commands (start here)
+
+Type these in the Codex chat. You can also just talk in plain English.
+
+| Type this | What it does (simple) |
+|-----------|------------------------|
+| `$setup` | First-time setup for this project |
+| `$orchestrator` | Front door — helps pick the next step |
+| `$help` | “Where am I?” in plain language |
+| `$status` | Current task and what’s next |
+| `$resume` | Continue after a break |
+| `$verify` | Check the work with proof |
+| `$fix` | Help when the same thing keeps failing |
+
+---
+
+## More skills (optional)
 
 | Skill | What it does |
 |-------|-------------|
-| `$setup` | First-use bootstrap |
-| `$orchestrator` | Front door — detects starting point and routes |
-| `$onboard` | Idea / spec / existing repo / bug |
-| `$clarify` | Only the questions needed to unblock |
+| `$onboard` | Idea / existing project / bug starting points |
+| `$clarify` | Only the questions needed to unblock you |
 | `$plan` | Ordered task plan |
-| `$execute` | Build from the plan; update state |
-| `$verify` | Evidence-first completion check |
-| `$fix` | Recovery when something keeps failing |
-| `$resume` | Continue after interrupt or restart |
-| `$status` | Where things stand |
-| `$help` | Project state in plain language |
-| `$learn` | Save a lesson to Markdown memory |
-| `$capture` | Record a decision, blocker, or insight |
+| `$execute` | Build from the plan |
+| `$learn` | Save a lesson to memory |
+| `$capture` | Record a decision or blocker |
 | `$govern` | Guard against silent scope change |
-| `$readable` | Keep code and artifacts understandable |
-| `$bridge` | Detect other plugins; route safely |
-| `$usage` | Token usage dashboard |
-| `$settings` | Persona, verbosity, automation |
-| `$update` | Migrate state after plugin upgrade |
-| `$handoff` | Structured session handoff |
+| `$readable` | Keep work understandable |
+| `$bridge` | Play nice with other plugins |
+| `$usage` | Token usage view |
+| `$settings` | Preferences |
+| `$update` | After a plugin upgrade |
+| `$handoff` | Pass work to a later session |
 
 ---
 

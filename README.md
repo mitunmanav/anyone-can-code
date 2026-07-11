@@ -5,8 +5,8 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>You describe what you want.</strong><br/>
-  It plans, builds, and verifies — no engineering background required.
+  <strong>You describe what you want in plain English.</strong><br/>
+  It plans, builds, and checks the work — you do not need to be a programmer.
 </p>
 
 <p align="center">
@@ -19,106 +19,178 @@
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
+<p align="center">
+  <a href="https://anyone-can-code.vercel.app/">Website</a>
+  ·
+  <a href="#install-in-3-steps">Install</a>
+  ·
+  <a href="https://github.com/mitunmanav/anyone-can-code/discussions/5">Start here</a>
+  ·
+  <a href="https://discord.gg/qgS29y7TqP">Discord</a>
+  ·
+  <a href="https://github.com/mitunmanav/anyone-can-code/issues/new/choose">Report a problem</a>
+</p>
+
 ---
 
-## Quick start
+## What is this?
 
-**Need:** [Codex Desktop](https://openai.com/codex/) · Windows · Python · **v1.1.0-beta.3**
+**Anyone Can Code (ACC)** is a free add-on for **Codex Desktop** on **Windows**.
 
-```text
-Codex Desktop → marketplace command → Install plugin → $setup → say what you want
-```
+1. You say what you want (like talking to a person).  
+2. ACC makes a plan.  
+3. It helps build the thing.  
+4. It **checks the work** before saying “done.”
 
-**1. Add the marketplace** (paste in a terminal):
+You do **not** need to know programming.  
+This is open source (MIT) and in **open beta** — rough edges can still happen. Tell us if something breaks.
+
+---
+
+## Before you start
+
+You need all three:
+
+1. A **Windows** computer  
+2. **[Codex Desktop](https://openai.com/codex/)** installed and working  
+3. **Python** installed (Codex often needs this for plugins)
+
+If Codex is not installed yet, do that first, then come back here.
+
+**Current version:** v1.1.0-beta.3
+
+---
+
+## Install in 3 steps
+
+### Step 1 — Add ACC to Codex
+
+1. Open the **Terminal** app on Windows  
+   (search “Terminal” or “PowerShell” in the Start menu)  
+2. Copy the whole line below  
+3. Paste it into the terminal  
+4. Press **Enter**
 
 ```powershell
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
-**2. Install the plugin**  
-Codex → plugin browser → **Anyone Can Code** → Install → restart Codex.
+This only tells Codex where ACC lives. It does not install the plugin yet.
 
-**3. First project**  
-Open a folder, start a chat, run:
+### Step 2 — Install the plugin
+
+1. Open **Codex Desktop**  
+2. Open the **plugin browser** (plugins list)  
+3. Find **Anyone Can Code**  
+4. Click **Install**  
+5. **Restart Codex** (close it fully, open again)
+
+### Step 3 — First project
+
+1. Open a folder for your project (any folder is fine)  
+2. Start a new chat in Codex  
+3. Type this and press Enter:
 
 ```
 $setup
 ```
 
-Then say what you want in plain English (or run `$orchestrator`).
+4. Then say what you want in normal words, for example:
 
 ```
-You:  "I want a website with login and payments"
-
-ACC:  Detected idea · website
-      Plan: site + auth + Stripe. SEO later.
+I want a simple website with a contact form
 ```
 
-### If install fails
+Or type `$orchestrator` and follow the prompts.
 
-| Symptom | Try this |
-|---------|----------|
-| Marketplace not found | Paste the full command, restart Codex |
-| Plugin missing | Plugin browser → **Anyone Can Code** → Install → restart |
-| `$setup` no reply | New chat inside a project folder |
-
-Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)
+**That’s it.** You can keep chatting in plain English.
 
 ---
 
-## Everyday commands
+## If something goes wrong
 
-| Say this | What happens |
-|----------|----------------|
-| `$setup` | First-time project setup |
-| `$orchestrator` | Front door — picks the right path |
-| `$help` | Plain-language “where am I?” |
-| `$status` | Current task and next step |
-| `$resume` | Continue after a break |
-| `$verify` | Check work with evidence |
-| `$fix` | Recover when something keeps failing |
+| What you see | What to try |
+|--------------|-------------|
+| Command not found / marketplace error | Paste the **full** Step 1 command again, then restart Codex |
+| You can’t find Anyone Can Code | Open plugins, search the name, Install, then **restart** Codex |
+| `$setup` does nothing | Open a **new chat** inside a project folder and try again |
 
-More skills: [plugin README](plugins/anyone-can-code/README.md)
+Still stuck?
 
----
-
-## What you get
-
-- Routes idea / bug / feature / review / ship automatically  
-- Asks only questions that unblock you  
-- Remembers decisions in portable Markdown  
-- Verifies before claiming “done”  
-- Optional background automations: [automations](plugins/anyone-can-code/automations/README.md)
+- Read the short **[FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)**  
+- Or the **[Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5)** guide  
+- Or ask on **[Discord](https://discord.gg/qgS29y7TqP)**  
+- Or **[report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)** (guided form — plain English is fine)
 
 ---
 
-## Help
+## Commands you’ll use most
 
-| Need | Go here |
-|------|---------|
-| Website | [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/) |
-| Questions | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) |
-| Something broken | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
-| Chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Safety | [SAFETY.md](.github/SAFETY.md) |
-| Contribute | [CONTRIBUTING.md](.github/CONTRIBUTING.md) |
+Type these in the Codex chat (with the `$`):
+
+| Type this | What it does |
+|-----------|----------------|
+| `$setup` | First-time setup for this project |
+| `$orchestrator` | “Front door” — helps pick the next step |
+| `$help` | Explains where you are, in plain language |
+| `$status` | Shows current task and what’s next |
+| `$resume` | Continues after you took a break |
+| `$verify` | Checks the work with proof |
+| `$fix` | Helps when the same thing keeps failing |
+
+You can also just **talk normally**. These commands are shortcuts when you want control.
+
+More detail (optional): [plugin README](plugins/anyone-can-code/README.md)
 
 ---
 
-## For contributors
+## What ACC is careful about
+
+- It **plans first**, then builds  
+- It asks **only the questions that unblock you**  
+- It **remembers** important decisions in simple files on your computer  
+- It tries **not** to say “done” without checking  
+- Your project notes stay **on your machine** (see [Privacy](docs/PRIVACY.md))
+
+---
+
+## Get help (pick one)
+
+| I want to… | Open this |
+|------------|-----------|
+| See the product page | [Website](https://anyone-can-code.vercel.app/) |
+| Install with pictures / short path | [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5) |
+| Ask “how do I…?” | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) or [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) |
+| Chat with people | [Discord](https://discord.gg/qgS29y7TqP) |
+| Report a bug or install failure | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
+
+**Simple rule**
+
+- Question or idea → **Discussions** or Discord  
+- Something is broken → **Report a problem** (forms guide you)
+
+You do **not** need perfect technical words. Write like you would text a friend.
+
+---
+
+## For people who want to change the code
+
+Most users can ignore this section.
 
 | Path | What it is |
 |------|------------|
-| `plugins/anyone-can-code/` | Plugin (skills, hooks, scripts, tests) |
-| `.github/` | Issues, PRs, CI, community docs |
-| `docs/` | Privacy, terms, credits — [map](docs/README.md) |
-| `CHANGELOG.md` | Release history |
+| `plugins/anyone-can-code/` | The plugin itself |
+| `.github/` | Issues, PR rules, safety, CI |
+| `docs/` | Privacy, terms, credits — [full map](docs/README.md) |
+| `CHANGELOG.md` | What changed in each release |
 
 ```bash
 python -m pytest plugins/anyone-can-code/tests -q
 ```
 
-Privacy · Terms: [docs/PRIVACY.md](docs/PRIVACY.md) · [docs/TERMS.md](docs/TERMS.md)
+- How to contribute: [CONTRIBUTING.md](.github/CONTRIBUTING.md)  
+- Maintainer safety checklist: [SAFETY.md](.github/SAFETY.md)  
+- Privacy · Terms: [PRIVACY](docs/PRIVACY.md) · [TERMS](docs/TERMS.md)
 
 ---
 

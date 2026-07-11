@@ -1,51 +1,54 @@
-# Issues guide
+# Issues — easy reporting
 
-Report problems so the maintainer (non-technical) and the AI brief can act.
+Use Issues when something is **broken** or you want a change **tracked**.
 
-## Pick a template
+Not sure? Start with the **[FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)** or **[Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5)**.
 
-→ **[New issue](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)**
+## Open a guided form
 
-| Template | Use when |
-|----------|----------|
+→ **[New issue — choose a type](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)**
+
+| Form name | Use when |
+|-----------|----------|
 | **Something is broken** | Crash, wrong result, weird failure |
 | **Install / setup problem** | Marketplace, plugin install, or `$setup` failed |
-| **Feature request** | Concrete change you want tracked |
-| **Docs or website problem** | Wrong or confusing docs / site |
-| **Technical contribution idea** | Engineer proposing a code change |
+| **Feature request** | You want a concrete change kept on the list |
+| **Docs or website problem** | Text is wrong or confusing |
+| **Technical contribution idea** | You’re a developer proposing a code change |
 
-## Not an issue?
+## Not an issue? Use these instead
 
-| Need | Go here |
-|------|---------|
-| How do I…? | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
-| Soft brainstorm | [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
+| I want… | Go here instead |
+|---------|-----------------|
+| How do I…? | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) or [Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
+| Soft idea / brainstorm | [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
 | Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Security | [Private advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new) |
+| Security problem | [Private advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new) only |
 
-## Easy bug checklist
+## Easy checklist (copy this style)
 
-1. What you wanted  
-2. What you did  
-3. What happened (paste errors; strip secrets)  
-4. Windows + Codex if you know them  
-5. Optional doctor:
+1. **What I wanted:** …  
+2. **What I did:** …  
+3. **What happened:** … (paste error text if any; remove secrets)  
+4. **My setup** (if you know): Windows + Codex  
+
+Optional doctor command (remove secrets before pasting):
 
 ```powershell
 python plugins\anyone-can-code\scripts\doctor.py --json
 ```
 
-## What happens next
+## What happens after you submit
 
-1. Issue is saved  
-2. **AI issue review** posts a plain-English **Maintainer brief** (~1 min)  
-3. Mitun reads the brief first  
-4. Re-run AI: comment `/ai-review`
+1. Your issue is saved  
+2. An **AI maintainer brief** posts in **plain English** (~1 minute)  
+3. Mitun reads that brief first  
+4. To re-run the AI: comment `/ai-review`
 
-## Tips
+## Friendly tips
 
-- One problem per issue  
-- Plain English beats perfect tech terms  
-- Never paste tokens, passwords, or full memory files  
+- **One problem per issue**  
+- **Plain English is better** than perfect technical words  
+- Never paste passwords, tokens, or private files  
 
-More: [SUPPORT.md](SUPPORT.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
+More help: [SUPPORT.md](SUPPORT.md)

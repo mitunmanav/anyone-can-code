@@ -1,39 +1,56 @@
-# Support
+# Support — simple guide
 
-Stuck? Pick the **smallest** path.
+You do **not** need to be technical. Pick the smallest option that fits.
 
-## Where to go
+## Start here (recommended)
 
-| Need | Where |
-|------|--------|
-| Install overview | [Website](https://anyone-can-code.vercel.app/) |
-| Install steps | [README](../README.md) |
-| How-to question | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
-| Soft idea | [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
-| Live chat | [Discord](https://discord.gg/qgS29y7TqP) |
-| Bug / install / feature | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
-| Security | [SECURITY.md](SECURITY.md) — **private only** |
+1. **[Start here — install in 3 steps](https://github.com/mitunmanav/anyone-can-code/discussions/5)**  
+2. If you’re still confused → **[FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9)**  
+3. If something is broken → **[Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)**  
 
-**Rule:** question or soft idea → **Discussions**. Something broken → **Issues**.
+## Where should I go?
 
-## Easy path
+| What I need | Where |
+|-------------|--------|
+| Product page / install overview | [Website](https://anyone-can-code.vercel.app/) |
+| Full install steps | [README](../README.md) |
+| “How do I…?” question | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) or [ask in Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) |
+| Soft idea / suggestion | [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) |
+| Talk to people live | [Discord](https://discord.gg/qgS29y7TqP) |
+| Crash, wrong result, install failed | [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
+| Security problem (private) | [SECURITY.md](SECURITY.md) — **not** public posts |
 
-1. [Start here](https://github.com/mitunmanav/anyone-can-code/discussions/5)  
-2. [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) if still stuck  
-3. Else [open an issue](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) with a guided form  
+### Easy rule
 
-Maps: [DISCUSSIONS.md](DISCUSSIONS.md) · [ISSUES.md](ISSUES.md)
+| Situation | Use |
+|-----------|-----|
+| I have a **question** or **idea** | Discussions or Discord |
+| Something is **broken** | Issues (guided forms) |
 
-## Before a bug report
+## How to report a problem (plain English)
 
-1. Use a guided form (plain English is fine).  
-2. Say what you wanted · what you did · what happened.  
-3. Optional doctor output (strip secrets):
+1. Click **[Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)**  
+2. Pick the form that matches (bug, install, feature, docs…)  
+3. Fill in:  
+   - What you wanted  
+   - What you did  
+   - What happened  
+4. Use normal words. Perfect tech terms are **not** required.
+
+Optional (only if you can): run this and paste the result **after removing secrets**:
 
 ```powershell
 python plugins\anyone-can-code\scripts\doctor.py --json
 ```
 
-Every **issue** gets an automatic **AI maintainer brief**. Re-run: comment `/ai-review`.
+### What happens next
 
-**Do not paste:** tokens, private paths, full memory notes, personal data.
+- An **AI brief** appears on the issue in plain English (about a minute)  
+- Mitun reads that brief first  
+- To re-run the AI: comment `/ai-review`
+
+### Never paste
+
+Passwords, tokens, private folders, or full personal notes.
+
+More maps: [DISCUSSIONS.md](DISCUSSIONS.md) · [ISSUES.md](ISSUES.md)
