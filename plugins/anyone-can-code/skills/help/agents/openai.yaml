@@ -1,0 +1,4 @@
+interface:
+  display_name: "Help"
+  short_description: "Reads the local workflow files and explains where the project stands in plain language."
+  default_prompt: "Use $help anytime you need to know where the project stands."

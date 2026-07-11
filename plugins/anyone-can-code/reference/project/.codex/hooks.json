@@ -1,0 +1,75 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$PWD\\.codex\\hooks\\scripts\\load_session.py\"",
+            "statusMessage": "Anyone Can Code is loading workflow context..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$PWD\\.codex\\hooks\\scripts\\guard.py\"",
+            "statusMessage": "Anyone Can Code is checking the request..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$PWD\\.codex\\hooks\\scripts\\guard.py\"",
+            "statusMessage": "Anyone Can Code is validating the next action..."
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$PWD\\.codex\\hooks\\scripts\\audit.py\"",
+            "statusMessage": "Anyone Can Code is checking capability access..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$PWD\\.codex\\hooks\\scripts\\audit.py\"",
+            "statusMessage": "Anyone Can Code is recording workflow evidence..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$PWD\\.codex\\hooks\\scripts\\save_session.py\"",
+            "timeout": 30,
+            "statusMessage": "Anyone Can Code is saving workflow state..."
+          }
+        ]
+      }
+    ]
+  }
+}

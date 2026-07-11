@@ -1,0 +1,38 @@
+/.codex/
+/plugins/anyone-can-code/.codex/*
+!/plugins/anyone-can-code/.codex/agents
+/plugins/anyone-can-code/.opencode/
+**/__pycache__/
+*.pyc
+.run-logs/
+.runtime/
+.worktrees/
+
+# runtime state from setup tools — never commit
+/.tokensave/
+/.codegraph/
+/data/
+/skills-lock.json
+
+# local assistant/session files — never commit
+/.claude/
+/.claude-flow/
+/CLAUDE.md
+CLAUDE.md.bak*
+.pytest_cache/
+
+# private Codex session transcripts — never commit
+/codex sessions/
+*.bak-*
+
+# internal dev-only docs — never commit to public repo
+/codex docs/
+/docs/plans/
+/docs/superpowers/
+/docs/SESSION_HANDOFF_*.md
+/docs/ACC_TRIAL_*.md
+/docs/CLAUDE_HARNESS_DESIGN.md
+/docs/ACC_LOOP_PROMPT.md
+/docs/ACC_IMPROVEMENT_LOOP.md
+/docs/ACC_PLUGIN_GOALS.md
+/docs/ACC_PLUGIN_BUILD_RULEBOOK.md

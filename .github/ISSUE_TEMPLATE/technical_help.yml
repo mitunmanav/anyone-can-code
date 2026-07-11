@@ -1,0 +1,33 @@
+name: Technical help
+description: Offer engineering help or suggest a technical improvement.
+title: "[Technical]: "
+labels:
+  - help wanted
+body:
+  - type: textarea
+    id: area
+    attributes:
+      label: Area
+      description: What part of the project does this relate to?
+      placeholder: "MCP memory, Windows setup, validation, release workflow, AI prompts, docs..."
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+      description: What should change, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: explanation
+    attributes:
+      label: Plain-language explanation
+      description: Explain the technical idea in a way a non-technical maintainer can evaluate.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks or tradeoffs
+      description: What could break or become more complex?

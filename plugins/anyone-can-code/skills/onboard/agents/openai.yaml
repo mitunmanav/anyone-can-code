@@ -1,0 +1,4 @@
+interface:
+  display_name: "Onboard"
+  short_description: "Detects whether the user is starting from an idea, a spec, an existing repo, or a bug. Builds the initial local workflow context without forcing unnecessary steps."
+  default_prompt: "Use $onboard to prepare your project for the Anyone Can Code pipeline."

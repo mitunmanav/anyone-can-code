@@ -1,0 +1,30 @@
+name: Feature request
+description: Suggest an improvement to Anyone Can Code.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should change?
+    validations:
+      required: true
+  - type: textarea
+    id: nontechnical
+    attributes:
+      label: Non-technical user value
+      description: How would this help someone who is not deeply technical?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any simpler options or tradeoffs?

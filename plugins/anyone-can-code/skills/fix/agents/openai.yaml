@@ -1,0 +1,7 @@
+interface:
+  display_name: "Fix"
+  short_description: "Recovery workflow for repeated failures. Uses local turn history, verification output, and overlap checks before retrying or abandoning."
+  default_prompt: "Use $fix after 3 failed verify cycles to recover from build errors."
+
+policy:
+  allow_implicit_invocation: true

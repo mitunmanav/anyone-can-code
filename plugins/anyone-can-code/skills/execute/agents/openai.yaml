@@ -1,0 +1,4 @@
+interface:
+  display_name: "Execute"
+  short_description: "Builds from the current task queue, follows the chosen route, and updates local workflow state without pretending unverified work is finished."
+  default_prompt: "Use $execute to start building the next task in the queue."

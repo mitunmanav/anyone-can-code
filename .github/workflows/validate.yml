@@ -1,0 +1,53 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate JSON
+        run: |
+          python -m json.tool plugins/anyone-can-code/.codex-plugin/plugin.json >/dev/null
+          python -m json.tool plugins/anyone-can-code/.mcp.json >/dev/null
+          python -m json.tool .agents/plugins/marketplace.json >/dev/null
+          python -m json.tool plugins/anyone-can-code/VERIFIER-REPORT.json >/dev/null
+
+      - name: Compile Python
+        run: |
+          python -m py_compile \
+            plugins/anyone-can-code/mcp/server.py \
+            plugins/anyone-can-code/hooks/scripts/state.py \
+            plugins/anyone-can-code/hooks/scripts/guard.py \
+            plugins/anyone-can-code/hooks/scripts/audit.py \
+            plugins/anyone-can-code/hooks/scripts/load_session.py \
+            plugins/anyone-can-code/hooks/scripts/save_session.py \
+            plugins/anyone-can-code/scripts/setup.py \
+            plugins/anyone-can-code/scripts/update.py \
+            plugins/anyone-can-code/scripts/doctor.py \
+            plugins/anyone-can-code/scripts/codeburn.py \
+            plugins/anyone-can-code/scripts/token-dashboard.py
+
+      - name: Run test suite
+        run: |
+          python -m pip install --quiet pytest pyyaml
+          python -m pytest plugins/anyone-can-code/tests -q
+
+      - name: Run doctor
+        working-directory: plugins/anyone-can-code
+        run: python scripts/doctor.py --json

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Readable"
+  short_description: "Keeps code and workflow artifacts understandable. Encourages clear naming, focused functions, and comments that explain why, not just what."
+  default_prompt: "Use $readable to check code meets quality standards before commit."

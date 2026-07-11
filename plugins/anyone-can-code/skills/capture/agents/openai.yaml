@@ -1,0 +1,7 @@
+interface:
+  display_name: "Capture"
+  short_description: "Explicit-only recording of decisions, blockers, and insights into the local project artifact history."
+  default_prompt: "Use $capture to record an important decision or blocker."
+
+policy:
+  allow_implicit_invocation: true

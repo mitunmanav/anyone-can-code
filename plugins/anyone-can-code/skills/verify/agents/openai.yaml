@@ -1,0 +1,7 @@
+interface:
+  display_name: "Verify"
+  short_description: "Evidence-first verification for code, plans, and repairs. Distinguishes built from verified and records what remains uncertain."
+  default_prompt: "Use $verify to check the built code before marking a task done."
+
+policy:
+  allow_implicit_invocation: true

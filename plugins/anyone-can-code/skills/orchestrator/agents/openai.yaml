@@ -1,0 +1,7 @@
+interface:
+  display_name: "Anyone Can Code"
+  short_description: "Front door for Anyone Can Code. Detects the user's starting point, shows the active mode, and routes to the right workflow with no silent assumptions."
+  default_prompt: "Use $orchestrator as the one front door. Detect my starting point, show the route, check installed plugin coverage, then continue."
+
+policy:
+  allow_implicit_invocation: false
