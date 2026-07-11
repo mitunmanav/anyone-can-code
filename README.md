@@ -5,8 +5,8 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>You describe what you want in plain English.</strong><br/>
-  It plans, builds, and checks the work — you do not need to be a programmer.
+  <strong>A Codex Desktop plugin for non-technical people.</strong><br/>
+  You describe what you want in plain English. It plans, builds, and checks the work.
 </p>
 
 <p align="center">
@@ -35,15 +35,41 @@
 
 ## What is this?
 
-**Anyone Can Code (ACC)** is a free add-on for **Codex Desktop** on **Windows**.
+**Anyone Can Code (ACC)** is a free **plugin** for **[Codex Desktop](https://openai.com/codex/)** on **Windows**.
+
+You can think of it as a helper that sits with you while you build — not a coding course, and **not** an “engineering product.”
 
 1. You say what you want (like talking to a person).  
-2. ACC makes a plan.  
+2. ACC helps make a plan.  
 3. It helps build the thing.  
 4. It **checks the work** before saying “done.”
 
-You do **not** need to know programming.  
-This is open source (MIT) and in **open beta** — rough edges can still happen. Tell us if something breaks.
+### Who it is for
+
+- People who are **not** technical (like the maker of this project)  
+- People who find other plugins, skills, and workflows **hard to use**  
+- People who want **one clear path**: say what you want → plan → build → check  
+
+It is **not** aimed at professional engineers. Engineers can use it, but the product is shaped for everyday non-technical builders.
+
+### Honest status
+
+- Open source (**MIT**) · **open beta** (v1.1.0-beta.3)  
+- Rough edges can still happen — please report them  
+- This is **unique**, with ideas taken from other tools and write-ups — not a copy of one system  
+- It is **not** claiming to be a finished “all-in-one” forever; it is the workflow that worked for a non-technical maker after a long search  
+
+### Why it exists (short story)
+
+Mitun is a **non-technical** person. For **more than a year** he tried many AI systems, plugins, and workflows. Most were too hard, too scattered, or built for people who already think like engineers.
+
+He still has not found one perfect “final system” — but he managed to **work with ACC** day to day. ACC is what he is building so people like him can build with AI **without** needing engineering knowledge.
+
+### Built with ACC (real example)
+
+While testing ACC, Mitun used it to help build **[Everything AI](https://github.com/mitunmanav/everything-ai)** — including work toward **[v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2)**.
+
+Everything AI also has its own repo and life. The point here: **a non-technical maker used ACC to ship real work.**
 
 ---
 
@@ -144,13 +170,15 @@ More detail (optional): [plugin README](plugins/anyone-can-code/README.md)
 
 ---
 
-## What ACC is careful about
+## What ACC tries to do well
 
-- It **plans first**, then builds  
-- It asks **only the questions that unblock you**  
-- It **remembers** important decisions in simple files on your computer  
-- It tries **not** to say “done” without checking  
-- Your project notes stay **on your machine** (see [Privacy](docs/PRIVACY.md))
+- **Plans first**, then builds  
+- Asks **only the questions that unblock you**  
+- **Remembers** important decisions in simple files on your computer  
+- Tries **not** to say “done” without checking  
+- Keeps project notes **on your machine** (see [Privacy](docs/PRIVACY.md))  
+
+It is a **plugin** that guides the work. Some people might later call this kind of thing a “harness” — ACC is not branding itself that way yet. It is a practical helper for non-technical people.
 
 ---
 

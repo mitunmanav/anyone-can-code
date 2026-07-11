@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code",
   "version": "1.1.0-beta.3",
-  "description": "Front-door Codex workflow router with local state, portable Markdown memory, optional hooks, and evidence-first verification.",
+  "description": "Codex Desktop plugin for non-technical people: plan, build, and verify in plain English. Not an engineering toolkit.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -28,8 +28,8 @@
   ],
   "interface": {
     "displayName": "Anyone Can Code",
-    "shortDescription": "Front door for ideas, repos, bugs, reviews, setup, memory, and verification workflows.",
-    "longDescription": "Anyone Can Code routes vague ideas, existing repos, feature requests, bugs, reviews, setup, learning, status, resume, and ship requests into explicit Codex workflows. It stores project-owned state and artifacts under .codex/anyone-can-code, uses portable Markdown memory with tiny fallback ledgers, supports optional bundled or repo-local hooks, keeps routing in the orchestrator, and separates implemented work from verified evidence.",
+    "shortDescription": "Plain-English plan \u2192 build \u2192 verify for non-technical people on Codex Desktop (Windows).",
+    "longDescription": "Anyone Can Code is a Codex Desktop plugin made by a non-technical person for non-technical people. It helps you describe what you want, make a plan, build, remember decisions, and check work before claiming done. It is unique, inspired by other tools, and still open beta \u2014 not a finished all-in-one forever.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [
