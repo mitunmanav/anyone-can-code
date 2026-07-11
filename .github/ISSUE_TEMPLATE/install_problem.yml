@@ -10,7 +10,7 @@ body:
 
         Already installed and something else broke? Use **Something is broken** instead.
 
-        Official steps: [README Quick start](https://github.com/mitunmanav/anyone-can-code#quick-start) · [Website](https://anyone-can-code.vercel.app/) · [Start here discussion](https://github.com/mitunmanav/anyone-can-code/discussions/5)
+        Official steps: [README Install](https://github.com/mitunmanav/anyone-can-code#install) · [Website](https://anyone-can-code.vercel.app/#install) · [Start here discussion](https://github.com/mitunmanav/anyone-can-code/discussions/5)
   - type: dropdown
     id: stage
     attributes:
