@@ -1,11 +1,13 @@
-# Security Policy
+# Security
 
-## Reporting a Vulnerability
+## Report a vulnerability
 
-Please report security issues privately by opening a GitHub security advisory for this repository.
+Use a **private** [GitHub security advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new).
 
-Do not publish exploit details in public issues. Include the affected version, reproduction steps, and any relevant logs with secrets removed.
+Do **not** post exploits or sensitive details in public issues.
 
-## Sensitive Data
+Include: affected version, steps to reproduce, logs with secrets removed.
 
-Anyone Can Code stores project workflow state under `.codex/anyone-can-code/` and runtime memory under the user's Codex home directory. These runtime files are local user data and should not be committed.
+## Local data
+
+Anyone Can Code keeps project state under `.codex/anyone-can-code/` and may use the user Codex home for runtime memory. That is local user data — do not commit it.

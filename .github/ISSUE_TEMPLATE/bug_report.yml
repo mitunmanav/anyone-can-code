@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a reproducible problem with Anyone Can Code.
+description: Something broke or behaved wrong.
 title: "[Bug]: "
 labels:
   - bug
@@ -7,41 +7,48 @@ body:
   - type: textarea
     id: summary
     attributes:
-      label: Summary
-      description: What went wrong?
+      label: What went wrong?
+      description: One or two sentences.
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
       label: Steps to reproduce
-      description: Include the command, skill, or workflow that triggered the issue.
+      description: What you did, in order.
       placeholder: |
-        1. Add marketplace...
-        2. Install plugin...
-        3. Run $setup...
+        1. Added marketplace
+        2. Installed plugin
+        3. Ran $setup
+        4. ...
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
+      label: What you expected
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: Actual behavior
+      label: What actually happened
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: Plugin version
-      placeholder: "1.0.0"
+      placeholder: "1.1.0-beta.3"
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: OS + Codex (Desktop version if known)
+      placeholder: "Windows 11 · Codex Desktop"
   - type: textarea
     id: diagnostics
     attributes:
-      label: Diagnostics
-      description: Paste relevant doctor output after removing private data.
+      label: Doctor output (optional)
+      description: Paste after removing private data. Run doctor.py --json if you can.
       render: text

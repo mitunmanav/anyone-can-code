@@ -1,5 +1,14 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Website & waitlist
+    url: https://anyone-can-code.vercel.app/
+    about: Product site, waitlist, and overview.
+  - name: Discord community
+    url: https://discord.gg/qgS29y7TqP
+    about: Ask questions and hang out with other builders.
+  - name: Read the guide
+    url: https://github.com/mitunmanav/anyone-can-code#quick-start
+    about: Install and first-run steps in the README.
   - name: Security reports
     url: https://github.com/mitunmanav/anyone-can-code/security/advisories/new
-    about: Please report vulnerabilities privately.
+    about: Report vulnerabilities privately — never in public issues.

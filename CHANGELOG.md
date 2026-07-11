@@ -6,6 +6,21 @@ All notable public changes to Anyone Can Code will be documented here.
 
 Fix-round release. Beta: rough edges expected — please report failures via GitHub Issues.
 
+### Added
+
+- **Real CLIs for `canonical_state.py` and `task_coordination.py`** (`show`, `update --set key=value`, `status`, `claim`, `release`) — no more hand-written inline-Python heredocs to read or update project state.
+- **Sticky entry-mode classification** — once a project is classified (idea / existing-repo / bug / etc.), it stays that way instead of re-classifying and flip-flopping every turn. Say "start over" / "new project" / "re-detect" to force a re-check.
+- **Task-aware adaptive loop** — requests are scored `micro | bug | feature | research | product` and get a matching loop budget and ceremony level, replacing one fixed process for every request size.
+- **Loop real-use checkpoint gate** — after the loop budget is used up, execution stops and asks for real-use proof instead of endlessly polishing docs.
+- `setup.py --agents-md {write,skip}` (default `skip`) — setup no longer silently writes an `AGENTS.md` into your repo root; opt in explicitly if you want it.
+- `doctor.py` accepts an optional target project path instead of only checking the current directory.
+- `memory_preflight.py` gives a clear usage example and a proper exit code on misuse instead of a bare error.
+- Handoff skill + `build_handoff` script for structured session handoffs.
+- Stop-after-2-identical-failures guard, wired into `audit.py`'s real `PostToolUse` handler.
+- Session-start context now always restates "strict caveman, short, direct" so style doesn't drift after long sessions/compaction.
+- Execute skill now says "let CI show the test count" instead of hardcoding numbers in docs that go stale.
+- Contract test ensures every file path a skill mentions is one setup actually creates.
+
 ### Fixed
 
 - `entry_mode` stickiness now survives via an atomic JSON write helper (`canonical_state.atomic_write_json`), fixing a case where the field was silently stripped.
@@ -16,12 +31,6 @@ Fix-round release. Beta: rough edges expected — please report failures via Git
 - Handoff skill uses the `$PLUGIN_ROOT` convention instead of a literal `<plugin>` placeholder.
 - Orchestrator skill trimmed to fit the token budget doctor gate.
 - Repeat-failure window filters to `command_result` events only; unbounded signal ledger now rotates.
-- Per-session style enforcement without hardcoded counts; loop gate text matches spec verbatim.
-
-### Added
-
-- Handoff skill + `build_handoff` script for structured session handoffs.
-- Stop-after-2-identical-failures guard, wired into `audit.py`'s real `PostToolUse` handler.
 
 ### Housekeeping
 

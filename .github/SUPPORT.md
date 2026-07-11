@@ -1,24 +1,23 @@
 # Support
 
-Use GitHub issues for support requests that can help other users too.
+Stuck? Use one of these:
 
-## Before Opening an Issue
+| Need | Where |
+|------|--------|
+| Install / how-to | [README](../README.md) · [plugin README](../plugins/anyone-can-code/README.md) |
+| Chat with people | [Discord](https://discord.gg/qgS29y7TqP) |
+| Bug or idea | [GitHub Issues](https://github.com/mitunmanav/anyone-can-code/issues) |
+| Security | [SECURITY.md](SECURITY.md) — **not** public issues |
 
-- Check `README.md` and `plugins/anyone-can-code/README.md`.
-- Run `python plugins\anyone-can-code\scripts\doctor.py --json`.
-- Remove private paths, tokens, local memory content, and unrelated logs from any output you share.
+## Before opening an issue
 
-## Bug Reports
+1. Read the README install steps.
+2. Run (remove secrets from output before sharing):
 
-Include:
+```powershell
+python plugins\anyone-can-code\scripts\doctor.py --json
+```
 
-- Codex environment and operating system.
-- Anyone Can Code version.
-- Exact command or skill used.
-- Expected result.
-- Actual result.
-- Doctor output, if relevant.
+3. Include: OS, plugin version, what you ran, expected vs actual.
 
-## Security
-
-Do not report vulnerabilities in public issues. Follow `SECURITY.md`.
+**Do not paste:** tokens, private paths, full memory notes, personal data.

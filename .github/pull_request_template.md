@@ -1,13 +1,17 @@
 ## Summary
 
-Describe what changed and why.
+What changed, and why (plain language).
+
+## User impact
+
+Who notices this? Install, setup, daily use, or only contributors?
 
 ## Checks
 
 - [ ] `python plugins\anyone-can-code\scripts\doctor.py --json`
-- [ ] Python syntax checks for changed scripts
-- [ ] JSON validation for changed manifests/configs
+- [ ] `python -m pytest plugins\anyone-can-code\tests -q` (or targeted tests)
+- [ ] JSON valid for any changed manifests
 
 ## Notes
 
-List known limitations, follow-up work, or user-facing risks.
+Limits, follow-ups, or risks.
