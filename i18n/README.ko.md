@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="plugins/anyone-can-code/assets/logo.png" alt="Anyone Can Code" width="420"/>
+  <img src="../plugins/anyone-can-code/assets/logo.png" alt="Anyone Can Code" width="420"/>
 </p>
 
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
   <strong>언어:</strong>
-  <a href="README.md">English</a> ·
+  <a href="../README.md">English</a> ·
   <a href="README.pt-BR.md">Português</a> ·
   <a href="README.es.md">Español</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
@@ -27,7 +27,7 @@
   <a href="https://discord.gg/qgS29y7TqP"><img src="https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
+  <a href="../LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
   <img src="https://img.shields.io/badge/Windows%20·%20Codex-0078D4?style=flat-square" alt="Platform"/>
   <img src="https://img.shields.io/badge/beta-orange?style=flat-square" alt="Beta"/>
 </p>
@@ -57,7 +57,7 @@
 ## 설치
 
 <p align="center">
-  <img src="docs/media/install-setup.gif" alt="Codex Desktop에 Anyone Can Code 설치" width="640"/>
+  <img src="../docs/media/install-setup.gif" alt="Codex Desktop에 Anyone Can Code 설치" width="640"/>
 </p>
 
 1. 이 URL 복사: `https://github.com/mitunmanav/anyone-can-code`
@@ -73,7 +73,7 @@
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
-영상: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · 사이트 전체 안내: [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/#install)
+영상: [docs/media/install-setup.mp4](../docs/media/install-setup.mp4) · 사이트 전체 안내: [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/#install)
 
 ---
 
@@ -107,6 +107,6 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 
 ## 링크
 
-[웹사이트](https://anyone-can-code.vercel.app/) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [개인정보](docs/PRIVACY.md) · [이용약관](docs/TERMS.md) · [기여](.github/CONTRIBUTING.md)
+[웹사이트](https://anyone-can-code.vercel.app/) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [개인정보](../docs/PRIVACY.md) · [이용약관](../docs/TERMS.md) · [기여](../.github/CONTRIBUTING.md)
 
 [![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)
