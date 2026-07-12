@@ -108,5 +108,3 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ## 链接
 
 [网站](https://anyone-can-code.vercel.app/) · [讨论](https://github.com/mitunmanav/anyone-can-code/discussions) · [隐私](../docs/PRIVACY.md) · [条款](../docs/TERMS.md) · [贡献](../.github/CONTRIBUTING.md)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)

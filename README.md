@@ -108,5 +108,3 @@ You can also just talk in plain English. These help when you want a clear switch
 ## Links
 
 [Website](https://anyone-can-code.vercel.app/) · [Roadmap](ROADMAP.md) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)

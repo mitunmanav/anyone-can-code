@@ -108,5 +108,3 @@ También puedes hablar en lenguaje simple. Estos ayudan cuando quieres un atajo 
 ## Enlaces
 
 [Sitio web](https://anyone-can-code.vercel.app/) · [Discusiones](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacidad](../docs/PRIVACY.md) · [Términos](../docs/TERMS.md) · [Contribuir](../.github/CONTRIBUTING.md)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)

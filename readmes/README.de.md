@@ -108,5 +108,3 @@ Du kannst auch einfach in Alltagssprache reden. Diese helfen für klaren Wechsel
 ## Links
 
 [Website](https://anyone-can-code.vercel.app/) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Datenschutz](../docs/PRIVACY.md) · [Bedingungen](../docs/TERMS.md) · [Mitwirken](../.github/CONTRIBUTING.md)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)

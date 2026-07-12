@@ -108,5 +108,3 @@ Vous pouvez aussi parler en langage simple. Celles-ci aident pour un basculement
 ## Liens
 
 [Site](https://anyone-can-code.vercel.app/) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Confidentialité](../docs/PRIVACY.md) · [Conditions](../docs/TERMS.md) · [Contribuer](../.github/CONTRIBUTING.md)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)
