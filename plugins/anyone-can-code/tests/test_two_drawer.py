@@ -67,3 +67,80 @@ def test_two_projects_never_mix(monkeypatch, tmp_path):
                            "summary": "Secret feature alpha plan", "project_root": str(a)})
     result = server.retrieve_context({"query": "secret feature alpha", "project_root": str(b)})
     assert all(item["scope"] != "project" for item in result["items"])
+
+
+def test_revoke_reaches_project_drawer(monkeypatch, tmp_path):
+    """Fix round 1: revoke_memory must reach a note stored in a project's own drawer."""
+    server = load_server(monkeypatch, tmp_path)
+    project = tmp_path / "proj-revoke"
+    project.mkdir()
+    stored = server.store_feedback({
+        "scope": "project", "kind": "lesson",
+        "summary": "Revoke me please",
+        "project_root": str(project),
+    })
+    record_id = stored["record"]["id"]
+
+    result = server.revoke_memory({"id": record_id, "project_root": str(project)})
+
+    assert result["updated"] is True
+    assert result["record"]["status"] == "revoked"
+    remaining = server.active_rows("project", str(project))
+    assert all(row["id"] != record_id for row in remaining)
+
+
+def test_promote_reaches_project_drawer(monkeypatch, tmp_path):
+    """Fix round 1: promote_memory must reach a note stored in a project's own drawer."""
+    server = load_server(monkeypatch, tmp_path)
+    project = tmp_path / "proj-promote"
+    project.mkdir()
+    stored = server.store_feedback({
+        "scope": "project", "kind": "lesson",
+        "summary": "Promote me please",
+        "project_root": str(project),
+    })
+    record_id = stored["record"]["id"]
+    starting_confidence = float(stored["record"]["confidence"])
+
+    result = server.promote_memory({"id": record_id, "project_root": str(project)})
+
+    assert result["promoted"] is True
+    assert result["record"]["id"] == record_id
+    assert float(result["record"]["confidence"]) > starting_confidence
+
+
+def test_search_shared_reaches_project_drawer(monkeypatch, tmp_path):
+    """Fix round 1: search_shared must reach a shared note stored in a project's own drawer."""
+    server = load_server(monkeypatch, tmp_path)
+    project = tmp_path / "proj-shared"
+    project.mkdir()
+    server.store_feedback({
+        "scope": "shared", "kind": "pattern",
+        "summary": "Shared onboarding checklist pattern",
+        "project_root": str(project),
+    })
+
+    result = server.search_shared({"query": "onboarding checklist", "project_root": str(project)})
+
+    assert result["count"] == 1
+    assert result["items"][0]["summary"] == "Shared onboarding checklist pattern"
+
+
+def test_rebuild_index_reaches_project_drawer(monkeypatch, tmp_path):
+    """Fix round 1: rebuild_index must count a note stored in a project's own drawer."""
+    server = load_server(monkeypatch, tmp_path)
+    project = tmp_path / "proj-rebuild"
+    project.mkdir()
+    server.store_feedback({
+        "scope": "project", "kind": "lesson",
+        "summary": "Index me please",
+        "project_root": str(project),
+    })
+
+    result = server.rebuild_index({"project_root": str(project)})
+
+    assert result["count"] >= 1
+    import json as _json
+    payload = _json.loads(Path(result["path"]).read_text(encoding="utf-8"))
+    summaries = [item["summary"] for item in payload["items"]]
+    assert "Index me please" in summaries

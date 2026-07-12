@@ -422,8 +422,9 @@ def promote_memory(arguments: dict) -> dict:
     record_id = str(arguments.get("id", "")).strip()
     if not record_id:
         raise ValueError("id required")
+    project_root_value = str(arguments.get("project_root", "")).strip() or None
     for scope in ("project", "user", "shared"):
-        for row in active_rows(scope):
+        for row in active_rows(scope, project_root_value):
             if row.get("id") == record_id:
                 row["reinforcement_count"] = int(row.get("reinforcement_count", 1) or 1) + 1
                 row["confidence"] = min(1.0, float(row.get("confidence", 0.2) or 0.2) + 0.15)
@@ -442,7 +443,8 @@ def revoke_memory(arguments: dict) -> dict:
         raise ValueError("status must be downgraded or revoked")
     if not record_id:
         raise ValueError("id required")
-    for row in load_all_records():
+    project_root_value = str(arguments.get("project_root", "")).strip() or None
+    for row in load_all_records(project_root_value):
         if row.get("id") == record_id:
             row["status"] = status
             row["updated_at"] = utc_now()
@@ -454,8 +456,8 @@ def revoke_memory(arguments: dict) -> dict:
 
 def search_shared(arguments: dict) -> dict:
     arguments = dict(arguments)
-    arguments.pop("project_root", None)
-    rows = active_rows("shared")
+    project_root_value = str(arguments.pop("project_root", "") or "").strip() or None
+    rows = active_rows("shared", project_root_value)
     query = str(arguments.get("query", "")).strip()
     if not query:
         raise ValueError("query required")
@@ -477,7 +479,8 @@ def search_shared(arguments: dict) -> dict:
 
 
 def rebuild_index(arguments: dict) -> dict:
-    rows = load_all_records()
+    project_root_value = str((arguments or {}).get("project_root", "")).strip() or None
+    rows = load_all_records(project_root_value)
     index_path = ensure_data_root() / "index" / "memory-index.json"
     payload = {
         "schema_version": 1,
@@ -758,7 +761,10 @@ TOOLS = {
         "description": "Increase trust for one memory item after repeated proof.",
         "inputSchema": {
             "type": "object",
-            "properties": {"id": {"type": "string"}},
+            "properties": {
+                "id": {"type": "string"},
+                "project_root": {"type": "string"},
+            },
             "required": ["id"],
         },
         "handler": promote_memory,
@@ -770,6 +776,7 @@ TOOLS = {
             "properties": {
                 "id": {"type": "string"},
                 "status": {"type": "string", "enum": ["downgraded", "revoked"]},
+                "project_root": {"type": "string"},
             },
             "required": ["id"],
         },
@@ -782,6 +789,7 @@ TOOLS = {
             "properties": {
                 "query": {"type": "string"},
                 "limit": {"type": "integer", "minimum": 1, "maximum": 5},
+                "project_root": {"type": "string"},
             },
             "required": ["query"],
         },
@@ -789,7 +797,10 @@ TOOLS = {
     },
     "rebuild_index": {
         "description": "Rebuild disposable search index from Markdown notes.",
-        "inputSchema": {"type": "object", "properties": {}},
+        "inputSchema": {
+            "type": "object",
+            "properties": {"project_root": {"type": "string"}},
+        },
         "handler": rebuild_index,
     },
     "import_session_files": {
