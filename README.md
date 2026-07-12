@@ -5,6 +5,19 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
+  <strong>Languages:</strong>
+  English ·
+  <a href="README.pt-BR.md">Português</a> ·
+  <a href="README.es.md">Español</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="README.hi.md">हिन्दी</a> ·
+  <a href="README.fr.md">Français</a> ·
+  <a href="README.de.md">Deutsch</a>
+</p>
+
+<p align="center">
   <strong>A Codex Desktop plugin for people who are not engineers.</strong><br/>
   Say what you want in plain English. ACC helps you plan, build, and check that it actually works.
 </p>
