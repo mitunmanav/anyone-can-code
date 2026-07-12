@@ -46,14 +46,47 @@ def utc_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
-def data_root() -> Path:
+def user_drawer_root() -> Path:
+    override = os.environ.get("ACC_USER_MEMORY_ROOT")
+    if override:
+        return Path(override)
+    # Legacy single-folder override (ACC_MCP_DATA_ROOT) still collapses both
+    # drawers into one folder, so callers that pin the whole memory tree
+    # (tests, migrations) keep working exactly as before the split.
+    data_override = os.environ.get("ACC_MCP_DATA_ROOT")
+    if data_override:
+        return Path(data_override)
+    codex_home = os.environ.get("CODEX_HOME")
+    if codex_home:
+        return Path(codex_home) / "anyone-can-code" / "user-memory"
+    return Path.home() / ".codex" / "anyone-can-code" / "user-memory"
+
+
+def project_drawer_root(project_root_value: str | None) -> Path:
     override = os.environ.get("ACC_MCP_DATA_ROOT")
     if override:
         return Path(override)
+    if project_root_value:
+        return Path(project_root_value) / ".codex" / "anyone-can-code" / "memory"
+    # Legacy fallback: old global pile keeps working when no project is known.
     codex_home = os.environ.get("CODEX_HOME")
     if codex_home:
         return Path(codex_home) / "anyone-can-code" / "memory"
     return Path.home() / ".codex" / "anyone-can-code" / "memory"
+
+
+def drawer_root(scope: str, project_root_value: str | None = None) -> Path:
+    root = user_drawer_root() if scope == "user" else project_drawer_root(project_root_value)
+    try:
+        ensure_memory_layout(root)
+    except OSError:
+        root = Path(__file__).resolve().parent.parent / ".runtime" / "memory"
+        ensure_memory_layout(root)
+    return root
+
+
+def data_root() -> Path:
+    return project_drawer_root(None)
 
 
 def ensure_data_root() -> Path:
@@ -92,16 +125,16 @@ def notes_root() -> Path:
     return ensure_data_root() / "notes"
 
 
-def scope_dir(scope: str) -> Path:
+def scope_dir(scope: str, project_root_value: str | None = None) -> Path:
     if scope not in SCOPES:
         raise ValueError(f"Invalid scope: {scope}")
-    path = notes_root() / scope
+    path = drawer_root(scope, project_root_value) / "notes" / scope
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
-def note_path(scope: str, record_id: str) -> Path:
-    return scope_dir(scope) / f"{safe_slug(record_id)}.md"
+def note_path(scope: str, record_id: str, project_root_value: str | None = None) -> Path:
+    return scope_dir(scope, project_root_value) / f"{safe_slug(record_id)}.md"
 
 
 def safe_slug(value: str) -> str:
@@ -140,6 +173,7 @@ def render_frontmatter(record: dict) -> str:
         "confidence",
         "reinforcement_count",
         "project_key",
+        "project_root",
         "content_hash",
         "secret_redacted",
         "source_receipt",
@@ -218,18 +252,19 @@ def render_markdown_note(record: dict) -> str:
 
 
 def write_note(record: dict) -> Path:
-    path = note_path(record["scope"], record["id"])
+    path = note_path(record["scope"], record["id"], record.get("project_root"))
     path.write_text(render_markdown_note(record), encoding="utf-8")
     return path
 
 
-def load_all_records() -> list[dict]:
-    root = notes_root()
+def load_all_records(project_root_value: str | None = None) -> list[dict]:
     rows: list[dict] = []
-    for path in root.rglob("*.md"):
-        row = parse_markdown_note(path)
-        if row:
-            rows.append(row)
+    roots = {user_drawer_root(), project_drawer_root(project_root_value)}
+    for root in roots:
+        for path in root.rglob("*.md"):
+            row = parse_markdown_note(path)
+            if row:
+                rows.append(row)
     return rows
 
 
@@ -290,6 +325,7 @@ def normalize_record(arguments: dict) -> dict:
         "provenance": source,
         "status": status,
         "project_key": project_key(project_root_value) if scope == "project" else "",
+        "project_root": project_root_value,
         "content_hash": content_hash,
         "secret_redacted": secret_redacted,
         "source_receipt": str(arguments.get("source_receipt", "")).strip(),
@@ -300,7 +336,7 @@ def normalize_record(arguments: dict) -> dict:
 
 
 def merge_or_append(record: dict) -> dict:
-    for row in load_all_records():
+    for row in load_all_records(record.get("project_root")):
         if (
             row.get("scope") == record["scope"]
             and row.get("kind") == record["kind"]
@@ -320,7 +356,7 @@ def merge_or_append(record: dict) -> dict:
 
 
 def active_rows(scope: str, project_root_value: str | None = None) -> list[dict]:
-    rows = [row for row in load_all_records() if row.get("scope") == scope]
+    rows = [row for row in load_all_records(project_root_value) if row.get("scope") == scope]
     if scope == "project":
         expected_key = project_key(project_root_value or "unknown-project")
         rows = [row for row in rows if row.get("project_key") == expected_key]
@@ -379,7 +415,7 @@ def store_feedback(arguments: dict) -> dict:
     record = normalize_record(arguments)
     saved = merge_or_append(record)
     rebuild_index({})
-    return {"stored": True, "mode": "portable-markdown", "record": saved, "path": str(note_path(saved["scope"], saved["id"]))}
+    return {"stored": True, "mode": "portable-markdown", "record": saved, "path": str(note_path(saved["scope"], saved["id"], saved.get("project_root")))}
 
 
 def promote_memory(arguments: dict) -> dict:
@@ -643,7 +679,7 @@ def import_selected_files(arguments: dict, operation: str) -> dict:
                 imported.append(
                     {
                         "id": saved.get("id"),
-                        "path": str(note_path(saved["scope"], saved["id"])),
+                        "path": str(note_path(saved["scope"], saved["id"], saved.get("project_root"))),
                         "source": str(source_file),
                         "source_receipt": receipt_id,
                     }
