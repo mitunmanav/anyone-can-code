@@ -7,14 +7,14 @@
 <p align="center">
   <strong>Languages:</strong>
   English ·
-  <a href="i18n/README.pt-BR.md">Português</a> ·
-  <a href="i18n/README.es.md">Español</a> ·
-  <a href="i18n/README.zh-CN.md">简体中文</a> ·
-  <a href="i18n/README.ja.md">日本語</a> ·
-  <a href="i18n/README.ko.md">한국어</a> ·
-  <a href="i18n/README.hi.md">हिन्दी</a> ·
-  <a href="i18n/README.fr.md">Français</a> ·
-  <a href="i18n/README.de.md">Deutsch</a>
+  <a href="readmes/README.pt-BR.md">Português</a> ·
+  <a href="readmes/README.es.md">Español</a> ·
+  <a href="readmes/README.zh-CN.md">简体中文</a> ·
+  <a href="readmes/README.ja.md">日本語</a> ·
+  <a href="readmes/README.ko.md">한국어</a> ·
+  <a href="readmes/README.hi.md">हिन्दी</a> ·
+  <a href="readmes/README.fr.md">Français</a> ·
+  <a href="readmes/README.de.md">Deutsch</a>
 </p>
 
 <p align="center">
