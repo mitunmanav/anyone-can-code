@@ -55,3 +55,35 @@ def test_memory_notes_recalled_and_proof_written(tmp_path):
 
     workflow = state.read_state(tmp_path)
     assert workflow.get("memory_read_proof"), "memory_read_proof still empty"
+
+
+def test_recall_reads_scoped_note_folders(tmp_path):
+    notes = tmp_path / ".codex" / "anyone-can-code" / "memory" / "notes" / "project"
+    notes.mkdir(parents=True)
+    notes.joinpath("lesson-1.md").write_text(
+        "---\nkind: \"lesson\"\nstatus: \"active\"\nreinforcement_count: 3\n---\n"
+        "# Lesson\n\n## Summary\n\nAlways run npm.cmd on Windows\n",
+        encoding="utf-8",
+    )
+    lessons, proof = load_session.recall_memory_notes(tmp_path)
+    assert any("npm.cmd" in line for line in lessons)
+    assert proof
+
+
+def test_recall_skips_revoked_and_caps_size(tmp_path):
+    notes = tmp_path / ".codex" / "anyone-can-code" / "memory" / "notes" / "project"
+    notes.mkdir(parents=True)
+    notes.joinpath("revoked.md").write_text(
+        "---\nkind: \"lesson\"\nstatus: \"revoked\"\n---\n\n## Summary\n\nOld wrong lesson\n",
+        encoding="utf-8",
+    )
+    for i in range(50):
+        notes.joinpath(f"l{i}.md").write_text(
+            f"---\nkind: \"lesson\"\nstatus: \"active\"\nreinforcement_count: {i}\n---\n"
+            f"\n## Summary\n\nLesson number {i} with a reasonably long sentence attached\n",
+            encoding="utf-8",
+        )
+    lessons, _ = load_session.recall_memory_notes(tmp_path)
+    joined = "\n".join(lessons)
+    assert "Old wrong lesson" not in joined
+    assert len(joined) <= 1200

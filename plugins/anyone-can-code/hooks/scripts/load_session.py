@@ -5,6 +5,7 @@ Load small session context.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -28,34 +29,56 @@ def read_agents_md(repo_root: Path) -> str:
     return ""
 
 
-MEMORY_RECALL_FILES = 2
-MEMORY_RECALL_LINES = 3
+MEMORY_RECALL_CHAR_CAP = 1200
+MEMORY_RECALL_KINDS = {"lesson", "mistake", "correction", "failure"}
 
 
 def recall_memory_notes(repo_root: Path) -> tuple[list[str], str]:
-    """Read newest memory notes; return (lesson lines, proof line)."""
+    """Read active lesson notes from every scope folder; strongest first. Cap size."""
     layout = state.ensure_project_layout(repo_root)
     notes_dir = layout["memory"] / "notes"
     if not notes_dir.exists():
         return [], ""
-    note_files = sorted(notes_dir.glob("*.md"), reverse=True)[:MEMORY_RECALL_FILES]
-    lessons: list[str] = []
-    for note_file in note_files:
+    scored: list[tuple[int, str, str]] = []
+    for note_file in notes_dir.rglob("*.md"):
         try:
-            entries = [
-                line.strip()
-                for line in note_file.read_text(encoding="utf-8").splitlines()
-                if line.strip().startswith("-")
-            ]
+            text = note_file.read_text(encoding="utf-8")
         except OSError:
             continue
-        lessons.extend(entries[-MEMORY_RECALL_LINES:])
-    if not lessons:
+        if '"revoked"' in text or "status: revoked" in text or 'status: "revoked"' in text:
+            continue
+        kind_match = re.search(r'kind:\s*"?(\w+)"?', text)
+        if kind_match:
+            if kind_match.group(1) not in MEMORY_RECALL_KINDS:
+                continue
+            summary_match = re.search(r"## Summary\s+(.+?)(?:\n## |\Z)", text, re.S)
+            if not summary_match:
+                continue
+            weight_match = re.search(r"reinforcement_count:\s*(\d+)", text)
+            weight = int(weight_match.group(1)) if weight_match else 1
+            line = summary_match.group(1).strip().splitlines()[0][:160]
+            scored.append((weight, line, note_file.name))
+            continue
+        # Legacy flat notes (bullet lines, no frontmatter) — still never-repeat.
+        for line in text.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("-"):
+                scored.append((1, stripped.lstrip("- ").strip()[:160], note_file.name))
+    if not scored:
         return [], ""
-    proof = (
-        f"{state.utc_now()} recalled {len(lessons)} lesson(s) from "
-        f"{', '.join(f.name for f in note_files)}"
-    )
+    scored.sort(reverse=True)
+    lessons: list[str] = []
+    used_files: list[str] = []
+    total = 0
+    for weight, line, name in scored:
+        entry = f"- {line}" if not line.startswith("-") else line
+        if total + len(entry) > MEMORY_RECALL_CHAR_CAP:
+            break
+        lessons.append(entry)
+        if name not in used_files:
+            used_files.append(name)
+        total += len(entry)
+    proof = f"{state.utc_now()} recalled {len(lessons)} lesson(s) from {', '.join(used_files[:5])}"
     return lessons, proof
 
 
