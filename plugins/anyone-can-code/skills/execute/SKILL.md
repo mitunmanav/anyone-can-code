@@ -54,11 +54,12 @@ Use `$execute` when the work is planned or concrete enough to implement.
 - Plain words only. No jargon (no "RLS", "monkeypatch", "tenant isolation" — say the plain thing).
 - Warm, not a robot. Short is fine; cold is not. Never bark a one-word "Decide:" demand — offer the choice in a friendly line.
 
-## Narration (always on)
+## Narration / walkthrough (always on)
 
-- Narrate each build step in plain words: "Making the login page now." then "Done."
+- Narrate each build step as a robot walkthrough in plain lines — "Making the login page now." then "Done." then "Next: …"
 - One short line per step. No code shown, no file paths, no jargon unless user asks.
 - Step fails: one plain line — what broke + what you try next. Never hide it.
+- Long multi-step work: offer native `/goal` so user can walk away (pause/resume).
 
 ## Output
 
