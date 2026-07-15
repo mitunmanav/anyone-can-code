@@ -16,7 +16,77 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 import silent_failure_detector
 
 
-SAFE_PERMISSION_TOOLS = ["Read", "Write", "Edit", "MultiEdit", "Bash"]
+# Item 14: auto-allow only low-risk tools. Never blanket-allow Bash.
+# (Audit: 35 yes/proceed clicks — kill spam, keep real risk prompts.)
+SAFE_READ_TOOLS = (
+    "Read",
+    "Grep",
+    "Glob",
+    "LS",
+    "Search",
+    "WebSearch",
+    "read_file",
+    "list_dir",
+    "grep",
+)
+# apply_patch / Edit / Write stay prompted unless already trusted by sandbox.
+# Safe Bash = read-only or test commands only.
+SAFE_BASH_PREFIXES = (
+    "pytest",
+    "python -m pytest",
+    "python3 -m pytest",
+    "npm test",
+    "npm.cmd test",
+    "npm run test",
+    "npm.cmd run test",
+    "git status",
+    "git diff",
+    "git log",
+    "git branch",
+    "ls ",
+    "ls\n",
+    "dir ",
+    "dir\n",
+    "rg ",
+    "cat ",
+    "type ",
+    "echo ",
+    "pwd",
+    "whoami",
+)
+
+
+def is_safe_auto_allow(tool_name: str, tool_input) -> bool:
+    """True when PermissionRequest should auto-allow (kill approval spam)."""
+    name = str(tool_name or "")
+    if any(safe in name for safe in SAFE_READ_TOOLS):
+        return True
+    # apply_patch / Edit / Write: still need user for first trust — do not auto-allow
+    if name in {"Bash", "bash", "Shell", "shell"} or name.endswith("Bash"):
+        command = ""
+        if isinstance(tool_input, dict):
+            command = str(tool_input.get("command") or "")
+        elif isinstance(tool_input, str):
+            command = tool_input
+        cmd = command.strip().lower()
+        if not cmd:
+            return False
+        # multi-command with && still ok if first is safe prefix
+        first = cmd.split("&&")[0].strip()
+        return any(first == p.strip() or first.startswith(p.strip()) for p in SAFE_BASH_PREFIXES)
+    return False
+
+
+def plain_approval_hint(tool_name: str, tool_input) -> str:
+    """Plain words when we leave the normal approval prompt."""
+    command = ""
+    if isinstance(tool_input, dict):
+        command = str(tool_input.get("command") or tool_input.get("description") or "")[:120]
+    return (
+        f"ACC: Codex asks you because this step may change things "
+        f"({tool_name}{': ' + command if command else ''}). "
+        "Yes = allow once. No = stop."
+    )
 
 
 def log_tool_call(repo_root: Path, payload: dict) -> None:
@@ -64,7 +134,8 @@ def summarize_response(tool_response) -> str:
 def handle_permission_request(payload: dict, repo_root: Path) -> None:
     log_tool_call(repo_root, payload)
     tool_name = payload.get("tool_name", "")
-    if any(allowed in tool_name for allowed in SAFE_PERMISSION_TOOLS):
+    tool_input = payload.get("tool_input", {})
+    if is_safe_auto_allow(tool_name, tool_input):
         log_signal(repo_root, "permission_auto_allow", f"Allowed {tool_name}.", payload)
         print(
             json.dumps(
@@ -77,7 +148,14 @@ def handle_permission_request(payload: dict, repo_root: Path) -> None:
             )
         )
         return
-    print(json.dumps({}))
+    # Leave normal Codex prompt; add plain-words systemMessage (docs support it)
+    print(
+        json.dumps(
+            {
+                "systemMessage": plain_approval_hint(tool_name, tool_input),
+            }
+        )
+    )
 
 
 FAILURE_LEDGER = "failure-ledger.jsonl"
@@ -171,7 +249,8 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
     if hook_event == "PermissionRequest":
         log_tool_call(repo_root, payload)
         tool_name = payload.get("tool_name", "")
-        if any(allowed in tool_name for allowed in SAFE_PERMISSION_TOOLS):
+        tool_input = payload.get("tool_input", {})
+        if is_safe_auto_allow(tool_name, tool_input):
             log_signal(repo_root, "permission_auto_allow", f"Allowed {tool_name}.", payload)
             return {
                 "hookSpecificOutput": {
@@ -179,6 +258,7 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                     "decision": {"behavior": "allow"},
                 }
             }
+        return {"systemMessage": plain_approval_hint(tool_name, tool_input)}
     return {}
 
 

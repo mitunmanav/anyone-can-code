@@ -546,6 +546,25 @@ class Doctor:
             self.check("config", "project_hooks_mode", "PASS", "info", "Project config can keep hooks quiet here")
         else:
             self.check("config", "project_hooks_mode", "WARN", "warning", "Project config does not disable hooks here")
+        # Item 13: native memories should stay off
+        try:
+            scripts = PLUGIN_ROOT / "scripts"
+            if str(scripts) not in sys.path:
+                sys.path.insert(0, str(scripts))
+            from native_memory_policy import check_memories_off
+            mem = check_memories_off(config_path)
+            if mem["ok"]:
+                self.check("config", "native_memories_off", "PASS", "info", mem["detail"])
+            else:
+                self.check(
+                    "config",
+                    "native_memories_off",
+                    "WARN",
+                    "warning",
+                    f"Native Codex memories not off ({mem['detail']}). ACC uses two-drawer memory instead.",
+                )
+        except Exception:
+            self.check("config", "native_memories_off", "WARN", "warning", "Could not check native memories flag")
 
     def run_default_prompts(self) -> None:
         path = PLUGIN_ROOT / ".codex-plugin" / "plugin.json"

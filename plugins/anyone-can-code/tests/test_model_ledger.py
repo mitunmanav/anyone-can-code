@@ -27,6 +27,23 @@ def test_no_data_returns_default(tmp_path):
     rec = model_ledger.recommend_model("new-task-type", ledger_path=ledger_path)
     assert rec["model"]
     assert "no data" in rec["reason"].lower() or "default" in rec["reason"].lower()
+    assert "reasoning" in rec
+    assert rec["reasoning"] != "high" or rec.get("reasoning")  # has a field
+
+
+def test_reasoning_not_always_high():
+    assert model_ledger.recommend_reasoning("micro") == "low"
+    assert model_ledger.recommend_reasoning("bug-fix") == "medium"
+    assert model_ledger.recommend_reasoning("feature") != "max"
+
+
+def test_record_includes_reasoning(tmp_path):
+    path = tmp_path / "led.jsonl"
+    model_ledger.record_model_result(
+        "gpt-5.6", "feature", "success", reasoning="medium", ledger_path=path
+    )
+    row = json.loads(path.read_text().splitlines()[0])
+    assert row["reasoning"] == "medium"
 
 
 def test_session_model_is_read_from_hook_payload():

@@ -127,18 +127,23 @@ def build_context(repo_root: Path, source: str) -> str:
     goal = workflow.get("active_goal") or workflow.get("active_task")
     if goal:
         context_lines.append(f"Goal: {str(goal)[:240]}")
+    reasoning = rec.get("reasoning") or "medium"
     context_lines += [
         f"State: {workflow.get('phase', 'idle')} / {workflow.get('route', 'unknown')}.",
         f"Next: {workflow.get('next_step', 'N/A')}.",
         f"ENFORCE comm rule: {comm_mode}. Short replies only. No walls of text.",
-        f"Memory: {workflow.get('memory_mode', 'portable-markdown')}.",
+        f"Memory: {workflow.get('memory_mode', 'portable-markdown')}. ACC two-drawer; native Codex memories OFF.",
         f"From: {source}.",
-        f"Model: {rec['model']} ({rec['reason']}).",
+        f"Model: {rec['model']} reasoning={reasoning} ({rec['reason']}). Not always high effort.",
         (
             "Session end rule: before stopping, give a 3-line recap — "
             "1) what got done, 2) what is next, 3) what the user must decide. "
             "Never stop on an unanswered question from the user."
         ),
+        "Observability: after tool work, tell the user what you did in plain words (What AI did).",
+        "Cost: label suggestions [CHEAP] or [HUNGRY]. Prefer cheap first.",
+        # Item 19: do NOT bulk-load skill bodies here — Codex progressive disclosure does that.
+        "Skills: use progressive load; do not re-read every skill file each turn.",
     ]
     try:
         nudge = _version_check.update_nudge()

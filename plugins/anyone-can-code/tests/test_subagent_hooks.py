@@ -27,7 +27,9 @@ def test_subagent_start_injects_caveman_and_scope(tmp_path):
     ctx = out["additionalContext"].lower()
     assert "caveman" in ctx
     assert "job" in ctx or "scope" in ctx
-    assert len(out["additionalContext"]) <= 400
+    assert "hungry" in ctx or "token" in ctx
+    assert "push" in ctx or "deploy" in ctx
+    assert len(out["additionalContext"]) <= 500
 
 
 def test_subagent_stop_logs_signal(tmp_path):

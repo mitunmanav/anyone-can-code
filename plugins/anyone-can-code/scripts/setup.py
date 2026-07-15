@@ -481,6 +481,12 @@ def bootstrap_project(
     config_path = target / ".codex" / "config.toml"
     if not config_path.exists() or force:
         shutil.copy2(REFERENCE / ".codex" / "config.toml", config_path)
+    # Item 13: native Codex memories stay OFF; ACC two-drawer is the memory.
+    try:
+        from native_memory_policy import ensure_memories_off
+        ensure_memories_off(config_path)
+    except Exception:
+        pass
     viewer = run_viewer_action(
         viewer_mode,
         viewer_action,
