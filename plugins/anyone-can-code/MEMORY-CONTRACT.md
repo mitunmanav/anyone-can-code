@@ -45,6 +45,22 @@ memory/
 
 `index/` is rebuildable. `imports/` holds receipts and snapshots.
 
+## Two Drawers
+
+Memory lives in two separate drawers that never mix:
+
+- **Project drawer** — inside each project at
+  `.codex/anyone-can-code/memory/`. Holds decisions, lessons, failures,
+  evidence for THAT project only. Moves and deletes with the project.
+- **User drawer** — one global folder at
+  `~/.codex/anyone-can-code/user-memory/` (override:
+  `ACC_USER_MEMORY_ROOT`). Holds taste only: style, common words, model
+  likes. Kinds allowed: `preference`, `pattern`. Project facts are
+  rejected with a plain-words error.
+
+`$update` migrates old project-local user notes: taste moves to the user
+drawer, project facts are re-scoped to the project drawer, with a receipt.
+
 ## MCP Backend
 
 Bundled MCP tools keep stable names where possible:

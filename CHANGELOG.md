@@ -2,6 +2,25 @@
 
 All notable public changes to Anyone Can Code will be documented here.
 
+## 1.1.0-beta.4 - 2026-07-15
+
+Beta.4 locked-rule finish. Beta: rough edges expected — please report failures via GitHub Issues.
+
+### Added
+
+- **Two-drawer memory** — user taste (style, likes) lives in one global drawer; project lessons stay inside the project. Drawers never mix.
+- **Taste guard** — user drawer accepts only `preference` / `pattern`; project facts are rejected in plain words.
+- **`$update` user-drawer migration** — taste notes move global; project facts re-scoped, with a receipt. Rerun-safe.
+- **Plain-words build narration** — execute/orchestrator narrate steps in plain words; no code shown unless asked.
+- **Warm tone + jargon plain** — caveman stays short but not cold; developer jargon auto-swapped for plain words.
+- **Layered push-back** — impossible → say no; better way → explain simple, user picks; fine as asked → do it.
+- **Permanent locked-rule guards** — skill ≤4000 chars, stdlib-only shipped Python.
+
+### Fixed
+
+- **Session-start lesson recall** — now reads scoped note folders (was non-recursive, found nothing). Capped and ranked; skips revoked.
+- **User words like `pending`** — step text kept; task queue maps `pending` → `todo` so the queue never rejects that word.
+
 ## 1.1.0-beta.3 - 2026-07-11
 
 Fix-round release. Beta: rough edges expected — please report failures via GitHub Issues.
