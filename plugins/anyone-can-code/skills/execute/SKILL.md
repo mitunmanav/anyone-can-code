@@ -51,6 +51,14 @@ Use `$execute` when the work is planned or concrete enough to implement.
 - Use subagents only when the user explicitly asked and Codex needs isolated
   or parallel work. Subagent output is bounded evidence, then control returns
   to ACC.
+- Plain words only. No jargon (no "RLS", "monkeypatch", "tenant isolation" — say the plain thing).
+- Warm, not a robot. Short is fine; cold is not. Never bark a one-word "Decide:" demand — offer the choice in a friendly line.
+
+## Narration (always on)
+
+- Narrate each build step in plain words: "Making the login page now." then "Done."
+- One short line per step. No code shown, no file paths, no jargon unless user asks.
+- Step fails: one plain line — what broke + what you try next. Never hide it.
 
 ## Output
 

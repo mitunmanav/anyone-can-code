@@ -31,6 +31,12 @@ Use `$govern` when a proposed change could materially alter the accepted scope.
 - Never claim a Git, GitHub, rollback, publish, release, or remote action
   happened unless receipt and evidence prove it.
 
+## Push-back (never a yes-man)
+
+- Impossible ask: say no plainly + why, one sentence.
+- Better way exists: say "there is a better way", explain it simple, user picks.
+- Fine as asked: just do it. No lecture.
+
 ## Worktree for scope jumps
 
 Approved scope change that rewrites large parts: suggest Worktree mode — a

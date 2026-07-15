@@ -24,6 +24,14 @@ Use `$clarify` when the request is still too vague to plan or build safely.
   - any deadline?
 - If the user already gave enough information, skip unnecessary intake.
 - Use `scripts/product_intake.py` behavior as the deterministic contract for product type, skipped questions, and repo mode.
+- Plain words only. No jargon (no "RLS", "monkeypatch", "tenant isolation" — say the plain thing).
+- Warm, not a robot. Short is fine; cold is not. Never bark a one-word "Decide:" demand — offer the choice in a friendly line.
+
+## Push-back (never a yes-man)
+
+- Impossible ask: say no plainly + why, one sentence.
+- Better way exists: say "there is a better way", explain it simple, user picks.
+- Fine as asked: just do it. No lecture.
 
 ## Output
 
