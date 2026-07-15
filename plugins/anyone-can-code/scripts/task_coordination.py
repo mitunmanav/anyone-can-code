@@ -18,6 +18,22 @@ import canonical_state
 
 
 TASK_STATUSES = {"todo", "in_progress", "blocked", "done"}
+# Plain words agents often use → real queue status. Never reject these.
+TASK_STATUS_ALIASES = {
+    "pending": "todo",
+    "todo": "todo",
+    "to-do": "todo",
+    "to_do": "todo",
+    "open": "todo",
+    "new": "todo",
+    "in_progress": "in_progress",
+    "in-progress": "in_progress",
+    "doing": "in_progress",
+    "blocked": "blocked",
+    "done": "done",
+    "complete": "done",
+    "completed": "done",
+}
 
 
 class TaskCoordinationError(RuntimeError):
@@ -37,9 +53,10 @@ def normalize_task(task: dict[str, Any] | str) -> dict[str, Any]:
     name = str(task.get("name") or task.get("id") or "").strip()
     if not name:
         raise TaskCoordinationError("Task name required")
-    status = str(task.get("status") or task.get("state") or "todo").strip()
+    raw_status = str(task.get("status") or task.get("state") or "todo").strip().lower()
+    status = TASK_STATUS_ALIASES.get(raw_status, raw_status)
     if status not in TASK_STATUSES:
-        raise TaskCoordinationError(f"Unsupported task status: {status}")
+        raise TaskCoordinationError(f"Unsupported task status: {raw_status}")
     owner = str(task.get("owner") or "acc").strip() or "acc"
     dependencies = task.get("dependencies") or task.get("depends_on") or []
     if not isinstance(dependencies, list):

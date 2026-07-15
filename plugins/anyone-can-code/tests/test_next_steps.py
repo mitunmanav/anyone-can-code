@@ -64,6 +64,35 @@ def test_explicit_next_action_wins(tmp_path):
     assert state["next_action"] == "ship it"
 
 
+def test_step_text_named_like_a_status_word_survives(tmp_path):
+    state = canonical_state.update_canonical_state(
+        tmp_path,
+        {"next_steps": ["pending", "clear the pending invoices", "mark order done"]},
+    )
+    texts = [s["step"] for s in state["next_steps"]]
+    assert "pending" in texts, "a literal 'pending' step must not be dropped"
+    assert "clear the pending invoices" in texts
+    assert "mark order done" in texts
+    # every kept step still has a valid status, none of them lost their text
+    assert all(s["status"] in {"pending", "done"} and s["step"] for s in state["next_steps"])
+
+
+def test_task_queue_accepts_pending_as_todo(tmp_path):
+    """Session 4: agent said queue rejected word pending — map it to todo."""
+    import task_coordination
+
+    state = task_coordination.set_task_queue(
+        tmp_path,
+        [
+            {"name": "Claim work", "status": "pending"},
+            {"name": "Finish work", "status": "done"},
+        ],
+    )
+    by_name = {t["name"]: t["status"] for t in state["tasks"]}
+    assert by_name["Claim work"] == "todo"
+    assert by_name["Finish work"] == "done"
+
+
 def test_capsule_carries_and_renders_next_steps(tmp_path):
     canonical_state.update_canonical_state(
         tmp_path,
