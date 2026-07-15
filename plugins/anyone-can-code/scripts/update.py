@@ -218,6 +218,54 @@ def migrate_legacy_memory(target: Path, before: dict | None = None) -> dict:
             os.environ["ACC_MCP_DATA_ROOT"] = old_root
 
 
+def write_user_drawer_migration_receipt(target: Path, payload: dict) -> str:
+    """Write a plain receipt for user-drawer migration under state/receipts/."""
+    receipts = project_root(target) / "state" / "receipts"
+    receipts.mkdir(parents=True, exist_ok=True)
+    path = receipts / f"user-drawer-migration-{time.strftime('%Y%m%dT%H%M%S')}.json"
+    body = {
+        "action": "user-drawer-migration",
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "moved": payload.get("moved", 0),
+        "rescoped": payload.get("rescoped", 0),
+    }
+    path.write_text(json.dumps(body, indent=2) + "\n", encoding="utf-8")
+    return str(path)
+
+
+def migrate_user_drawer(target: Path) -> dict:
+    """Move taste notes to the global user drawer; re-scope project facts. Rerun-safe."""
+    server = load_memory_server()
+    local_user = selected_memory_root(target) / "notes" / "user"
+    moved = rescoped = 0
+    if local_user.exists():
+        for note in sorted(local_user.glob("*.md")):
+            record = server.parse_markdown_note(note)
+            if not record:
+                continue
+            if record.get("kind") in server.USER_TASTE_KINDS:
+                dest_dir = server.user_drawer_root() / "notes" / "user"
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                dest = dest_dir / note.name
+                if not dest.exists():
+                    shutil.copy2(note, dest)
+                    moved += 1
+                note.unlink()
+            else:
+                record["scope"] = "project"
+                dest_dir = selected_memory_root(target) / "notes" / "project"
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                dest_dir.joinpath(note.name).write_text(
+                    server.render_markdown_note(record), encoding="utf-8"
+                )
+                note.unlink()
+                rescoped += 1
+    receipt = write_user_drawer_migration_receipt(
+        target, {"moved": moved, "rescoped": rescoped}
+    )
+    return {"moved": moved, "rescoped": rescoped, "receipt": receipt}
+
+
 def run_doctor(target: Path) -> dict | None:
     if not DOCTOR.exists():
         return None
@@ -308,6 +356,7 @@ def migrate(target: Path) -> None:
         print("Memory migration rolled back.")
         print(f"Receipt: {memory_receipt['rollback_receipt_path']}")
         return
+    drawer_receipt = migrate_user_drawer(target)
     run_setup(target, hook_mode, before)
 
     install_state = install_state_path(target)
@@ -350,6 +399,11 @@ def migrate(target: Path) -> None:
         print(f"Memory receipt: {memory_receipt['receipt_path']}")
     else:
         print("Legacy memory: none found.")
+    print(
+        f"User drawer: {drawer_receipt['moved']} taste moved, "
+        f"{drawer_receipt['rescoped']} project facts re-scoped."
+    )
+    print(f"User drawer receipt: {drawer_receipt['receipt']}")
     if quarantined:
         print("Bad files moved:")
         for item in quarantined:
