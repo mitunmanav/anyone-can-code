@@ -257,6 +257,24 @@ def handle_user_prompt_submit(payload: dict, repo_root: Path) -> None:
     )
 
 
+def security_gate_for_deploy(repo_root: Path, command: str) -> str | None:
+    """If deploy command, run production security scan. Plain reason or None."""
+    if not is_deploy_command(command):
+        return None
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import security_gate as _security_gate
+        result = _security_gate.scan_project(repo_root)
+    except Exception:
+        return None
+    if result.get("ok"):
+        return None
+    lines = result.get("summary_lines") or [result.get("user_line") or "Security gate fail."]
+    return " ".join(lines[:4])
+
+
 def handle_pre_tool_use(payload: dict, repo_root: Path) -> None:
     blocked = check_destructive_command(payload.get("tool_input", {}))
     if blocked:
@@ -268,6 +286,32 @@ def handle_pre_tool_use(payload: dict, repo_root: Path) -> None:
                         "hookEventName": "PreToolUse",
                         "permissionDecision": "deny",
                         "permissionDecisionReason": f"Guard stop bad command: {blocked}",
+                    }
+                }
+            )
+        )
+        return
+
+    tool_input = payload.get("tool_input") or {}
+    command = ""
+    if isinstance(tool_input, dict):
+        command = str(tool_input.get("command") or "")
+    elif isinstance(tool_input, str):
+        command = tool_input
+    gate_reason = security_gate_for_deploy(repo_root, command)
+    if gate_reason:
+        log_blocked(repo_root, payload, f"security gate: {gate_reason[:200]}")
+        print(
+            json.dumps(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": (
+                            "Security gate stop. Fix open signup / default password / "
+                            f"secrets first. {gate_reason[:400]} "
+                            "User must explicitly accept risk to override later."
+                        ),
                     }
                 }
             )
@@ -314,6 +358,19 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                         "permissionDecisionReason": (
                             "Guard blocked deploy: USE_MOCK_DB=true. "
                             "Set USE_MOCK_DB=false or remove it before deploying."
+                        ),
+                    }
+                }
+            gate_reason = security_gate_for_deploy(repo_root, cmd)
+            if gate_reason:
+                log_blocked(repo_root, payload, f"security gate: {gate_reason[:200]}")
+                return {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": (
+                            "Security gate stop. Fix open signup / default password / "
+                            f"secrets first. {gate_reason[:400]}"
                         ),
                     }
                 }
