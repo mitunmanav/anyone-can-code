@@ -73,11 +73,9 @@ Example: `Status: build implemented, tests verified, deploy blocked`.
 Never report `works`, `proper`, `perfect`, or user accepted unless matching
 interaction, visual QA, or user-acceptance evidence is recorded.
 
-## Self-check + host
+## Host
 
-Optional ACC self-audit: `python "$PLUGIN_ROOT/scripts/expand_pack.py" self-audit`
-(plain doctor/skill/hooks pass-fail). CLI and Desktop use the same plugin.
-Other agents = later, not yet.
+CLI and Desktop use the same plugin. Other agents = later, not yet.
 
 ## Past questions
 

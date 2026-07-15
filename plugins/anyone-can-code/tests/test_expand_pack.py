@@ -1,4 +1,4 @@
-"""Phase F: CLI host, other-agents later, ACC audits ACC."""
+"""Phase F: CLI host + other-agents later (no ACC self-audit)."""
 from __future__ import annotations
 
 import json
@@ -45,74 +45,49 @@ def test_other_agents_honest_later():
     assert h["force"] is False
     low = h["user_line"].lower()
     assert "later" in low or "not yet" in low or "codex first" in low
-    # must not claim live ports
     assert "works on claude today" not in low
     assert "already ports" not in low
 
 
-def test_self_audit_ok_on_plugin_tree():
-    report = ep.self_audit(PLUGIN)
-    assert report["id"] == "acc_audits_acc"
-    assert "summary" in report
-    assert report["summary"]["fail"] >= 0
-    assert report["ok"] is True or report["summary"]["fail"] > 0
-    assert report["user_line"]
-    assert "proof" in report["agent_line"].lower() or "doctor" in report["agent_line"].lower()
-    # always has skill budget + manifest checks
-    ids = {c["id"] for c in report["checks"]}
-    assert "skill_budget" in ids
-    assert "plugin_manifest" in ids
-
-
-def test_self_audit_flags_missing_manifest(tmp_path):
-    report = ep.self_audit(tmp_path)
-    assert report["ok"] is False
-    assert report["summary"]["fail"] >= 1
-    assert any(c["id"] == "plugin_manifest" and c["status"] == "fail" for c in report["checks"])
-
-
-def test_self_audit_flags_fat_skill(tmp_path):
-    skill = tmp_path / "skills" / "fat"
-    skill.mkdir(parents=True)
-    (skill / "SKILL.md").write_text("x" * 4500, encoding="utf-8")
-    (tmp_path / ".codex-plugin").mkdir()
-    (tmp_path / ".codex-plugin" / "plugin.json").write_text(
-        json.dumps({"name": "t", "version": "0", "skills": "./skills/"}),
-        encoding="utf-8",
-    )
-    report = ep.self_audit(tmp_path)
-    assert any(c["id"] == "skill_budget" and c["status"] == "fail" for c in report["checks"])
-    assert report["ok"] is False
-
-
 def test_menu_covers_phase_f():
     ids = {f["id"] for f in ep.all_features()}
-    for need in ("cli_port", "other_agents", "acc_audits_acc"):
+    for need in ("cli_port", "other_agents"):
         assert need in ids
+    assert "acc_audits_acc" not in ids
     menu = ep.plain_menu().lower()
     assert "choose" in menu or "decide" in menu
+    assert "self-audit" not in menu
+    assert "audits acc" not in menu
 
 
-def test_cli_main_json(tmp_path):
+def test_no_self_audit_api():
+    assert not hasattr(ep, "self_audit")
+    assert not hasattr(ep, "self_audit_howto")
+
+
+def test_cli_main_menu_json():
     import subprocess
 
     script = PLUGIN / "scripts" / "expand_pack.py"
     r = subprocess.run(
-        [sys.executable, str(script), "self-audit", "--plugin-root", str(PLUGIN), "--json"],
+        [sys.executable, str(script), "menu", "--json"],
         capture_output=True,
         text=True,
         timeout=60,
     )
     assert r.returncode == 0, r.stderr + r.stdout
     data = json.loads(r.stdout)
-    assert data["id"] == "acc_audits_acc"
-    assert "summary" in data
+    ids = {item["id"] for item in data}
+    assert "cli_port" in ids
+    assert "other_agents" in ids
+    assert "acc_audits_acc" not in ids
 
 
-def test_skills_mention_phase_f():
+def test_skills_mention_cli_not_self_audit():
     status = (PLUGIN / "skills" / "status" / "SKILL.md").read_text(encoding="utf-8").lower()
     help_s = (PLUGIN / "skills" / "help" / "SKILL.md").read_text(encoding="utf-8").lower()
-    orch = (PLUGIN / "skills" / "orchestrator" / "SKILL.md").read_text(encoding="utf-8").lower()
-    blob = status + help_s + orch
-    assert "self-audit" in blob or "audits" in blob or "doctor" in blob
+    blob = status + help_s
     assert "cli" in blob
+    assert "self-audit" not in blob
+    assert "self audit" not in blob
+    assert "audits acc" not in blob

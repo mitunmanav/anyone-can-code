@@ -35,5 +35,4 @@ When explaining the active route, use the same entry-mode and route names from
 `scripts/front_door.py`. Never expose development-system audit or promotion
 terms as product workflow.
 
-Also say: Desktop or CLI both work (same plugin). ACC can self-audit itself
-with `expand_pack.py self-audit`. Ports to Claude/Cursor = later.
+Also say: Desktop or CLI both work (same plugin). Ports to Claude/Cursor = later.
