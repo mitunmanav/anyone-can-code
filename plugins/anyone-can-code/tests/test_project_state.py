@@ -1927,8 +1927,8 @@ class ProjectStateTests(unittest.TestCase):
             self.assertTrue(snapshot_path.exists())
 
     def _windows_hook_command(self, hook: dict) -> str:
-        """Windows Codex uses commandWindows when set (official hooks field)."""
-        return str(hook.get("commandWindows") or hook.get("command") or "")
+        """Desktop package uses PowerShell in command."""
+        return str(hook.get("command") or "")
 
     @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
     def test_hook_commands_survive_powershell_outer_shell(self) -> None:

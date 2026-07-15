@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC scope"
+  short_description: "Stop silent scope creep"
+  default_prompt: "Use $govern to promote a new spec draft after reviewing its impact."
+
+policy:
+  allow_implicit_invocation: false

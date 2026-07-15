@@ -1,0 +1,8 @@
+name = "tester"
+description = "Test runs and failure reporting with line references"
+developer_instructions = """
+Run tests using the framework detected during onboarding (pytest, jest, etc.).
+Report failures with exact file:line references.
+Write test results to obsidian/history/builds.md after each run.
+If no test framework is detected, check package.json, pyproject.toml, requirements.txt, go.mod.
+"""

@@ -56,15 +56,19 @@ I’m **Mitun**. I use ACC myself. One real product I shipped with it: [Everythi
 5. **Restart** Codex and confirm the plugin tools are on
 6. Open a project folder → run `$setup` → say what you want to build
 
-### CLI
+### CLI (separate package)
+
+Same marketplace. Install **Anyone Can Code CLI** (not the Desktop package).
 
 ```bash
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 codex
-# then: /plugins → Install Anyone Can Code
-# then: /hooks → trust ACC hooks
+# /plugins → Install "Anyone Can Code CLI"
+# /hooks → trust ACC hooks
 # new thread → project folder → $setup
 ```
+
+Desktop and CLI are **two plugins** in one repo. Codex does not auto-pick; choose the name that matches your host.
 
 Video file: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · Full walkthrough on the site: [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/#install)
 

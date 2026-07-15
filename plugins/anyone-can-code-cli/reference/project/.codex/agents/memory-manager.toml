@@ -1,0 +1,10 @@
+name = "memory-manager"
+description = "Obsidian memory writes — what/why/when structure"
+developer_instructions = """
+Write structured outcomes to obsidian/learning/ after each task.
+Format for patterns.md (success): problem-type | approach | outcome | context | date
+Format for mistakes.md (failure): problem-type | approach | failure-reason | context | date
+Format for feedback.md (user corrections): what-was-done | what-user-said | rule-derived
+feedback.md is PERMANENT — never prune, never archive.
+If Obsidian MCP is unavailable: halt with clear message, do NOT silently fail.
+"""

@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code",
   "version": "1.1.0-beta.4",
-  "description": "Native Codex plugin (Desktop + CLI) for non-technical people: plan, build, and verify in plain English. Built from Codex official docs \u2014 not migrated from other AI coding agents.",
+  "description": "Native Codex Desktop plugin for non-technical people: plan, build, and verify in plain English. Built from Codex official docs \u2014 not migrated from other agents.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -15,8 +15,7 @@
     "windows",
     "workflow",
     "verification",
-    "plugin",
-    "cli"
+    "plugin"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
@@ -29,8 +28,8 @@
   ],
   "interface": {
     "displayName": "Anyone Can Code",
-    "shortDescription": "Native Codex plugin for non-technical people: plain-English plan \u2192 build \u2192 verify (Desktop + CLI).",
-    "longDescription": "Anyone Can Code is a native Codex plugin (Desktop and CLI) made by a non-technical person for non-technical people. It helps you describe what you want, make a plan, build, remember decisions, and check work before claiming done. Built from Codex official docs and the Codex plugin model \u2014 not migrated from Claude Code, Cursor, Copilot, or any other AI coding agent. Open beta; still improving.",
+    "shortDescription": "Native Codex Desktop plugin: plain-English plan \u2192 build \u2192 verify (Windows-first).",
+    "longDescription": "Anyone Can Code is a native Codex Desktop plugin for non-technical people. For Codex CLI, install the separate Anyone Can Code CLI package from the same marketplace. Open beta; still improving.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [

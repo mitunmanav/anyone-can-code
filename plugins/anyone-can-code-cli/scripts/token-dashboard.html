@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anyone Can Code — Token Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  h1 { font-size: 24px; color: #58a6ff; }
+  .subtitle { color: #8b949e; font-size: 14px; margin-bottom: 8px; }
+  .session-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .session-bar select { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 4px 8px; font-size: 13px; }
+  .session-bar .label { color: #8b949e; font-size: 13px; }
+  .last-updated { color: #8b949e; font-size: 12px; margin-bottom: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; text-align: center; }
+  .card .label { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+  .card .value { font-size: 28px; font-weight: 600; color: #f0f6fc; margin-top: 4px; }
+  .card .value.green { color: #3fb950; }
+  .card .value.blue { color: #58a6ff; }
+  .card .value.yellow { color: #d29922; }
+  .card .value.purple { color: #bc8cff; }
+  h2 { font-size: 18px; color: #c9d1d9; margin-bottom: 12px; margin-top: 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #21262d; font-size: 14px; }
+  th { color: #8b949e; font-weight: 500; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+  td { color: #c9d1d9; }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .status-dot.live { background: #3fb950; }
+  .bar-bg { background: #21262d; border-radius: 4px; height: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .bar-fill.bash { background: #58a6ff; }
+  .bar-fill.read { background: #3fb950; }
+  .bar-fill.edit { background: #d29922; }
+  .bar-fill.mcp { background: #bc8cff; }
+  .bar-fill.other { background: #8b949e; }
+  .note { color: #8b949e; font-size: 13px; margin-top: 24px; text-align: center; border-top: 1px solid #21262d; padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header-row">
+    <h1>Token Usage</h1>
+    <div class="subtitle">Anyone Can Code</div>
+  </div>
+
+  <div class="session-bar">
+    <span class="label">Session:</span>
+    <select id="session-select" onchange="changeSession()">
+      <option value="0">Loading...</option>
+    </select>
+    <span class="label" id="session-count"></span>
+  </div>
+
+  <div class="last-updated" id="last-updated">Waiting for data...</div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">Total Tokens</div>
+      <div class="value blue" id="total-tokens">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Input</div>
+      <div class="value green" id="input-tokens">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Output</div>
+      <div class="value" id="output-tokens">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Reasoning</div>
+      <div class="value yellow" id="reasoning-tokens">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Cache Read</div>
+      <div class="value purple" id="cached-tokens">0</div>
+    </div>
+  </div>
+
+  <h2>Tool Usage</h2>
+  <table id="tool-table">
+    <thead>
+      <tr><th>Tool</th><th>Calls</th><th>Distribution</th></tr>
+    </thead>
+    <tbody id="tool-body">
+    </tbody>
+  </table>
+
+  <div class="note">
+    <span class="status-dot live" id="status-dot"></span>
+    <span id="status-text">Connected</span> &mdash; Auto-refreshes every 3s
+  </div>
+</div>
+
+<script>
+let currentSession = '';
+
+async function loadSessionList() {
+  try {
+    const resp = await fetch('/api/sessions');
+    const sessions = await resp.json();
+    const sel = document.getElementById('session-select');
+    sel.innerHTML = '';
+    for (const s of sessions) {
+      const opt = document.createElement('option');
+      opt.value = s.key;
+      const tokens = s.total_tokens.toLocaleString();
+      opt.textContent = `[${s.mtime}] ${tokens} tokens — ${s.filename}`;
+      sel.appendChild(opt);
+    }
+    document.getElementById('session-count').textContent = `${sessions.length} total sessions`;
+    if (sessions.length > 0) {
+      sel.value = sessions[0].key;
+      currentSession = sessions[0].key;
+    }
+  } catch (e) {
+    document.getElementById('session-select').innerHTML = '<option>No sessions found</option>';
+  }
+}
+
+function changeSession() {
+  currentSession = document.getElementById('session-select').value;
+  fetchData();
+}
+
+async function fetchData() {
+  try {
+    const resp = await fetch(`/api/tokens?session=${currentSession}`);
+    const data = await resp.json();
+
+    document.getElementById('total-tokens').textContent = data.total_tokens.toLocaleString();
+    document.getElementById('input-tokens').textContent = data.total_input.toLocaleString();
+    document.getElementById('output-tokens').textContent = data.total_output.toLocaleString();
+    document.getElementById('reasoning-tokens').textContent = data.total_reasoning.toLocaleString();
+    document.getElementById('cached-tokens').textContent = data.total_cached.toLocaleString();
+    const shortKey = data.current_session_key ? data.current_session_key.split(/[\\/]/).pop() : '';
+    document.getElementById('last-updated').textContent = `Session: ${shortKey} | ${data.session_count} total | Updated: ${data.last_updated}`;
+
+    const toolBody = document.getElementById('tool-body');
+    toolBody.innerHTML = '';
+    const entries = Object.entries(data.tool_calls);
+    if (entries.length === 0) {
+      toolBody.innerHTML = '<tr><td colspan="3" style="color:#8b949e;text-align:center;">No tool calls recorded yet</td></tr>';
+    } else {
+      const maxCount = Math.max(...entries.map(([_, c]) => c));
+      for (const [tool, count] of entries) {
+        const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
+        let barClass = 'other';
+        const t = tool.toLowerCase();
+        if (t.includes('bash') || t.includes('exec') || t.includes('shell')) barClass = 'bash';
+        else if (t.includes('read') || t.includes('cat') || t.includes('grep')) barClass = 'read';
+        else if (t.includes('edit') || t.includes('write') || t.includes('patch')) barClass = 'edit';
+        else if (t.includes('mcp') || t.includes('memory')) barClass = 'mcp';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${tool}</td>
+          <td>${count}</td>
+          <td style="width:200px">
+            <div class="bar-bg">
+              <div class="bar-fill ${barClass}" style="width:${pct}%"></div>
+            </div>
+          </td>`;
+        toolBody.appendChild(row);
+      }
+    }
+
+    document.getElementById('status-dot').className = 'status-dot live';
+    document.getElementById('status-text').textContent = 'Connected';
+  } catch (e) {
+    document.getElementById('status-dot').className = 'status-dot';
+    document.getElementById('status-text').textContent = 'Disconnected';
+  }
+}
+
+loadSessionList();
+fetchData();
+setInterval(fetchData, 3000);
+</script>
+</body>
+</html>

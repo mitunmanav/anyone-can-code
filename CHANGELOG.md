@@ -8,7 +8,7 @@ Beta.4 locked-rule finish. Beta: rough edges expected — please report failures
 
 ### Added
 
-- **Codex CLI port (same bundle)** — portable hook `command` via `python3` + `PLUGIN_ROOT`; Windows keeps `commandWindows`; short hook timeouts; CLI install path (`/plugins`, `/hooks` trust, `$setup`); Desktop + CLI wording in skills/README.
+- **Codex CLI package (separate plugin)** — `plugins/anyone-can-code-cli/` full copy, CLI-tuned hooks (`python3` + `PLUGIN_ROOT`, short timeouts); Desktop stays `plugins/anyone-can-code/`; same marketplace lists both; pick the name for your host (Codex does not auto-select).
 - **Two-drawer memory** — user taste (style, likes) lives in one global drawer; project lessons stay inside the project. Drawers never mix.
 - **Taste guard** — user drawer accepts only `preference` / `pattern`; project facts are rejected in plain words.
 - **`$update` user-drawer migration** — taste notes move global; project facts re-scoped, with a receipt. Rerun-safe.

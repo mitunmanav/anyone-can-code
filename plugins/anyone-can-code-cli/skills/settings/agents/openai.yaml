@@ -1,0 +1,4 @@
+interface:
+  display_name: "ACC settings"
+  short_description: "Talk mode, learning, automations"
+  default_prompt: "Use $settings to inspect or change Anyone Can Code preferences."

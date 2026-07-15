@@ -28,22 +28,13 @@
 
 ### Install (short)
 
-**Desktop**
+**This is the Desktop package.** For Codex CLI, install **Anyone Can Code CLI** from the same marketplace.
 
 1. Copy `https://github.com/mitunmanav/anyone-can-code`  
 2. Codex → **Plugins** → **+** → **Add a Marketplace** → paste URL  
-3. **Anyone Can Code** → **Install**  
+3. **Anyone Can Code** (Desktop) → **Install**  
 4. Trust every ACC hook (required)  
 5. Restart · open a project · `$setup` · say what you want  
-
-**CLI**
-
-1. `codex plugin marketplace add mitunmanav/anyone-can-code --ref main` (or local path)  
-2. Run `codex` → `/plugins` → Install **Anyone Can Code**  
-3. `/hooks` → trust ACC hooks (required)  
-4. New thread · project folder · `$setup` · say what you want  
-
-More: `docs/superpowers/plans/cli-port/cli-install-path.md` (on `grok` branch).
 
 **Current version:** [plugin.json](.codex-plugin/plugin.json) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
 

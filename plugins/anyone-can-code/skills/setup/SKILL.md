@@ -12,9 +12,9 @@ Reply rule:
 - talk strict caveman only
 - keep answer short
 
-## Host (Desktop + CLI)
+## Host
 
-Same plugin. **CLI:** `/plugins` install → `/hooks` trust → `$setup`. **Desktop:** Plugins UI → trust hooks → `$setup`. Optional: `codex plugin marketplace add <repo|path>`. No trust = hooks do nothing.
+This package is **Codex Desktop**. For Codex CLI, install **Anyone Can Code CLI** from the same marketplace (separate plugin). Desktop: Plugins UI → trust hooks → `$setup`. No trust = hooks do nothing.
 
 ## What it does
 

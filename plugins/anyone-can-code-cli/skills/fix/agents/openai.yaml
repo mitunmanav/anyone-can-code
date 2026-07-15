@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC fix"
+  short_description: "Recover when the same thing keeps failing"
+  default_prompt: "Use $fix after 3 failed verify cycles to recover from build errors."
+
+policy:
+  allow_implicit_invocation: true
