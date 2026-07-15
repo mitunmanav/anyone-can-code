@@ -19,6 +19,10 @@
 
 - [ ] Bundled hook mode works only when Codex `plugin_hooks` is enabled.
 - [ ] Project bootstrap hook mode is optional, not required for core plugin function.
+- [ ] Every command hook has explicit `timeout` (≤ 60s); never rely on docs default 600s.
+- [ ] Portable `command` uses `python3` + `PLUGIN_ROOT` (no PowerShell-only default).
+- [ ] Optional `commandWindows` keeps Windows Desktop launcher parity.
+- [ ] CLI install path documented: `/plugins` → `/hooks` trust → `$setup`.
 - [ ] Hook commands resolve through `PLUGIN_ROOT`/`CLAUDE_PLUGIN_ROOT` in bundled mode and fall back to repo-local plugin source during development.
 - [ ] Repo-local hook commands resolve through `.codex/hooks/scripts/` in project mode.
 - [ ] Hook scripts emit valid JSON only.

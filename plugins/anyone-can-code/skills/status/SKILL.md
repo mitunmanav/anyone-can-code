@@ -76,6 +76,8 @@ interaction, visual QA, or user-acceptance evidence is recorded.
 ## Host
 
 CLI and Desktop use the same plugin. Other agents = later, not yet.
+Optional: `python "$PLUGIN_ROOT/scripts/host_detect.py" --guidance` for host-plain install/review lines.
+CLI user stuck on hooks: open `/hooks` and trust ACC hooks.
 
 ## Past questions
 

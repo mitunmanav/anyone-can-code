@@ -12,6 +12,8 @@ Reply rule:
 
 Use `$onboard` when the plugin needs to understand the starting point before planning or building.
 
+If hooks never ran: CLI `/hooks` trust, or Desktop hook trust, then `$setup`.
+
 ## Entry modes
 
 - `idea`: a vague or partial idea, likely routes to `$clarify`.

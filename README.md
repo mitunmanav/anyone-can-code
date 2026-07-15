@@ -5,7 +5,7 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>A Codex Desktop plugin for people who are not engineers.</strong><br/>
+  <strong>A Codex plugin (Desktop + CLI) for people who are not engineers.</strong><br/>
   Say what you want in plain English. ACC helps you plan, build, and check that it actually works.
 </p>
 
@@ -15,7 +15,7 @@
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
-  <img src="https://img.shields.io/badge/Windows%20·%20Codex-0078D4?style=flat-square" alt="Platform"/>
+  <img src="https://img.shields.io/badge/Codex%20Desktop%20%2B%20CLI-0078D4?style=flat-square" alt="Platform"/>
   <img src="https://img.shields.io/badge/beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
@@ -23,7 +23,7 @@
 
 ## What it is
 
-**Anyone Can Code (ACC)** is a free plugin for **Codex Desktop** on Windows. It is built for non-technical people — including me.
+**Anyone Can Code (ACC)** is a free plugin for **Codex Desktop and Codex CLI**. Windows-first, also works where Codex CLI runs. Built for non-technical people — including me.
 
 You describe an idea, a fix, or a project in normal words. ACC walks you through:
 
@@ -37,11 +37,13 @@ It is a **native Codex** plugin — written from [Codex official docs](https://o
 
 I’m **Mitun**. I use ACC myself. One real product I shipped with it: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2). Open beta: **v1.1.0-beta.3**.
 
-**You need:** Windows · [Codex Desktop](https://openai.com/codex/) · Python
+**You need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python
 
 ---
 
 ## Install
+
+### Desktop
 
 <p align="center">
   <img src="docs/media/install-setup.gif" alt="Install Anyone Can Code in Codex Desktop" width="640"/>
@@ -54,10 +56,14 @@ I’m **Mitun**. I use ACC myself. One real product I shipped with it: [Everythi
 5. **Restart** Codex and confirm the plugin tools are on
 6. Open a project folder → run `$setup` → say what you want to build
 
-Optional (marketplace only — you still need hooks, restart, then `$setup`):
+### CLI
 
-```powershell
+```bash
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
+codex
+# then: /plugins → Install Anyone Can Code
+# then: /hooks → trust ACC hooks
+# new thread → project folder → $setup
 ```
 
 Video file: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · Full walkthrough on the site: [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/#install)

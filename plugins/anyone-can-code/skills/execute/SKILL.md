@@ -59,7 +59,7 @@ Use `$execute` when the work is planned or concrete enough to implement.
 - Narrate each build step as a robot walkthrough in plain lines — "Making the login page now." then "Done." then "Next: …"
 - One short line per step. No code shown, no file paths, no jargon unless user asks.
 - Step fails: one plain line — what broke + what you try next. Never hide it.
-- Long multi-step work: offer native `/goal` so user can walk away (pause/resume).
+- Long multi-step work: offer native `/goal` so user can walk away (pause/resume). Works on CLI and Desktop.
 
 ## Output
 

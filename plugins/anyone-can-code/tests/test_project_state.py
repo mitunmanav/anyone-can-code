@@ -1926,6 +1926,10 @@ class ProjectStateTests(unittest.TestCase):
             self.assertEqual(agents_path.read_text(encoding="utf-8"), "project rules stay\n")
             self.assertTrue(snapshot_path.exists())
 
+    def _windows_hook_command(self, hook: dict) -> str:
+        """Windows Codex uses commandWindows when set (official hooks field)."""
+        return str(hook.get("commandWindows") or hook.get("command") or "")
+
     @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
     def test_hook_commands_survive_powershell_outer_shell(self) -> None:
         hooks = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
@@ -1935,7 +1939,9 @@ class ProjectStateTests(unittest.TestCase):
         env["PLUGIN_ROOT"] = str(marketplace_repo)
         env.pop("CLAUDE_PLUGIN_ROOT", None)
 
-        command = hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"]
+        command = self._windows_hook_command(
+            hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]
+        )
         payload = {
             "hook_event_name": "UserPromptSubmit",
             "prompt": "test",
@@ -1966,7 +1972,7 @@ class ProjectStateTests(unittest.TestCase):
 
         cases = [
             (
-                hooks["hooks"]["PreToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PreToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PreToolUse",
                     "tool_name": "Bash",
@@ -1975,7 +1981,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["PostToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PostToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PostToolUse",
                     "tool_name": "Bash",
@@ -1985,7 +1991,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["Stop"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["Stop"][0]["hooks"][0]),
                 {
                     "hook_event_name": "Stop",
                     "turn_id": "test-turn",
@@ -2020,7 +2026,9 @@ class ProjectStateTests(unittest.TestCase):
 
         cases = [
             (
-                hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"],
+                self._windows_hook_command(
+                    hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]
+                ),
                 {
                     "hook_event_name": "UserPromptSubmit",
                     "prompt": "test",
@@ -2028,7 +2036,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["PreToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PreToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PreToolUse",
                     "tool_name": "Bash",
@@ -2037,7 +2045,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["PostToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PostToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PostToolUse",
                     "tool_name": "Bash",

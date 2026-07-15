@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>You describe what you want in plain English.</strong><br/>
-  Idea → plan → build → verify. Codex plugin for Windows. No programming background required.
+  Idea → plan → build → verify. Codex plugin for Desktop + CLI. No programming background required.
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
   <a href="../../LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
-  <img src="https://img.shields.io/badge/platform-Codex%20·%20Windows-0078D4?style=flat-square" alt="Platform"/>
+  <img src="https://img.shields.io/badge/platform-Codex%20Desktop%20%2B%20CLI-0078D4?style=flat-square" alt="Platform"/>
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
@@ -28,13 +28,22 @@
 
 ### Install (short)
 
+**Desktop**
+
 1. Copy `https://github.com/mitunmanav/anyone-can-code`  
 2. Codex → **Plugins** → **+** → **Add a Marketplace** → paste URL  
-3. Scroll → **Anyone Can Code** → **Install**  
-4. **Hooks → Settings → enable + trust every ACC hook** (required; not automatic)  
-5. Restart Codex · enable tools · open a project · `$setup` · say what you want  
+3. **Anyone Can Code** → **Install**  
+4. Trust every ACC hook (required)  
+5. Restart · open a project · `$setup` · say what you want  
 
-Optional terminal: `codex plugin marketplace add mitunmanav/anyone-can-code --ref main` — then still do steps 3–5.
+**CLI**
+
+1. `codex plugin marketplace add mitunmanav/anyone-can-code --ref main` (or local path)  
+2. Run `codex` → `/plugins` → Install **Anyone Can Code**  
+3. `/hooks` → trust ACC hooks (required)  
+4. New thread · project folder · `$setup` · say what you want  
+
+More: `docs/superpowers/plans/cli-port/cli-install-path.md` (on `grok` branch).
 
 **Current version:** [plugin.json](.codex-plugin/plugin.json) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
 

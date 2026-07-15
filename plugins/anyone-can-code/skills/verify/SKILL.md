@@ -42,12 +42,14 @@ Need eyes on the page. Prefer connected Chrome (`@Chrome`) — safer. The in-app
 No Chrome / user OK with mini browser → short preview only, not long test loops.
 Missing tool or login → `visual QA unverified`; ask user.
 
-## Review pane handoff + ship gate
+## Review handoff + ship gate
 
-After code changes, send the user to the review pane: green = added,
-red = removed. They can revert any file they dislike. Git repos only;
-no repo — offer to create one. Before ship/deploy: review pane + security
-gate (`scripts/security_gate.py`) + explicit user YES. Never force ship.
+After code changes, send user to review:
+- **CLI:** `/review` (working tree review; no auto-edit).
+- **Desktop:** review pane (green = added, red = removed) or `/review`.
+User can revert any file they dislike. Git repos only; no repo — offer to
+create one. Before ship/deploy: review + security gate
+(`scripts/security_gate.py`) + explicit user YES. Never force ship.
 
 ## Rule
 

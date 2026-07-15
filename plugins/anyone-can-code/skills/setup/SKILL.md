@@ -12,32 +12,18 @@ Reply rule:
 - talk strict caveman only
 - keep answer short
 
+## Host (Desktop + CLI)
+
+Same plugin. **CLI:** `/plugins` install → `/hooks` trust → `$setup`. **Desktop:** Plugins UI → trust hooks → `$setup`. Optional: `codex plugin marketplace add <repo|path>`. No trust = hooks do nothing.
+
 ## What it does
 
-- Explains ordinary Markdown storage, shows path, and offers `none` or optional
-  `obsidian` viewer before execution.
-- Asks user to confirm or change storage path.
-- Defaults to no viewer. ACC remains fully usable.
-- Detects Obsidian without launching it.
-- Offers viewer actions separately: no action, official download page,
-  consented `winget` install, or consented vault-open request.
-- Shows every selected session path and scope. Uses preview unless user
-  explicitly confirms import.
-- Creates `.codex/anyone-can-code/` for state, artifacts, learning, logs, backups, migrations, and portable Markdown memory.
-- Creates default preferences with builder persona, `caveman-strict` communication mode, assisted automation, local-first research, automatic plugin routing, and trigger-auto learning.
-- Creates memory defaults: path `.codex/anyone-can-code/memory/notes`, viewer mode `none`, import scope `ask`, and production-repo caution on.
-- Stores persona once as `builder`, `developer`, or `mixed` (also non-tech / middle / developer). Sets 4 knobs: plain, teach, tech shown, questions. Automations off until user says yes ("set up automations?").
-- Writes an install record that tracks plugin version, hook mode, portable Markdown memory mode, memory path, and viewer mode.
-- Selected session import snapshots every source before write, skips duplicate
-  content on rerun, verifies Markdown, and writes success or rollback receipt.
-- Keeps Codex memories off in the plugin-development reference config.
-- ACC-only hook suppression uses an ancestor
-  `.codex/anyone-can-code-hooks.disabled` marker so unrelated hooks remain active.
-- Skips `AGENTS.md` in repo root by default. Use `--agents-md write` to create it (never overwrites existing file).
-- Optionally installs repo-local hooks with `$setup --project-hooks`.
-- Runs `doctor.py` so the project gets an immediate health report.
-- Writes plain Markdown and JSON setup receipts under
-  `.codex/anyone-can-code/state/receipts/`.
+- Markdown storage path; viewer `none` (default) or optional `obsidian`.
+- Creates `.codex/anyone-can-code/` (state, artifacts, learning, logs, memory).
+- Defaults: caveman-strict, persona knobs, automations off until user says yes.
+- Session import only after path/scope/confirm; snapshot + receipt.
+- Optional `$setup --project-hooks`; `--agents-md write` (never overwrite).
+- Runs `doctor.py`; writes receipts under `state/receipts/`.
 
 ## Consent
 
@@ -73,8 +59,6 @@ Reply rule:
 
 ## Action buttons (suggest only)
 
-After setup, run `python "$PLUGIN_ROOT/scripts/action_suggest.py"` logic via
-the module (`action_suggest.suggest_actions`) for this project. If it returns
-suggestions, tell the user in plain words: "Add one-click buttons: Codex
-Settings -> Actions -> paste the script." Show each name + script + why.
-NEVER write app settings yourself — suggest, user clicks.
+After setup, use `action_suggest.suggest_actions`. If suggestions: plain words —
+"Codex Settings → Actions → paste script." Desktop-first UI; CLI can run same
+scripts in terminal. NEVER write app settings yourself.
