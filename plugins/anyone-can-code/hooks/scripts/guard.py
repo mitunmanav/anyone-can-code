@@ -205,6 +205,16 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
     lines.append(f"Unclear: {uncertainty}.")
 
     try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import rate_limit_guard as _rate_limit_guard
+        for line in _rate_limit_guard.build_guard_lines():
+            lines.append(line)
+    except Exception:
+        pass
+
+    try:
         import inbox as _inbox
         inbox_result = _inbox.process_prompt(prompt, repo_root)
         if inbox_result["context"]:

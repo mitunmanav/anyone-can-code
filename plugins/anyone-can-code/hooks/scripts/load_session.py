@@ -18,6 +18,15 @@ import rule_promote as _rule_promote
 import user_model as _user_model
 import capabilities as _capabilities
 
+# Cheap rate-limit + token-burn guard (reads ~/.codex/sessions rollout files).
+_SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+try:
+    import rate_limit_guard as _rate_limit_guard
+except Exception:  # pragma: no cover - optional if scripts path missing
+    _rate_limit_guard = None
+
 
 def read_agents_md(repo_root: Path) -> str:
     path = repo_root / "AGENTS.md"
@@ -162,6 +171,12 @@ def build_context(repo_root: Path, source: str) -> str:
     if memory_lines:
         context_lines.append("Memory recall (apply these lessons):")
         context_lines.extend(f"  {line}" for line in memory_lines)
+    if _rate_limit_guard is not None:
+        try:
+            for line in _rate_limit_guard.build_guard_lines():
+                context_lines.append(line)
+        except Exception:
+            pass
     if agents:
         context_lines.append("")
         context_lines.append("Project rules:")
