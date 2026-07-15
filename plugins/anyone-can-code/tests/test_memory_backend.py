@@ -374,10 +374,11 @@ class MemoryBackendTests(unittest.TestCase):
             try:
                 result = server.store_feedback(
                     {
-                        "scope": "user",
+                        "scope": "project",
                         "kind": "mistake",
                         "summary": "Never save api_key=abcdef1234567890 in memory",
                         "source": "test",
+                        "project_root": "C:/one",
                     }
                 )
                 text = Path(result["path"]).read_text(encoding="utf-8")

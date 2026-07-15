@@ -6,6 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import pytest
+
 PLUGIN = Path(__file__).resolve().parents[1]
 
 
@@ -144,3 +146,27 @@ def test_rebuild_index_reaches_project_drawer(monkeypatch, tmp_path):
     payload = _json.loads(Path(result["path"]).read_text(encoding="utf-8"))
     summaries = [item["summary"] for item in payload["items"]]
     assert "Index me please" in summaries
+
+
+# --- Beta.4 Task 2: taste guard on the user drawer ---
+
+
+def test_user_drawer_rejects_project_facts(monkeypatch, tmp_path):
+    server = load_server(monkeypatch, tmp_path)
+    project = tmp_path / "proj-d"
+    project.mkdir()
+    with pytest.raises(ValueError, match="taste"):
+        server.store_feedback({
+            "scope": "user", "kind": "lesson",
+            "summary": "This repo needs npm.cmd on Windows",
+            "project_root": str(project),
+        })
+
+
+def test_user_drawer_accepts_taste(monkeypatch, tmp_path):
+    server = load_server(monkeypatch, tmp_path)
+    result = server.store_feedback({
+        "scope": "user", "kind": "preference",
+        "summary": "User likes one question at a time",
+    })
+    assert result["stored"] is True

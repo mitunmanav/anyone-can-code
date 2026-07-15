@@ -32,6 +32,7 @@ KINDS = {
     "project_convention",
     "pattern",
 }
+USER_TASTE_KINDS = {"preference", "pattern"}
 STATUSES = {"active", "downgraded", "revoked"}
 DEFAULT_LIMIT = 5
 NOTE_SCHEMA_VERSION = 1
@@ -300,6 +301,11 @@ def normalize_record(arguments: dict) -> dict:
         raise ValueError(f"Invalid kind: {kind}")
     if status not in STATUSES:
         raise ValueError(f"Invalid status: {status}")
+    if scope == "user" and kind not in USER_TASTE_KINDS:
+        raise ValueError(
+            "User drawer holds taste only (style, words, likes). "
+            f"'{kind}' looks project-specific - store it with scope 'project'."
+        )
     summary = str(arguments.get("summary", "")).strip()
     if not summary:
         raise ValueError("summary required")
