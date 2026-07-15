@@ -39,10 +39,10 @@ Never claim from memory or from an old run. Timeout (exit 124) = NOT ready.
 
 ## Browser visual QA (web products)
 
-Visual or interaction claims need eyes on the page. Use the in-app browser:
-`@Browser` open the local page, look at rendered state, click the key flow,
-screenshot as evidence. Browser plugin missing or page needs login/signed-in
-state -> say `visual QA unverified` and tell user to preview (Ctrl+Shift+B).
+Need eyes on the page. Prefer connected Chrome (`@Chrome`) — safer. The in-app browser
+(`@Browser`) can crash the app (Codex bug). Explain plain; user decides; never force.
+No Chrome / user OK with mini browser → short preview only, not long test loops.
+Missing tool or login → `visual QA unverified`; ask user.
 
 ## Review pane handoff
 
