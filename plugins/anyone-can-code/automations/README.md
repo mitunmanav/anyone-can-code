@@ -1,14 +1,18 @@
 # Ready-Made Automations
 
-Optional. Codex Desktop runs these on a schedule in the background. Results land in the
-**Triage** inbox in the sidebar; runs with nothing to report auto-archive.
+Optional. You choose. Nothing turns on by itself.
+
+Codex Desktop runs these on a schedule in the background (native Scheduled
+tasks). Results land in the **Triage** inbox in the sidebar; runs with nothing
+to report auto-archive. Each run costs tokens **[HUNGRY]**.
 
 Plugin install first: see the [root README](../../../README.md).
 
-**Setup (once per automation):** Codex app sidebar → Automations → New →
-paste a prompt below → pick the schedule → choose your project.
+**Setup (only if you want):** Ask ACC "set up automations?" or open Codex
+sidebar → Scheduled / Automations → New → paste a prompt below → pick the
+schedule → choose your project. Say NO to skip.
 Safety: these prompts only read your project — keep the default read-only
-sandbox. No extra installs needed.
+sandbox. No extra installs needed. PC must stay on at run time.
 
 ### 1. Daily project recap (schedule: every morning)
 
