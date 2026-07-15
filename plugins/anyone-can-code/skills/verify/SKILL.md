@@ -57,6 +57,8 @@ Only use these workflow states: `in scope`, `designed`, `approved`,
 
 Use `verified` only when evidence exists. If a check did not run, say
 `implemented` or `blocked`, then name the missing proof.
+No "done" without proof: run `python "$PLUGIN_ROOT/scripts/cross_agent_pack.py"`
+logic via `claim_done` — product needs real-use path, not unit tests alone.
 Do not say interactive work `works` without interaction evidence.
 Build, audit, source scan, HTTP 200 are not interaction evidence.
 Do not say visual quality, polish, perfect, final, or accepted unless
@@ -70,4 +72,9 @@ Verify `usage_checkpoint` before long work: 85% checkpoint, 90% split, 94% stop.
 Verify `patch_retry` after a failed patch: reread exact target before retry.
 Verify `mechanics_docs_gate`: docs brief before platform mechanics code changes.
 Safety receipts for risky/remote work. Release needs installed runtime evidence.
+
+## Headless + GitHub review (native wrap)
+
+- Headless scripts/CI: wrap `codex exec` (default read-only). User decides wider sandbox.
+- PR auto-review: Codex cloud + settings Code review; `@codex review` or Automatic reviews.
 

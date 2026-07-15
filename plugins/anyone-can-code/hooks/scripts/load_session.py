@@ -26,6 +26,10 @@ try:
     import rate_limit_guard as _rate_limit_guard
 except Exception:  # pragma: no cover - optional if scripts path missing
     _rate_limit_guard = None
+try:
+    import cross_agent_pack as _cross_agent_pack
+except Exception:  # pragma: no cover
+    _cross_agent_pack = None
 
 
 def read_agents_md(repo_root: Path) -> str:
@@ -144,7 +148,13 @@ def build_context(repo_root: Path, source: str) -> str:
         "Cost: label suggestions [CHEAP] or [HUNGRY]. Prefer cheap first.",
         # Item 19: do NOT bulk-load skill bodies here — Codex progressive disclosure does that.
         "Skills: use progressive load; do not re-read every skill file each turn.",
+        "Proof: never claim done/works/perfect without named evidence. Built ≠ verified.",
     ]
+    if _cross_agent_pack is not None:
+        try:
+            context_lines.append(_cross_agent_pack.env_agent_line())
+        except Exception:
+            pass
     try:
         nudge = _version_check.update_nudge()
         if nudge:
