@@ -65,6 +65,7 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 | ACC plan | `$plan` | Ordered task plan |
 | ACC build | `$execute` | Build from the plan |
 | ACC learn | `$learn` | Save a lesson to memory |
+| ACC wiki | `$wiki` | Save, ask, or clean project notebook (ACC only; no Codex native memory) |
 | ACC note | `$capture` | Record a decision or blocker |
 | ACC scope | `$govern` | Guard against silent scope change |
 | ACC clear | `$readable` | Keep work understandable |

@@ -46,6 +46,20 @@ MEMORY_RECALL_CHAR_CAP = 1200
 MEMORY_RECALL_KINDS = {"lesson", "mistake", "correction", "failure"}
 
 
+def recall_wiki_brief(repo_root: Path) -> str:
+    """Karpathy index-first brief. Never touches Codex native memories."""
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import wiki_memory as _wiki_memory  # type: ignore
+
+        memory_root = state.ensure_project_layout(repo_root)["memory"]
+        return _wiki_memory.session_brief(memory_root)
+    except Exception:
+        return ""
+
+
 def recall_memory_notes(repo_root: Path) -> tuple[list[str], str]:
     """Read active lesson notes from every scope folder; strongest first. Cap size."""
     layout = state.ensure_project_layout(repo_root)
@@ -115,6 +129,7 @@ def build_context(repo_root: Path, source: str) -> str:
         pass
 
     memory_lines, read_proof = recall_memory_notes(repo_root)
+    wiki_brief = recall_wiki_brief(repo_root)
     if read_proof:
         try:
             state.write_state(repo_root, {"memory_read_proof": read_proof})
@@ -136,7 +151,7 @@ def build_context(repo_root: Path, source: str) -> str:
         f"State: {workflow.get('phase', 'idle')} / {workflow.get('route', 'unknown')}.",
         f"Next: {workflow.get('next_step', 'N/A')}.",
         f"ENFORCE comm rule: {comm_mode}. Short replies only. No walls of text.",
-        f"Memory: {workflow.get('memory_mode', 'portable-markdown')}. ACC two-drawer; native Codex memories OFF.",
+        f"Memory: {workflow.get('memory_mode', 'portable-markdown')}. ACC wiki (raw+notes+index+log); native Codex memories OFF.",
         f"From: {source}.",
         f"Model: {rec['model']} reasoning={reasoning} ({rec['reason']}). Not always high effort.",
         (
@@ -183,6 +198,8 @@ def build_context(repo_root: Path, source: str) -> str:
     if mistake_lines:
         context_lines.append("Recent mistakes (do not repeat):")
         context_lines.extend(mistake_lines)
+    if wiki_brief:
+        context_lines.append(wiki_brief)
     if memory_lines:
         context_lines.append("Memory recall (apply these lessons):")
         context_lines.extend(f"  {line}" for line in memory_lines)

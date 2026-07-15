@@ -30,7 +30,8 @@ Required memory folders:
 
 ```text
 memory/
-  notes/
+  raw/                 # sources only — AI never rewrites
+  notes/               # durable wiki pages (Markdown notes)
     project/
     user/
     shared/
@@ -39,11 +40,17 @@ memory/
     decisions/
     evidence/
     archive/
-  index/
+  wiki/
+    index.md           # human catalog (rebuild from notes)
+    log.md             # append-only change log
+  index/               # machine cache (rebuildable JSON)
   imports/
 ```
 
-`index/` is rebuildable. `imports/` holds receipts and snapshots.
+`index/` is rebuildable JSON. `wiki/index.md` is the human catalog. `raw/` is
+immutable source drops. `imports/` holds receipts and snapshots.
+
+**Native Codex memories are never used.** ACC wiki is the only product memory.
 
 ## Two Drawers
 
@@ -65,12 +72,17 @@ drawer, project facts are re-scoped to the project drawer, with a receipt.
 
 Bundled MCP tools keep stable names where possible:
 
-- `store_feedback`: writes or reinforces one Markdown note.
+- `store_feedback`: writes or reinforces one Markdown note; refreshes
+  `wiki/index.md` and appends `wiki/log.md`.
 - `retrieve_context`: reads Markdown notes and returns top 3-5 advisory items.
 - `promote_memory`: increases trust for one note.
 - `revoke_memory`: downgrades or revokes one note.
 - `search_shared`: searches only shared notes.
-- `rebuild_index`: rebuilds disposable `index/memory-index.json`.
+- `rebuild_index`: rebuilds disposable `index/memory-index.json` and
+  human `wiki/index.md`.
+- `wiki_brief`: short index-first session brief (capped).
+- `lint_wiki`: health check (empty wiki, orphan links, raw without notes).
+- `ingest_raw`: copy a user-selected source into `raw/` with explicit consent.
 - `import_session_files`: imports user-selected files into scoped Markdown notes
   and writes an import receipt.
 

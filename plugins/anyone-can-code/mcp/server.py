@@ -113,8 +113,28 @@ def ensure_memory_layout(root: Path) -> None:
         "notes/archive",
         "index",
         "imports/snapshots",
+        "raw",
+        "wiki",
     ]:
         (root / relative).mkdir(parents=True, exist_ok=True)
+    # Karpathy human catalog seeds (index.md + log.md)
+    try:
+        scripts = Path(__file__).resolve().parent.parent / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import wiki_memory as _wiki_memory  # type: ignore
+
+        _wiki_memory.ensure_wiki_layout(root)
+    except Exception:
+        # Best effort: folders above still exist.
+        wiki = root / "wiki"
+        if not (wiki / "index.md").exists():
+            (wiki / "index.md").write_text(
+                "# Project wiki index\n\n## Pages\n\n- (empty)\n",
+                encoding="utf-8",
+            )
+        if not (wiki / "log.md").exists():
+            (wiki / "log.md").write_text("# Project wiki log\n\n", encoding="utf-8")
 
 
 def project_key(project_root: str) -> str:
@@ -417,11 +437,43 @@ def retrieve_context(arguments: dict) -> dict:
     }
 
 
+def _wiki_sync_for_record(saved: dict) -> dict | None:
+    """Refresh human index.md + log.md for the drawer that received the note."""
+    try:
+        scripts = Path(__file__).resolve().parent.parent / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import wiki_memory as _wiki_memory  # type: ignore
+
+        root = drawer_root(saved.get("scope", "project"), saved.get("project_root") or None)
+        return _wiki_memory.sync_after_store(
+            root,
+            str(saved.get("summary", "")),
+            kind=str(saved.get("kind", "note")),
+        )
+    except Exception:
+        return None
+
+
 def store_feedback(arguments: dict) -> dict:
     record = normalize_record(arguments)
     saved = merge_or_append(record)
-    rebuild_index({})
-    return {"stored": True, "mode": "portable-markdown", "record": saved, "path": str(note_path(saved["scope"], saved["id"], saved.get("project_root")))}
+    rebuild_index(
+        {
+            "project_root": saved.get("project_root") or "",
+            "scope": saved.get("scope"),
+        }
+    )
+    wiki = _wiki_sync_for_record(saved)
+    result = {
+        "stored": True,
+        "mode": "portable-markdown",
+        "record": saved,
+        "path": str(note_path(saved["scope"], saved["id"], saved.get("project_root"))),
+    }
+    if wiki:
+        result["wiki"] = wiki
+    return result
 
 
 def promote_memory(arguments: dict) -> dict:
@@ -486,8 +538,20 @@ def search_shared(arguments: dict) -> dict:
 
 def rebuild_index(arguments: dict) -> dict:
     project_root_value = str((arguments or {}).get("project_root", "")).strip() or None
+    scope = str((arguments or {}).get("scope", "")).strip() or None
     rows = load_all_records(project_root_value)
-    index_path = ensure_data_root() / "index" / "memory-index.json"
+    # Machine + human index for the drawer being updated. User taste never seeds project paths.
+    if scope == "user":
+        root = user_drawer_root()
+    elif project_root_value:
+        root = project_drawer_root(project_root_value)
+    else:
+        root = ensure_data_root()
+    try:
+        ensure_memory_layout(root)
+    except OSError:
+        root = ensure_data_root()
+    index_path = root / "index" / "memory-index.json"
     payload = {
         "schema_version": 1,
         "rebuilt_at": utc_now(),
@@ -508,7 +572,73 @@ def rebuild_index(arguments: dict) -> dict:
     }
     index_path.parent.mkdir(parents=True, exist_ok=True)
     index_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    return {"rebuilt": True, "path": str(index_path), "count": len(rows)}
+    human = None
+    try:
+        scripts = Path(__file__).resolve().parent.parent / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import wiki_memory as _wiki_memory  # type: ignore
+
+        human = _wiki_memory.rebuild_human_index(root)
+    except Exception:
+        human = None
+    result = {"rebuilt": True, "path": str(index_path), "count": len(rows)}
+    if human:
+        result["wiki_index"] = human
+    return result
+
+
+def wiki_brief(arguments: dict) -> dict:
+    project_root_value = str((arguments or {}).get("project_root", "")).strip() or None
+    root = project_drawer_root(project_root_value)
+    ensure_memory_layout(root)
+    scripts = Path(__file__).resolve().parent.parent / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    import wiki_memory as _wiki_memory  # type: ignore
+
+    max_chars = int((arguments or {}).get("max_chars", 800) or 800)
+    brief = _wiki_memory.session_brief(root, max_chars=max_chars)
+    return {
+        "mode": "acc-wiki",
+        "native_codex_memory": False,
+        "brief": brief,
+        "memory_root": str(root),
+    }
+
+
+def lint_wiki(arguments: dict) -> dict:
+    project_root_value = str((arguments or {}).get("project_root", "")).strip() or None
+    root = project_drawer_root(project_root_value)
+    ensure_memory_layout(root)
+    scripts = Path(__file__).resolve().parent.parent / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    import wiki_memory as _wiki_memory  # type: ignore
+
+    result = _wiki_memory.lint_wiki(root)
+    result["mode"] = "acc-wiki"
+    result["native_codex_memory"] = False
+    return result
+
+
+def ingest_raw(arguments: dict) -> dict:
+    project_root_value = str((arguments or {}).get("project_root", "")).strip() or None
+    source = str((arguments or {}).get("path") or (arguments or {}).get("source") or "").strip()
+    if not source:
+        raise ValueError("path required")
+    consent = bool((arguments or {}).get("consent", False))
+    root = project_drawer_root(project_root_value)
+    ensure_memory_layout(root)
+    scripts = Path(__file__).resolve().parent.parent / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    import wiki_memory as _wiki_memory  # type: ignore
+
+    result = _wiki_memory.ingest_raw(root, source, consent=consent)
+    result["mode"] = "acc-wiki"
+    result["native_codex_memory"] = False
+    return result
 
 
 def iter_selected_files(paths: list[str]) -> list[Path]:
@@ -802,12 +932,44 @@ TOOLS = {
         "handler": search_shared,
     },
     "rebuild_index": {
-        "description": "Rebuild disposable search index from Markdown notes.",
+        "description": "Rebuild disposable search index and human wiki/index.md from Markdown notes.",
         "inputSchema": {
             "type": "object",
             "properties": {"project_root": {"type": "string"}},
         },
         "handler": rebuild_index,
+    },
+    "wiki_brief": {
+        "description": "Short ACC project wiki brief from index.md for session start. Never uses Codex native memories.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "project_root": {"type": "string"},
+                "max_chars": {"type": "integer", "minimum": 100, "maximum": 2000},
+            },
+        },
+        "handler": wiki_brief,
+    },
+    "lint_wiki": {
+        "description": "Health-check ACC wiki: empty index, orphan links, raw without notes.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"project_root": {"type": "string"}},
+        },
+        "handler": lint_wiki,
+    },
+    "ingest_raw": {
+        "description": "Copy a user-selected source into memory/raw/ (immutable). Requires consent=true. Does not rewrite raw.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string"},
+                "project_root": {"type": "string"},
+                "consent": {"type": "boolean"},
+            },
+            "required": ["path"],
+        },
+        "handler": ingest_raw,
     },
     "import_session_files": {
         "description": "Import user-selected session files into scoped Markdown notes with receipt.",

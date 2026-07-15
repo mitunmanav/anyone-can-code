@@ -101,8 +101,19 @@ def ensure_memory_layout(notes_path: Path) -> None:
         raise FileExistsError(f"Memory path exists and is not a directory: {notes_path}")
     for name in ("project", "user", "shared", "lessons", "failures", "decisions", "evidence", "archive"):
         (notes_path / name).mkdir(parents=True, exist_ok=True)
-    (notes_path.parent / "index").mkdir(parents=True, exist_ok=True)
-    (notes_path.parent / "imports").mkdir(parents=True, exist_ok=True)
+    memory_root = notes_path.parent
+    (memory_root / "index").mkdir(parents=True, exist_ok=True)
+    (memory_root / "imports").mkdir(parents=True, exist_ok=True)
+    (memory_root / "raw").mkdir(parents=True, exist_ok=True)
+    wiki = memory_root / "wiki"
+    wiki.mkdir(parents=True, exist_ok=True)
+    if not (wiki / "index.md").exists():
+        (wiki / "index.md").write_text(
+            "# Project wiki index\n\n## Pages\n\n- (empty — save a lesson or decision first)\n",
+            encoding="utf-8",
+        )
+    if not (wiki / "log.md").exists():
+        (wiki / "log.md").write_text("# Project wiki log\n\n", encoding="utf-8")
 
 
 def detect_obsidian() -> Path | None:
@@ -285,6 +296,8 @@ def ensure_project_layout(target: Path) -> dict[str, Path]:
         "memory_archive": root / "memory" / "notes" / "archive",
         "memory_index": root / "memory" / "index",
         "memory_imports": root / "memory" / "imports",
+        "memory_raw": root / "memory" / "raw",
+        "memory_wiki": root / "memory" / "wiki",
         "logs": root / "logs",
         "backups": root / "backups",
         "settings": root / "settings",
@@ -293,6 +306,14 @@ def ensure_project_layout(target: Path) -> dict[str, Path]:
     }
     for path in paths.values():
         path.mkdir(parents=True, exist_ok=True)
+    wiki = paths["memory_wiki"]
+    if not (wiki / "index.md").exists():
+        (wiki / "index.md").write_text(
+            "# Project wiki index\n\n## Pages\n\n- (empty — save a lesson or decision first)\n",
+            encoding="utf-8",
+        )
+    if not (wiki / "log.md").exists():
+        (wiki / "log.md").write_text("# Project wiki log\n\n", encoding="utf-8")
     return paths
 
 

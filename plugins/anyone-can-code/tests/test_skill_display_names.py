@@ -26,6 +26,7 @@ EXPECTED = {
     "usage": "ACC usage",
     "learn": "ACC learn",
     "capture": "ACC note",
+    "wiki": "ACC wiki",
     "readable": "ACC clear",
     "govern": "ACC scope",
     "bridge": "ACC plugins",

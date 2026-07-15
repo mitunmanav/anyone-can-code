@@ -32,9 +32,20 @@ Markdown memory lives under:
 
 - `.codex/anyone-can-code/memory/notes/`
 
-Rebuildable index lives under:
+Human wiki catalog + log:
+
+- `.codex/anyone-can-code/memory/wiki/index.md`
+- `.codex/anyone-can-code/memory/wiki/log.md`
+
+Raw sources (never rewrite):
+
+- `.codex/anyone-can-code/memory/raw/`
+
+Rebuildable machine index lives under:
 
 - `.codex/anyone-can-code/memory/index/`
+
+Native Codex memories stay OFF. Prefer `$wiki` for save / ask / clean jobs.
 
 Suggested tiny local files:
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -229,6 +230,23 @@ def write_resume_artifacts(repo_root: Path, payload: dict, summary: str, workflo
     )
 
 
+def wiki_stop_proposals(repo_root: Path, summary: str, write_proof: str) -> str:
+    """Propose (not auto-write) 1–3 wiki saves when no durable write ran."""
+    if write_proof:
+        return ""
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import wiki_memory as _wiki_memory  # type: ignore
+
+        # Prefer decision-like sentences from the turn summary.
+        chunks = [c.strip() for c in re.split(r"[.\n]+", summary or "") if c.strip()]
+        return _wiki_memory.stop_save_prompt(chunks)
+    except Exception:
+        return ""
+
+
 def handle_payload(payload: dict, repo_root: Path) -> dict:
     if payload.get("stop_hook_active"):
         return {}
@@ -238,6 +256,19 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
     write_mistake_ledger(repo_root, signals)
     record_session_model_outcome(repo_root, payload, signals)
     write_proof = durable_memory_writes(repo_root, signals, summary)
+    # Keep human wiki index/log in sync when durable disk notes landed without MCP.
+    if write_proof:
+        try:
+            scripts = Path(__file__).resolve().parents[2] / "scripts"
+            if str(scripts) not in sys.path:
+                sys.path.insert(0, str(scripts))
+            import wiki_memory as _wiki_memory  # type: ignore
+
+            mem = state.ensure_project_layout(repo_root)["memory"]
+            _wiki_memory.rebuild_human_index(mem)
+            _wiki_memory.append_log(mem, "session-save", write_proof[:160])
+        except Exception:
+            pass
     updates = {
         "last_task": summary or "",
         "active_task": summary or "",
@@ -260,6 +291,9 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
             "transaction_id": workflow.get("transaction_id", ""),
         },
     )
+    proposal = wiki_stop_proposals(repo_root, summary, write_proof)
+    if proposal:
+        return {"systemMessage": proposal}
     return {}
 
 

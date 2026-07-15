@@ -138,6 +138,8 @@ def ensure_project_layout(repo_root: Path) -> dict[str, Path]:
         "memory_archive": root / "memory" / "notes" / "archive",
         "memory_index": root / "memory" / "index",
         "memory_imports": root / "memory" / "imports",
+        "memory_raw": root / "memory" / "raw",
+        "memory_wiki": root / "memory" / "wiki",
         "logs": root / "logs",
         "backups": root / "backups",
         "settings": root / "settings",
@@ -145,6 +147,17 @@ def ensure_project_layout(repo_root: Path) -> dict[str, Path]:
     }
     for path in paths.values():
         path.mkdir(parents=True, exist_ok=True)
+    # Karpathy seeds: index.md + log.md (best effort; no Codex native memory)
+    wiki = paths["memory_wiki"]
+    index_md = wiki / "index.md"
+    log_md = wiki / "log.md"
+    if not index_md.exists():
+        index_md.write_text(
+            "# Project wiki index\n\n## Pages\n\n- (empty — save a lesson or decision first)\n",
+            encoding="utf-8",
+        )
+    if not log_md.exists():
+        log_md.write_text("# Project wiki log\n\n", encoding="utf-8")
     return paths
 
 
