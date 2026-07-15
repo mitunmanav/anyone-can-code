@@ -6,24 +6,52 @@ from typing import Any
 
 PREFS_SUBPATH = Path(".codex") / "anyone-can-code" / "settings" / "preferences.json"
 
+# Modes: non-tech / middle / developer (aliases: builder / mixed / developer)
 USER_TYPE_DEFAULTS: dict[str, dict[str, Any]] = {
     "builder": {
+        "mode": "non-tech",
         "automation_preference": "aggressive",
         "learning_preference": "enabled",
         "communication_mode": "caveman-strict",
         "approval_preference": "minimal",
+        "automations_opt_in": False,
+        "knobs": {"plain": 3, "teach": 3, "tech_shown": 0, "questions": "life"},
+    },
+    "non-tech": {
+        "mode": "non-tech",
+        "automation_preference": "aggressive",
+        "learning_preference": "enabled",
+        "communication_mode": "caveman-strict",
+        "approval_preference": "minimal",
+        "automations_opt_in": False,
+        "knobs": {"plain": 3, "teach": 3, "tech_shown": 0, "questions": "life"},
     },
     "developer": {
+        "mode": "developer",
         "automation_preference": "balanced",
         "learning_preference": "enabled",
         "communication_mode": "caveman-strict",
         "approval_preference": "standard",
+        "automations_opt_in": False,
+        "knobs": {"plain": 1, "teach": 0, "tech_shown": 3, "questions": "tech"},
     },
     "mixed": {
+        "mode": "middle",
         "automation_preference": "balanced",
         "learning_preference": "enabled",
         "communication_mode": "caveman-strict",
         "approval_preference": "standard",
+        "automations_opt_in": False,
+        "knobs": {"plain": 2, "teach": 1, "tech_shown": 1, "questions": "mixed"},
+    },
+    "middle": {
+        "mode": "middle",
+        "automation_preference": "balanced",
+        "learning_preference": "enabled",
+        "communication_mode": "caveman-strict",
+        "approval_preference": "standard",
+        "automations_opt_in": False,
+        "knobs": {"plain": 2, "teach": 1, "tech_shown": 1, "questions": "mixed"},
     },
 }
 

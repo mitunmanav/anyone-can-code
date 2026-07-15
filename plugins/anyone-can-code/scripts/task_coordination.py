@@ -191,6 +191,63 @@ def complete_task(
     )
 
 
+def unclaim_task(
+    repo_root: Path,
+    task_id_or_name: str,
+    *,
+    claim_id: str | None = None,
+    force: bool = False,
+    reason: str = "helper-dead",
+) -> dict[str, Any]:
+    """Release a claim so another worker can take the job. Does NOT mark done.
+
+    Item 45: if a helper died mid-task, free the claim. With force=True, clear
+    any claim on the task (dead helper; claim_id may be unknown).
+    """
+    state = canonical_state.read_canonical_state(repo_root)
+    tasks = [normalize_task(task) for task in state.get("tasks", [])]
+    index = _find_task(tasks, task_id_or_name)
+    task = copy.deepcopy(tasks[index])
+    existing = str(task.get("claim_id") or "").strip()
+    if task["status"] == "done":
+        raise TaskCoordinationError("Done task cannot be unclaimed")
+    if not existing and task["status"] != "in_progress":
+        # already free
+        return state
+    if not force:
+        if not claim_id:
+            raise TaskCoordinationError("claim_id required unless force")
+        if existing and existing != claim_id:
+            raise TaskCoordinationError("Task claim mismatch")
+    task.update(
+        {
+            "status": "todo",
+            "claim_id": "",
+            "claimed_by": "",
+            "claimed_at": "",
+            "owner": "acc",
+        }
+    )
+    tasks[index] = task
+    claims = copy.deepcopy(state.get("task_claims") or {})
+    claims.pop(task["id"], None)
+    active = state.get("active_task")
+    updates: dict[str, Any] = {"tasks": tasks, "task_claims": claims}
+    if active and str(active) in {task["id"], task["name"]}:
+        updates["active_task"] = ""
+    return canonical_state.update_canonical_state(
+        repo_root,
+        updates,
+        history_entry={
+            "event": "task-unclaimed",
+            "status": "todo",
+            "task": task["id"],
+            "reason": str(reason or "helper-dead")[:120],
+            "forced": bool(force),
+        },
+    )
+
+
 def build_subagent_assignment(
     *,
     task: str,
@@ -241,10 +298,18 @@ def main() -> None:
     claim.add_argument("--owner", default="acc")
     claim.add_argument("--claim-id", default=None)
 
-    release = sub.add_parser("release")
+    release = sub.add_parser("release", help="Unclaim task (not done) so another can take it")
     release.add_argument("--repo-root", default=".")
     release.add_argument("--task-id", required=True)
-    release.add_argument("--claim-id", required=True)
+    release.add_argument("--claim-id", default=None)
+    release.add_argument("--force", action="store_true", help="Clear claim even if claim_id unknown (dead helper)")
+    release.add_argument("--reason", default="helper-dead")
+
+    complete = sub.add_parser("complete", help="Mark task done with claim + evidence")
+    complete.add_argument("--repo-root", default=".")
+    complete.add_argument("--task-id", required=True)
+    complete.add_argument("--claim-id", required=True)
+    complete.add_argument("--evidence", action="append", default=[])
 
     args = parser.parse_args()
     root = Path(args.repo_root).resolve()
@@ -268,7 +333,27 @@ def main() -> None:
 
     if args.cmd == "release":
         try:
-            result = complete_task(root, args.task_id, claim_id=args.claim_id, evidence=[])
+            result = unclaim_task(
+                root,
+                args.task_id,
+                claim_id=args.claim_id,
+                force=bool(args.force),
+                reason=args.reason,
+            )
+        except TaskCoordinationError as exc:
+            print(str(exc), file=sys.stderr)
+            sys.exit(2)
+        print(json.dumps({"tasks": result.get("tasks", []), "task_claims": result.get("task_claims", {})}, indent=2))
+        return
+
+    if args.cmd == "complete":
+        try:
+            result = complete_task(
+                root,
+                args.task_id,
+                claim_id=args.claim_id,
+                evidence=list(args.evidence or []),
+            )
         except TaskCoordinationError as exc:
             print(str(exc), file=sys.stderr)
             sys.exit(2)

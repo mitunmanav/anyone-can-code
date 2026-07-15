@@ -203,7 +203,11 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
     source = payload.get("source", "startup")
     ctx = build_context(repo_root, source)
     if not _first_run.is_configured(repo_root):
-        ctx += "\n\nFIRST RUN: Ask user one question only: builder, developer, or mixed? Then call $setup."
+        ctx += (
+            "\n\nFIRST RUN: Ask user one question only: non-tech, middle, or developer "
+            "(or builder/mixed/developer)? Then call $setup. Also ask: set up automations? "
+            "Default NO."
+        )
     return {
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",

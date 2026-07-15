@@ -26,7 +26,7 @@ Reply rule:
 - Creates `.codex/anyone-can-code/` for state, artifacts, learning, logs, backups, migrations, and portable Markdown memory.
 - Creates default preferences with builder persona, `caveman-strict` communication mode, assisted automation, local-first research, automatic plugin routing, and trigger-auto learning.
 - Creates memory defaults: path `.codex/anyone-can-code/memory/notes`, viewer mode `none`, import scope `ask`, and production-repo caution on.
-- Stores persona once as `builder`, `developer`, or `mixed`; future ACC flow auto-configures tone, depth, approvals, and routing from that setting.
+- Stores persona once as `builder`, `developer`, or `mixed` (also non-tech / middle / developer). Sets 4 knobs: plain, teach, tech shown, questions. Automations off until user says yes ("set up automations?").
 - Writes an install record that tracks plugin version, hook mode, portable Markdown memory mode, memory path, and viewer mode.
 - Selected session import snapshots every source before write, skips duplicate
   content on rerun, verifies Markdown, and writes success or rollback receipt.

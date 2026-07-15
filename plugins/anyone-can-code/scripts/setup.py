@@ -46,10 +46,16 @@ DEFAULT_PREFERENCES = {
     "schema_version": 2,
     "persona_mode": "builder",
     "persona_allowed_modes": ["builder", "developer", "mixed"],
+    # NEW 36: non-tech / middle / developer (maps to builder / mixed / developer)
+    "mode": "non-tech",
+    "mode_allowed": ["non-tech", "middle", "developer"],
+    "knobs": {"plain": 3, "teach": 3, "tech_shown": 0, "questions": "life"},
     "verbosity": "simple",
     "automation_level": "assisted",
     "communication_mode": "caveman-strict",
     "automation_preference": "aggressive",
+    # NEW 46: automations off until user says yes at setup
+    "automations_opt_in": False,
     "learning_preference": "enabled",
     "research_preference": "local-first",
     "approval_preference": "ask-for-secrets-paid-login-destructive-product",
@@ -64,6 +70,9 @@ DEFAULT_PREFERENCES = {
     "production_repo_caution": True,
     "repo_mode": "unknown",
     "git_mode": "auto",
+    "vocabulary": [],
+    "passive_profile": {},
+    "plan_locked": False,
 }
 
 
