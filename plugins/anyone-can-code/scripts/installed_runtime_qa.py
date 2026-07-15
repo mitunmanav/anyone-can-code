@@ -488,6 +488,20 @@ amb = run_hook(
     },
 )
 amb_receipts = read_receipts(ambiguous)
+amb_parent_layout = (ambiguous / ".codex" / "anyone-can-code").exists()
+# Bare folder with no ACC setup must stay empty of ACC state.
+bare = proof_root / "bare-no-setup"
+(bare / ".git").mkdir(parents=True)
+bare_run = run_hook(
+    "load_session",
+    {
+        "hook_event_name": "SessionStart",
+        "source": "startup",
+        "session_id": "s-bare",
+        "cwd": str(bare),
+    },
+)
+bare_layout = (bare / ".codex" / "anyone-can-code").exists()
 
 payload = {
     "load_returncode": load["returncode"],
@@ -502,6 +516,10 @@ payload = {
     "resume_note_exists": (artifacts_root / "resume-note.md").exists(),
     "nested_receipts": receipts,
     "ambiguous_receipts": amb_receipts,
+    "ambiguous_parent_layout": amb_parent_layout,
+    "ambiguous_empty_output": amb["json"] == {},
+    "bare_empty_output": bare_run["json"] == {},
+    "bare_layout": bare_layout,
     "redacted_prompt": "secret token" not in receipt_text and "ABC123" not in receipt_text,
 }
 print("ACC_HOOK_NESTED_RECEIPT_PROOF=" + json.dumps(payload, sort_keys=True))
@@ -559,12 +577,13 @@ print("ACC_HOOK_NESTED_RECEIPT_PROOF=" + json.dumps(payload, sort_keys=True))
         and item.get("final_effectiveness") == "useful"
         and item.get("state_write_result") == "declared"
     ]
-    ambiguous = [
-        item
-        for item in ambiguous_receipts
-        if item.get("resolution_state") == "ambiguous"
-        and item.get("final_effectiveness") == "skipped"
-    ]
+    # Ambiguous / no-setup: hooks must skip with no parent ACC layout and no receipts.
+    ambiguous_clean = (
+        not payload.get("ambiguous_parent_layout")
+        and payload.get("ambiguous_empty_output")
+        and len(ambiguous_receipts) == 0
+    )
+    bare_clean = (not payload.get("bare_layout")) and payload.get("bare_empty_output")
     checks = {
         "nested-resolution": bool(useful),
         "useful-context": bool(payload.get("load_context") and payload.get("guard_context")),
@@ -576,7 +595,8 @@ print("ACC_HOOK_NESTED_RECEIPT_PROOF=" + json.dumps(payload, sort_keys=True))
             and payload.get("resume_note_exists")
             and payload.get("agents_unchanged")
         ),
-        "ambiguous-skip-receipt": bool(ambiguous),
+        "ambiguous-skip-clean": bool(ambiguous_clean),
+        "bare-skip-clean": bool(bare_clean),
         "redacted-prompt": bool(payload.get("redacted_prompt")),
     }
     failed = [name for name, passed in checks.items() if not passed]

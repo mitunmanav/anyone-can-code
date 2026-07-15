@@ -1,4 +1,4 @@
 interface:
-  display_name: "Setup"
-  short_description: "Bootstrap project-owned state for Anyone Can Code. Creates local workflow, learning, settings, and artifact folders, and can optionally install repo-local hooks."
+  display_name: "ACC setup"
+  short_description: "First-time project setup for Anyone Can Code"
   default_prompt: "Use $setup to initialize and verify the plugin after installation."

@@ -1,6 +1,6 @@
 interface:
-  display_name: "Clarify"
-  short_description: "Structured intake for vague or partial requests. Asks only the questions needed to remove meaningful uncertainty, then writes a local spec draft."
+  display_name: "ACC clarify"
+  short_description: "Ask only what unblocks the build"
   default_prompt: "Use $clarify to describe your app idea and get a structured spec."
 
 policy:

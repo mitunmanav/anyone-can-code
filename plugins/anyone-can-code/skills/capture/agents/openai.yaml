@@ -1,6 +1,6 @@
 interface:
-  display_name: "Capture"
-  short_description: "Explicit-only recording of decisions, blockers, and insights into the local project artifact history."
+  display_name: "ACC note"
+  short_description: "Record a decision or blocker"
   default_prompt: "Use $capture to record an important decision or blocker."
 
 policy:

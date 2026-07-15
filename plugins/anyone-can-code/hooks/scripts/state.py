@@ -419,21 +419,32 @@ def git_root_from_ancestors(location: Path) -> Path | None:
     return None
 
 
-def is_hook_project_candidate(path: Path) -> bool:
-    try:
-        return (path / ".git").exists() or (path / ".codex" / PROJECT_NAMESPACE).exists()
-    except OSError:
-        return False
-
-
 def is_meaningful_hook_project(path: Path) -> bool:
+    """True only when ACC was set up in this folder (`.codex/anyone-can-code`)."""
     try:
         return (path / ".codex" / PROJECT_NAMESPACE).exists()
     except OSError:
         return False
 
 
+def is_hook_project_candidate(path: Path) -> bool:
+    # Hooks bind only to ACC-setup folders, never bare git alone.
+    return is_meaningful_hook_project(path)
+
+
+def acc_project_from_ancestors(location: Path) -> Path | None:
+    """Walk cwd → parents for the nearest ACC-setup folder."""
+    current = location.resolve()
+    if current.is_file():
+        current = current.parent
+    for candidate in (current, *current.parents):
+        if is_meaningful_hook_project(candidate):
+            return candidate.resolve()
+    return None
+
+
 def discover_nested_hook_projects(location: Path) -> list[Path]:
+    """Find ACC-setup folders under location. Bare git does not stop the scan."""
     discovered: list[Path] = []
     seen: set[Path] = set()
     pending: list[tuple[Path, int]] = [(location.resolve(), 0)]
@@ -442,7 +453,7 @@ def discover_nested_hook_projects(location: Path) -> list[Path]:
         if current in seen:
             continue
         seen.add(current)
-        if is_hook_project_candidate(current):
+        if is_meaningful_hook_project(current):
             discovered.append(current)
             continue
         if depth >= PROJECT_SCAN_MAX_DEPTH:
@@ -466,6 +477,7 @@ def discover_nested_hook_projects(location: Path) -> list[Path]:
 
 
 def resolve_hook_project(payload: dict) -> dict:
+    """Resolve ACC project for hooks. Unresolved when ACC was never set up here."""
     location = hook_start_location(payload)
     if acc_hooks_disabled(location):
         return {
@@ -476,18 +488,14 @@ def resolve_hook_project(payload: dict) -> dict:
             "candidates": [],
         }
 
-    direct = git_root_from_ancestors(location)
+    ancestor = acc_project_from_ancestors(location)
     nested = discover_nested_hook_projects(location)
-    meaningful_nested = [candidate for candidate in nested if is_meaningful_hook_project(candidate)]
-    if meaningful_nested:
-        candidates = meaningful_nested
-    elif nested:
-        candidates = nested
-    else:
-        candidates = [direct] if direct is not None else []
-    candidates = list(dict.fromkeys(candidate.resolve() for candidate in candidates))
-    meaningful = [candidate for candidate in candidates if is_meaningful_hook_project(candidate)]
-    selectable = meaningful or candidates
+    candidates: list[Path] = []
+    if ancestor is not None:
+        candidates.append(ancestor)
+    candidates.extend(nested)
+    # Only ACC-setup folders — never bare git / random cwd.
+    selectable = list(dict.fromkeys(candidate.resolve() for candidate in candidates if is_meaningful_hook_project(candidate)))
 
     if len(selectable) == 1:
         chosen = selectable[0]
@@ -497,7 +505,7 @@ def resolve_hook_project(payload: dict) -> dict:
                 "reason": "acc-hooks-disabled",
                 "cwd": str(location),
                 "fallback_root": str(location),
-                "candidates": [str(candidate) for candidate in candidates],
+                "candidates": [str(candidate) for candidate in selectable],
             }
         return {
             "status": "resolved",
@@ -505,7 +513,7 @@ def resolve_hook_project(payload: dict) -> dict:
             "cwd": str(location),
             "fallback_root": str(location),
             "project_root": str(chosen),
-            "candidates": [str(candidate) for candidate in candidates],
+            "candidates": [str(candidate) for candidate in selectable],
         }
     if len(selectable) > 1:
         return {
@@ -576,9 +584,10 @@ def declared_state_writes(hook_name: str, event: str, result: dict) -> list[str]
 
 
 def receipt_root_from_resolution(resolution: dict) -> Path | None:
-    if resolution.get("status") == "disabled":
+    # Never create/write under a folder that is not an ACC-setup project.
+    if resolution.get("status") != "resolved":
         return None
-    root = resolution.get("project_root") or resolution.get("fallback_root") or resolution.get("cwd")
+    root = resolution.get("project_root")
     return Path(str(root)).resolve() if root else None
 
 

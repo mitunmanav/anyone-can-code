@@ -42,37 +42,37 @@ Optional terminal: `codex plugin marketplace add mitunmanav/anyone-can-code --re
 
 ## Everyday commands (start here)
 
-Type these in the Codex chat. You can also just talk in plain English.
+Type these in the Codex chat (or pick the short **ACC …** name in the app). You can also just talk in plain English.
 
-| Type this | What it does (simple) |
-|-----------|------------------------|
-| `$setup` | First-time setup for this project |
-| `$orchestrator` | Front door — helps pick the next step |
-| `$help` | “Where am I?” in plain language |
-| `$status` | Current task and what’s next |
-| `$resume` | Continue after a break |
-| `$verify` | Check the work with proof |
-| `$fix` | Help when the same thing keeps failing |
+| In app | Type this | What it does (simple) |
+|--------|-----------|------------------------|
+| ACC setup | `$setup` | First-time setup for this project |
+| ACC home | `$orchestrator` | Front door — helps pick the next step |
+| ACC help | `$help` | “Where am I?” in plain language |
+| ACC status | `$status` | Current task and what’s next |
+| ACC resume | `$resume` | Continue after a break |
+| ACC check | `$verify` | Check the work with proof |
+| ACC fix | `$fix` | Help when the same thing keeps failing |
 
 ---
 
 ## More skills (optional)
 
-| Skill | What it does |
-|-------|-------------|
-| `$onboard` | Idea / existing project / bug starting points |
-| `$clarify` | Only the questions needed to unblock you |
-| `$plan` | Ordered task plan |
-| `$execute` | Build from the plan |
-| `$learn` | Save a lesson to memory |
-| `$capture` | Record a decision or blocker |
-| `$govern` | Guard against silent scope change |
-| `$readable` | Keep work understandable |
-| `$bridge` | Play nice with other plugins |
-| `$usage` | Token usage view |
-| `$settings` | Preferences |
-| `$update` | After a plugin upgrade |
-| `$handoff` | Pass work to a later session |
+| In app | Type this | What it does |
+|--------|-----------|-------------|
+| ACC start | `$onboard` | Idea / existing project / bug starting points |
+| ACC clarify | `$clarify` | Only the questions needed to unblock you |
+| ACC plan | `$plan` | Ordered task plan |
+| ACC build | `$execute` | Build from the plan |
+| ACC learn | `$learn` | Save a lesson to memory |
+| ACC note | `$capture` | Record a decision or blocker |
+| ACC scope | `$govern` | Guard against silent scope change |
+| ACC clear | `$readable` | Keep work understandable |
+| ACC plugins | `$bridge` | Play nice with other plugins |
+| ACC usage | `$usage` | Token usage view |
+| ACC settings | `$settings` | Preferences |
+| ACC update | `$update` | After a plugin upgrade |
+| ACC handoff | `$handoff` | Pass work to a later session |
 
 ---
 

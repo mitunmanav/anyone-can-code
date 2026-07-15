@@ -1,6 +1,6 @@
 interface:
-  display_name: "Learn"
-  short_description: "Captures reinforced learnings through portable Markdown memory, with tiny local fallback ledgers only."
+  display_name: "ACC learn"
+  short_description: "Save a lesson to memory"
   default_prompt: "Use $learn after verified work or explicit user feedback to record durable learnings."
 
 policy:

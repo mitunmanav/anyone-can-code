@@ -1,6 +1,6 @@
 interface:
-  display_name: "Resume"
-  short_description: "Resumes, reconstructs, repairs, or abandons stale workflow state using the local project artifacts."
+  display_name: "ACC resume"
+  short_description: "Continue after a break"
   default_prompt: "Use $resume when the workflow needs to continue or recover."
 
 policy:

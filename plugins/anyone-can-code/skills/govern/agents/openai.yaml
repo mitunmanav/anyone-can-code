@@ -1,6 +1,6 @@
 interface:
-  display_name: "Govern"
-  short_description: "Controls meaningful scope changes by comparing the draft change against the current local plan, verification state, and active workflow route."
+  display_name: "ACC scope"
+  short_description: "Stop silent scope creep"
   default_prompt: "Use $govern to promote a new spec draft after reviewing its impact."
 
 policy:

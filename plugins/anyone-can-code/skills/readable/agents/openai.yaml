@@ -1,4 +1,4 @@
 interface:
-  display_name: "Readable"
-  short_description: "Keeps code and workflow artifacts understandable. Encourages clear naming, focused functions, and comments that explain why, not just what."
+  display_name: "ACC clear"
+  short_description: "Keep code and notes understandable"
   default_prompt: "Use $readable to check code meets quality standards before commit."

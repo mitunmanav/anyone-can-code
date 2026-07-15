@@ -1,6 +1,6 @@
 interface:
-  display_name: "Plan"
-  short_description: "Turns the accepted spec or concrete request into an executable local plan with ordered tasks, dependencies, and verification targets."
+  display_name: "ACC plan"
+  short_description: "Turn the request into ordered tasks"
   default_prompt: "Use $plan to break down the clarified spec into build tasks."
 
 policy:

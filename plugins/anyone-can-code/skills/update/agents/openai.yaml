@@ -1,4 +1,4 @@
 interface:
-  display_name: "Update"
-  short_description: "Migrates project state to the current plugin version after the plugin source is refreshed in Codex. Backs up supported data, quarantines corrupt files, and records a migration journal."
+  display_name: "ACC update"
+  short_description: "Migrate after a plugin upgrade"
   default_prompt: "Run $update to upgrade the plugin."

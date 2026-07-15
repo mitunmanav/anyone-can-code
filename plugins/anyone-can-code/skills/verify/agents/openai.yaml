@@ -1,6 +1,6 @@
 interface:
-  display_name: "Verify"
-  short_description: "Evidence-first verification for code, plans, and repairs. Distinguishes built from verified and records what remains uncertain."
+  display_name: "ACC check"
+  short_description: "Verify work with real proof"
   default_prompt: "Use $verify to check the built code before marking a task done."
 
 policy:
