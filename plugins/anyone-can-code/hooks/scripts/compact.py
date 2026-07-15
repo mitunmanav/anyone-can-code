@@ -1,4 +1,9 @@
-"""PreCompact hook: freeze the working capsule before Codex compresses context."""
+"""PreCompact + PostCompact: announce shrink, save capsule, re-inject goal/next.
+
+Docs (hooks): PreCompact/PostCompact support common output fields including
+systemMessage. PostCompact does NOT document additionalContext — use
+systemMessage for re-inject. SessionStart source=compact also re-anchors.
+"""
 
 from __future__ import annotations
 
@@ -10,27 +15,104 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
 
 
-def handle_payload(payload: dict, repo_root: Path) -> dict:
+def _capsule_path(repo_root: Path) -> Path:
+    layout = state.ensure_project_layout(repo_root)
+    return layout["state"] / "compact-capsule.md"
+
+
+def _read_goal_next(repo_root: Path) -> tuple[str, str, list[dict]]:
     workflow = state.read_state(repo_root)
+    goal = str(workflow.get("active_goal") or workflow.get("active_task") or "not set")
+    nxt = str(workflow.get("next_action") or workflow.get("next_step") or "not set")
     steps = workflow.get("next_steps") or []
+    if not isinstance(steps, list):
+        steps = []
+    return goal, nxt, steps
+
+
+def write_capsule(repo_root: Path, trigger: str) -> Path:
+    goal, nxt, steps = _read_goal_next(repo_root)
     lines = [
         "# Compact Capsule",
-        f"Saved: {state.utc_now()} (trigger: {payload.get('trigger', 'unknown')})",
-        f"Goal: {workflow.get('active_goal') or workflow.get('active_task') or 'not set'}",
-        f"Next: {workflow.get('next_action') or workflow.get('next_step') or 'not set'}",
+        f"Saved: {state.utc_now()} (trigger: {trigger})",
+        f"Goal: {goal}",
+        f"Next: {nxt}",
     ]
     for step in steps:
+        if not isinstance(step, dict):
+            continue
         marker = "x" if step.get("status") == "done" else " "
         lines.append(f"- [{marker}] {step.get('step', '')}")
-    layout = state.ensure_project_layout(repo_root)
-    (layout["state"] / "compact-capsule.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    path = _capsule_path(repo_root)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def handle_pre_compact(payload: dict, repo_root: Path) -> dict:
+    trigger = str(payload.get("trigger") or "unknown")
+    write_capsule(repo_root, trigger)
     state.append_jsonl(
         state.signal_log_path(repo_root),
-        {"timestamp": state.utc_now(), "signal_type": "compaction",
-         "detail": f"capsule saved ({payload.get('trigger', 'unknown')})",
-         "turn_id": payload.get("turn_id")},
+        {
+            "timestamp": state.utc_now(),
+            "signal_type": "compaction",
+            "detail": f"pre-compact capsule saved ({trigger})",
+            "turn_id": payload.get("turn_id"),
+        },
     )
-    return {}
+    # systemMessage = user-visible warn (docs common output fields)
+    return {
+        "systemMessage": (
+            "ACC: Chat is about to shrink (compact). "
+            "Saving your goal and next steps first. This is not a crash."
+        )
+    }
+
+
+def handle_post_compact(payload: dict, repo_root: Path) -> dict:
+    trigger = str(payload.get("trigger") or "unknown")
+    goal, nxt, _ = _read_goal_next(repo_root)
+    capsule = _capsule_path(repo_root)
+    if capsule.exists():
+        try:
+            text = capsule.read_text(encoding="utf-8")
+            for line in text.splitlines():
+                if line.startswith("Goal:"):
+                    goal = line.split(":", 1)[1].strip() or goal
+                elif line.startswith("Next:"):
+                    nxt = line.split(":", 1)[1].strip() or nxt
+        except OSError:
+            pass
+    state.append_jsonl(
+        state.signal_log_path(repo_root),
+        {
+            "timestamp": state.utc_now(),
+            "signal_type": "compaction",
+            "detail": f"post-compact re-inject ({trigger})",
+            "turn_id": payload.get("turn_id"),
+        },
+    )
+    # Re-inject via systemMessage (documented for PostCompact). Keep short.
+    goal_s = goal[:160]
+    next_s = nxt[:160]
+    return {
+        "systemMessage": (
+            f"ACC: Context was shortened. Goal: {goal_s}. Next: {next_s}. "
+            "Do not re-ask answered questions. Re-read capsule if unsure."
+        )
+    }
+
+
+def handle_payload(payload: dict, repo_root: Path) -> dict:
+    event = str(
+        payload.get("hook_event_name")
+        or payload.get("hookEventName")
+        or ""
+    ).lower()
+    if "postcompact" in event or event == "post_compact":
+        return handle_post_compact(payload, repo_root)
+    # Default PreCompact (also when event blank for older callers)
+    return handle_pre_compact(payload, repo_root)
 
 
 def main() -> None:
