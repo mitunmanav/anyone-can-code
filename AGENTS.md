@@ -43,10 +43,10 @@ Runtime state: `.codex/anyone-can-code/` (local, not committed).
 ## Checks
 
 ```bash
-python -m pytest plugins/anyone-can-code/tests -q
-python plugins/anyone-can-code/scripts/doctor.py --json
-python -m json.tool plugins/anyone-can-code/.codex-plugin/plugin.json >/dev/null
-python -m json.tool .agents/plugins/marketplace.json >/dev/null
+python3 -m pytest plugins/anyone-can-code/tests -q
+python3 plugins/anyone-can-code/scripts/doctor.py --json
+python3 -m json.tool plugins/anyone-can-code/.codex-plugin/plugin.json >/dev/null
+python3 -m json.tool .agents/plugins/marketplace.json >/dev/null
 ```
 
 ## More

@@ -1,32 +1,37 @@
+# === runtime / local agent state — never public ===
 /.codex/
 /plugins/anyone-can-code/.codex/*
 !/plugins/anyone-can-code/.codex/agents
 /plugins/anyone-can-code/.opencode/
-**/__pycache__/
-*.pyc
-.run-logs/
-.runtime/
-.worktrees/
-
-# runtime state from setup tools — never commit
+/.claude/
+/.claude-flow/
 /.tokensave/
 /.codegraph/
 /data/
 /skills-lock.json
-
-# local assistant/session files — never commit
-/.claude/
-/.claude-flow/
-/CLAUDE.md
-CLAUDE.md.bak*
+.worktrees/
+.run-logs/
+.runtime/
 .pytest_cache/
-
-# private Codex session transcripts — never commit
-/codex sessions/
+**/__pycache__/
+*.pyc
 *.bak-*
+CLAUDE.md
+CLAUDE.md.bak*
+CLAUDE.local.md
+AGENTS.local.md
 
-# internal dev-only docs — never commit to public repo
+# === private sessions / exports / audits — never public ===
+/codex sessions/
+/codex testing sessions/
 /codex docs/
+/2026-*-local-command-*.txt
+/2026-*-conversation-exported-*.txt
+/**/*session*export*
+/**/*AUDIT*
+!plugins/**/tests/**
+
+# === internal development rules & process — never public ===
 /docs/plans/
 /docs/superpowers/
 /docs/SESSION_HANDOFF_*.md
@@ -36,3 +41,19 @@ CLAUDE.md.bak*
 /docs/ACC_IMPROVEMENT_LOOP.md
 /docs/ACC_PLUGIN_GOALS.md
 /docs/ACC_PLUGIN_BUILD_RULEBOOK.md
+/docs/ACC-OPERATING-CONTRACT.md
+/docs/**/*RULEBOOK*
+/docs/**/*OPERATING*
+/docs/**/*HARNESS*
+/docs/**/*LOOP*
+*.local.md
+/scratch/
+/tmp/
+/.now/
+/NOW.md
+
+# === OS junk ===
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/

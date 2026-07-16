@@ -5,12 +5,27 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
+  <strong>Languages:</strong>
+  English ·
+  <a href="readmes/README.pt-BR.md">Português</a> ·
+  <a href="readmes/README.es.md">Español</a> ·
+  <a href="readmes/README.zh-CN.md">简体中文</a> ·
+  <a href="readmes/README.ja.md">日本語</a> ·
+  <a href="readmes/README.ko.md">한국어</a> ·
+  <a href="readmes/README.hi.md">हिन्दी</a> ·
+  <a href="readmes/README.fr.md">Français</a> ·
+  <a href="readmes/README.de.md">Deutsch</a>
+</p>
+
+<p align="center">
   <strong>Plain English → plan → build → check.</strong><br/>
-  Free Codex plugins for people who are not engineers.
+  Free Codex plugins (Desktop + CLI) for people who are not engineers.<br/>
+  Say what you want in plain English. ACC helps you plan, build, and check that it actually works.
 </p>
 
 <p align="center">
   <a href="https://anyone-can-code.vercel.app/"><img src="https://img.shields.io/badge/website-live-10A37F?style=flat-square" alt="Website"/></a>
+  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/roadmap-public-0A66C2?style=flat-square" alt="Roadmap"/></a>
   <a href="https://discord.gg/qgS29y7TqP"><img src="https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
@@ -159,8 +174,19 @@ python3 plugins/anyone-can-code-cli/scripts/doctor.py --json
 
 ---
 
+## Roadmap
+
+What is next (plain words, no hard dates — plans can change):
+
+| When | Focus |
+|------|--------|
+| **Now · beta.4** | Two-drawer memory · never repeat a lesson · plain-words progress · honest push-back · safety guards |
+| **Next · beta.5** | Plays-nice plugin list · smarter model choice · never lose work at usage limits |
+
+Full detail: **[ROADMAP.md](ROADMAP.md)** · [pinned issue](https://github.com/mitunmanav/anyone-can-code/issues/14) · [Discussion](https://github.com/mitunmanav/anyone-can-code/discussions/13) · [website](https://anyone-can-code.vercel.app/#roadmap)
+
+---
+
 ## Links
 
-[Website](https://anyone-can-code.vercel.app/) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mitunmanav/anyone-can-code&type=Date)](https://star-history.com/#mitunmanav/anyone-can-code&Date)
+[Website](https://anyone-can-code.vercel.app/) · [Roadmap](ROADMAP.md) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)
