@@ -77,7 +77,9 @@ class PortableHandoffWriter(unittest.TestCase):
                 {
                     "active_goal": "goal",
                     "next_action": "continue",
-                    "active_task": "api_key=sk-abcdefghijklmnopqrstuvwxyz123456",
+                    # Fake values for redaction unit test — avoid CI secret-hygiene
+                    # patterns like sk-/ghp_ literals in the repo tree.
+                    "active_task": "api_key=not-a-real-secret-value-999",
                 },
             )
             portable_handoff.write_portable_handoff(
@@ -85,7 +87,8 @@ class PortableHandoffWriter(unittest.TestCase):
                 summary="password: hunter2secret99 and Bearer abcdefghijklmnop",
             )
             text = portable_handoff.read_portable_handoff(root)
-            self.assertNotIn("sk-abcdefghijklmnopqrstuvwxyz123456", text)
+            self.assertNotIn("not-a-real-secret-value-999", text)
+            self.assertNotIn("hunter2secret99", text)
             self.assertIn("[REDACTED]", text)
 
     def test_size_cap(self):
