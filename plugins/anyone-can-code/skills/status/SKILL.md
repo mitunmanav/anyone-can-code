@@ -73,9 +73,20 @@ Example: `Status: build implemented, tests verified, deploy blocked`.
 Never report `works`, `proper`, `perfect`, or user accepted unless matching
 interaction, visual QA, or user-acceptance evidence is recorded.
 
-## Host
+## Host + live scripts (not test-only)
 
-This is the **Desktop** package. CLI users install **Anyone Can Code CLI** (same marketplace). Other agents = later.
+This is the **Desktop** package. CLI users install **Anyone Can Code CLI**.
+
+Always run these cheap CLIs for truth (product path, not tests):
+
+```
+python "$PLUGIN_ROOT/scripts/host_detect.py" --guidance
+python "$PLUGIN_ROOT/scripts/loop_registry.py"
+python "$PLUGIN_ROOT/scripts/ai_observability.py" --project-root .
+python "$PLUGIN_ROOT/scripts/walkaway_pack.py" --goal
+```
+
+Show host line + loop menu + “What AI did” receipt + walk-away `/goal` tip in plain words.
 
 ## Past questions
 

@@ -32,3 +32,11 @@ Reply rule:
 ## Rule
 
 Communication mode changes surfaced communication only. It does not control hidden reasoning.
+
+When showing or changing communication mode, dry-run tone with the live helper:
+
+```
+python "$PLUGIN_ROOT/scripts/comm_contract.py" caveman-strict "Feature implemented successfully."
+```
+
+That script is product path (not tests).

@@ -35,4 +35,6 @@ When explaining the active route, use the same entry-mode and route names from
 `scripts/front_door.py`. Never expose development-system audit or promotion
 terms as product workflow.
 
-Also say: This is the CLI package. Desktop users install **Anyone Can Code** (Desktop). CLI: `/plugins`, `/hooks`, `/review`, `/goal`, `/model`.
+Also say: This is the **CLI** package. Desktop users install **Anyone Can Code** (separate). Ports to Claude/Cursor = later.
+
+Host wording: run `python "$PLUGIN_ROOT/scripts/host_detect.py" --guidance` and use those install/review lines so CLI vs Desktop advice stays honest.

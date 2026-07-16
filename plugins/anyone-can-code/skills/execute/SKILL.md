@@ -61,23 +61,17 @@ Use `$execute` when the work is planned or concrete enough to implement.
 - Narrate each build step as a robot walkthrough in plain lines — "Making the login page now." then "Done." then "Next: …"
 - One short line per step. No code shown, no file paths, no jargon unless user asks.
 - Step fails: one plain line — what broke + what you try next. Never hide it.
-- Long multi-step work: offer native `/goal` so user can walk away (pause/resume). Works on CLI and Desktop.
+- Long work: run `scripts/walkaway_pack.py --goal`, then native `/goal`.
+- Git: run `scripts/git_workflow.py --mode auto|manual --dry-run`; user approves real git.
 
 ## Output
 
-- code changes
-- updated workflow state
-- optional notes under `.codex/anyone-can-code/artifacts/`
+- code changes + updated workflow state + notes under `.codex/anyone-can-code/artifacts/`
 
 ## Evidence rules
 
-- Do not hardcode test counts in docs. Say "all tests green" and let CI show the number.
-  Bad: "183 tests pass." Good: "all tests green."
+- Do not hardcode test counts in docs. Say "all tests green"; let CI show the number.
 
 ## Worktree for risky work
 
-Big refactor, experiment, or change that could break the working app: tell
-the user in plain words — "Start this thread in Worktree mode: Codex works on
-a safe copy, your real project stays untouched. When it is good, Handoff
-moves it back." Git repositories only; no Git -> say so and proceed local
-with extra care.
+Big refactor: tell user Worktree mode (safe copy; Handoff merges). Git only; no Git → local with care.

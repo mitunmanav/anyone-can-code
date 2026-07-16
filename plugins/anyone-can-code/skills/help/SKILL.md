@@ -36,3 +36,5 @@ When explaining the active route, use the same entry-mode and route names from
 terms as product workflow.
 
 Also say: This is the Desktop package. CLI users install **Anyone Can Code CLI** (separate). Ports to Claude/Cursor = later.
+
+Host wording: run `python "$PLUGIN_ROOT/scripts/host_detect.py" --guidance` and use those install/review lines so CLI vs Desktop advice stays honest.

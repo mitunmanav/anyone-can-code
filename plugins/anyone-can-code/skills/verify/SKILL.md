@@ -44,10 +44,14 @@ Never claim from memory or from an old run. Timeout (exit 124) = NOT ready.
 
 ## Browser visual QA (web products)
 
-Need eyes on the page. Prefer connected Chrome (`@Chrome`) — safer. The in-app browser
-(`@Browser`) can crash the app (Codex bug). Explain plain; user decides; never force.
-No Chrome / user OK with mini browser → short preview only, not long test loops.
-Missing tool or login → `visual QA unverified`; ask user.
+Need eyes on the page. Run first:
+
+```
+python "$PLUGIN_ROOT/scripts/browser_policy.py"
+```
+
+Prefer connected Chrome (`@Chrome`) — safer. Built-in in-app browser (`@Browser`) can crash (Codex bug).
+Explain plain; user decides; never force. Signed-in/login pages may need Chrome. Missing tool → `visual QA unverified`.
 
 ## Review handoff + ship gate
 
