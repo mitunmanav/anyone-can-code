@@ -29,7 +29,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash|Edit|Write",
+        "matcher": "Bash|apply_patch",
         "hooks": [
           {
             "type": "command",
@@ -43,7 +43,7 @@
     ],
     "PermissionRequest": [
       {
-        "matcher": "Bash|Edit|Write",
+        "matcher": "Bash|apply_patch",
         "hooks": [
           {
             "type": "command",
@@ -57,7 +57,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Bash|Edit|Write",
+        "matcher": "Bash|apply_patch",
         "hooks": [
           {
             "type": "command",
