@@ -5,7 +5,7 @@ Product-facing notes only. Process / learning notes do **not** belong in this re
 ## Product
 
 - **Name:** Anyone Can Code (ACC)
-- **Version:** see `plugins/anyone-can-code/.codex-plugin/plugin.json` (v1.1.0-beta.3)
+- **Version:** see `plugins/anyone-can-code/.codex-plugin/plugin.json` (v1.1.0-beta.4)
 - **Platform:** Codex Desktop · Windows
 - **Site:** https://anyone-can-code.vercel.app/
 - **Repo:** https://github.com/mitunmanav/anyone-can-code
