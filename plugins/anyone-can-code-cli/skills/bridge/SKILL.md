@@ -10,7 +10,8 @@ Reply rule:
 - talk strict caveman only
 - keep answer short
 
-Detect and route to other installed plugins.
+Detect and route to other installed plugins. Also wire Superpowers-style
+skills through OpenSpec-style bindings so they help ACC instead of fighting it.
 
 ## How it works
 
@@ -31,23 +32,32 @@ Detect and route to other installed plugins.
 8. Assignment names exact request, allowed output, permissions, forbidden
    workflow controls, project-context-first requirement, process authority,
    and return path.
-9. Preserve returned `command_guard` for any specialist shell, package-manager,
-   browser, server, Git, or tool suggestion.
-10. On Windows PowerShell, require `npm.cmd`, block Bash-only `||`, and require
-   resolved repo root before Git commands.
-11. Report requested specialist handling visibly:
-   `Using [plugin-name] for [requested specialist]. Falling back to ACC for
-   [requested specialist]: [reason].`
-12. Block foreign plans, trackers, approval gates, commit rules, response-style
-   changes, workflow-owner changes, route/state changes, browser/server starts,
-   and visual-companion offers.
-13. Keep usable technical output, return it to ACC, verify it, then continue.
-14. If plugin is unavailable, unhealthy, fails, or returns no usable result, report
-   fallback and continue with ACC.
-15. Never let specialist routing end the turn with progress UI only. Return to
+9. Read `tool_interop` from front door. It is the OpenSpec-style binding table:
+   ACC phase → external skill, PRECHECK status, and output redirect.
+10. When a binding is `precheck: ok`, invoke that installed skill for the matching
+    ACC phase (plan/execute/fix/verify). Do not rebuild the skill inside ACC.
+11. Honor redirects: write durable notes only to `redirect.write_to` (ACC
+    artifacts). Never write to `redirect.do_not_write_to` (e.g.
+    `docs/superpowers/specs/`, `docs/superpowers/plans/`).
+12. Missing or unhealthy binding → PRECHECK fail → ACC local path with reason.
+    No silent fallback that pretends the skill ran.
+13. Preserve returned `command_guard` for any specialist shell, package-manager,
+    browser, server, Git, or tool suggestion.
+14. On Windows PowerShell, require `npm.cmd`, block Bash-only `||`, and require
+    resolved repo root before Git commands.
+15. Report requested specialist handling visibly:
+    `Using [plugin-name] for [requested specialist]. Falling back to ACC for
+    [requested specialist]: [reason].`
+16. Block foreign plans, trackers, approval gates, commit rules, response-style
+    changes, workflow-owner changes, route/state changes, browser/server starts,
+    and visual-companion offers.
+17. Keep usable technical output, return it to ACC, verify it, then continue.
+18. If plugin is unavailable, unhealthy, fails, or returns no usable result, report
+    fallback and continue with ACC.
+19. Never let specialist routing end the turn with progress UI only. Return to
     ACC and emit visible summary plus next action under the front-door
     `response_contract`.
-16. Scan nested specialist output, not only top-level fields. Keep bounded
+20. Scan nested specialist output, not only top-level fields. Keep bounded
     technical output, ignore foreign controls, and report blocked field paths.
 
 ## When to use

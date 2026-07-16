@@ -25,6 +25,14 @@ through `scripts/task_coordination.py` so each task has name, dependencies,
 owner, status, claim fields, and evidence. Derived plan guidance and task queue
 must share the same transaction ID.
 
+## External tool interop (Superpowers-style)
+
+If front door `tool_interop` has an available `writing-plans` binding for phase
+`plan`, you may invoke that installed skill for micro-steps — but write the
+durable plan only to the binding `redirect.write_to` (ACC `PLAN.md`), never to
+foreign defaults like `docs/superpowers/plans/`. ACC stays workflow owner.
+Missing PRECHECK → local ACC plan only, say why.
+
 Show one concise builder-facing line, for example:
   - `Plan: website + auth + deploy. Payments later.`
 

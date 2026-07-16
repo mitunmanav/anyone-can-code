@@ -201,6 +201,50 @@ SPECIALIST_INTENTS = (
         "match_terms": ("brainstorming", "brainstorm", "superpowers"),
     },
     {
+        "requested": "writing-plans",
+        "markers": ("writing-plans", "writing plans", "implementation plan"),
+        "match_terms": ("writing-plans", "writing plans", "superpowers"),
+    },
+    {
+        "requested": "test-driven-development",
+        "markers": ("test-driven-development", "test driven development", "tdd"),
+        "match_terms": (
+            "test-driven-development",
+            "test driven development",
+            "tdd",
+            "superpowers",
+        ),
+    },
+    {
+        "requested": "systematic-debugging",
+        "markers": ("systematic-debugging", "systematic debugging"),
+        "match_terms": ("systematic-debugging", "systematic debugging", "superpowers"),
+    },
+    {
+        "requested": "verification-before-completion",
+        "markers": (
+            "verification-before-completion",
+            "verification before completion",
+        ),
+        "match_terms": (
+            "verification-before-completion",
+            "verification before completion",
+            "superpowers",
+        ),
+    },
+    {
+        "requested": "subagent-driven-development",
+        "markers": (
+            "subagent-driven-development",
+            "subagent driven development",
+        ),
+        "match_terms": (
+            "subagent-driven-development",
+            "subagent driven development",
+            "superpowers",
+        ),
+    },
+    {
         "requested": "product design",
         "markers": ("product design", "product-design"),
         "match_terms": ("product design", "product-design"),
@@ -220,6 +264,122 @@ SPECIALIST_INTENTS = (
         "markers": ("browser", "browser-use"),
         "match_terms": ("browser", "browser-use"),
     },
+)
+
+# OpenSpec-style bindings: external skills stay intact; ACC owns workflow +
+# artifact paths. Pattern from OpenSpec / superpowers-bridge:
+# - do not edit the foreign skill source
+# - map phase → skill with PRECHECK
+# - redirect foreign default outputs into ACC-owned paths
+# - fail loud / ACC fallback when skill missing
+ACC_ARTIFACT_ROOT = ".codex/anyone-can-code/artifacts"
+
+# Short single-token skill names ("auth", "ai") must not steal generic requests.
+MIN_SKILL_NAME_LEN_FOR_ROUTE = 6
+
+TOOL_SKILL_BINDINGS = (
+    {
+        "id": "brainstorming",
+        "skill": "brainstorming",
+        "acc_phases": ("intake", "clarify"),
+        "acc_skills": ("clarify", "plan"),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/SPEC-DRAFT.md",
+        "foreign_outputs": ("docs/superpowers/specs/",),
+        "markers": ("brainstorming", "brainstorm"),
+    },
+    {
+        "id": "writing-plans",
+        "skill": "writing-plans",
+        "acc_phases": ("plan",),
+        "acc_skills": ("plan",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/PLAN.md",
+        "foreign_outputs": ("docs/superpowers/plans/",),
+        "markers": ("writing-plans", "writing plans", "implementation plan"),
+    },
+    {
+        "id": "test-driven-development",
+        "skill": "test-driven-development",
+        "acc_phases": ("execute",),
+        "acc_skills": ("execute",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/TDD-NOTES.md",
+        "foreign_outputs": (),
+        "markers": ("test-driven-development", "tdd", "test driven"),
+    },
+    {
+        "id": "systematic-debugging",
+        "skill": "systematic-debugging",
+        "acc_phases": ("fix",),
+        "acc_skills": ("fix",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/DEBUG-NOTES.md",
+        "foreign_outputs": (),
+        "markers": ("systematic-debugging", "systematic debugging"),
+    },
+    {
+        "id": "subagent-driven-development",
+        "skill": "subagent-driven-development",
+        "acc_phases": ("execute",),
+        "acc_skills": ("execute",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/PLAN.md",
+        "foreign_outputs": (),
+        "markers": ("subagent-driven-development", "subagent driven"),
+    },
+    {
+        "id": "executing-plans",
+        "skill": "executing-plans",
+        "acc_phases": ("execute",),
+        "acc_skills": ("execute",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/PLAN.md",
+        "foreign_outputs": (),
+        "markers": ("executing-plans", "executing plans"),
+    },
+    {
+        "id": "using-git-worktrees",
+        "skill": "using-git-worktrees",
+        "acc_phases": ("execute",),
+        "acc_skills": ("execute",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/WORKTREE-NOTES.md",
+        "foreign_outputs": (),
+        "markers": ("using-git-worktrees", "git worktree", "worktrees"),
+    },
+    {
+        "id": "verification-before-completion",
+        "skill": "verification-before-completion",
+        "acc_phases": ("verify",),
+        "acc_skills": ("verify",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/VERIFICATION.md",
+        "foreign_outputs": (),
+        "markers": (
+            "verification-before-completion",
+            "verification before completion",
+        ),
+    },
+    {
+        "id": "requesting-code-review",
+        "skill": "requesting-code-review",
+        "acc_phases": ("verify", "review"),
+        "acc_skills": ("verify",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/REVIEW-NOTES.md",
+        "foreign_outputs": (),
+        "markers": ("requesting-code-review", "code review"),
+    },
+    {
+        "id": "finishing-a-development-branch",
+        "skill": "finishing-a-development-branch",
+        "acc_phases": ("verify",),
+        "acc_skills": ("verify",),
+        "acc_output": f"{ACC_ARTIFACT_ROOT}/SHIP-NOTES.md",
+        "foreign_outputs": (),
+        "markers": ("finishing-a-development-branch", "finish branch"),
+    },
+)
+
+TOOL_INTEROP_INSTRUCTION = (
+    "Use available external skills for the matching ACC phase. "
+    "Write durable notes only under ACC artifact paths (redirect). "
+    "Do not write to foreign default paths. "
+    "External skills are advisory; ACC keeps workflow_owner. "
+    "Missing skill → PRECHECK fail → ACC local fallback with reason. "
+    "Never rebuild Superpowers/OpenSpec inside ACC."
 )
 
 
@@ -413,6 +573,164 @@ def scan_installed_plugins(cache_root: Path | None = None) -> list[dict[str, Any
 def meaningful_tokens(value: str) -> set[str]:
     tokens = set(re.findall(r"[a-z0-9]+", normalize_text(value)))
     return {token for token in tokens if len(token) > 2 and token not in STOP_WORDS}
+
+
+def skill_mentioned_in_request(skill: str, request_text: str) -> bool:
+    """True when a skill is named as a whole phrase, not a short generic token.
+
+    Short single-token skill names (e.g. Vercel ``auth``) used to match any
+    request containing that word and steal routing from ACC.
+    """
+    name = normalize_text(skill)
+    text = normalize_text(request_text)
+    if not name or not text:
+        return False
+    variants = [name]
+    spaced = name.replace("-", " ")
+    if spaced != name:
+        variants.append(spaced)
+    for variant in variants:
+        pattern = rf"(?<![a-z0-9]){re.escape(variant)}(?![a-z0-9])"
+        if not re.search(pattern, text):
+            continue
+        # Single short tokens are too generic for auto-route ("auth", "ai").
+        if " " not in variant and len(variant) < MIN_SKILL_NAME_LEN_FOR_ROUTE:
+            continue
+        return True
+    return False
+
+
+def _skill_index(
+    plugins: list[dict[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
+    """Map skill name → capability entries that declare it."""
+    registry = capability_registry.build_capability_registry(plugins or [])
+    index: dict[str, list[dict[str, Any]]] = {}
+    for capability in registry:
+        provider = normalize_text(capability.get("provider"))
+        if not provider or provider == "anyone-can-code":
+            continue
+        for skill in capability.get("skills") or []:
+            skill_name = normalize_text(skill)
+            if not skill_name:
+                continue
+            index.setdefault(skill_name, []).append(capability)
+    return index
+
+
+def build_tool_interop(
+    request: str,
+    plugins: list[dict[str, Any]] | None = None,
+    route: list[str] | None = None,
+) -> dict[str, Any]:
+    """OpenSpec-style phase→skill bindings with PRECHECK + output redirect.
+
+    Does not invent a new runtime. Wraps installed Codex plugin skills so they
+    plug into ACC phases without fighting ACC artifact ownership.
+    """
+    request_text = normalize_text(request)
+    route_phases = tuple(normalize_text(step) for step in (route or []))
+    skill_index = _skill_index(plugins or [])
+    bindings: list[dict[str, Any]] = []
+
+    for template in TOOL_SKILL_BINDINGS:
+        skill_name = normalize_text(template["skill"])
+        candidates = skill_index.get(skill_name, [])
+        healthy = [
+            item for item in candidates if item.get("health", {}).get("status") == "healthy"
+        ]
+        chosen = healthy[0] if healthy else (candidates[0] if candidates else None)
+
+        mentioned = has_any(request_text, tuple(template.get("markers") or ()))
+        phase_hit = any(phase in route_phases for phase in template.get("acc_phases") or ())
+        # Attach when skill exists and (user named it OR current route needs it).
+        if not chosen and not mentioned:
+            continue
+        if chosen and not mentioned and not phase_hit:
+            # Still expose installed methodology skills for the active route only.
+            continue
+        if not chosen and mentioned:
+            bindings.append(
+                {
+                    "id": template["id"],
+                    "skill": template["skill"],
+                    "provider": None,
+                    "available": False,
+                    "precheck": "missing-skill",
+                    "acc_phases": list(template["acc_phases"]),
+                    "acc_skills": list(template["acc_skills"]),
+                    "redirect": {
+                        "write_to": template["acc_output"],
+                        "do_not_write_to": list(template.get("foreign_outputs") or ()),
+                        "reason": "acc-owns-artifacts",
+                    },
+                    "fallback": {
+                        "owner": "acc",
+                        "route": "local-acc",
+                        "reason": "skill-precheck-failed",
+                    },
+                    "workflow_owner": "acc",
+                    "process_authority": "advisory",
+                }
+            )
+            continue
+        if not chosen:
+            continue
+
+        available = bool(healthy)
+        precheck = "ok" if available else "unhealthy"
+        bindings.append(
+            {
+                "id": template["id"],
+                "skill": template["skill"],
+                "provider": chosen.get("provider"),
+                "available": available,
+                "precheck": precheck,
+                "acc_phases": list(template["acc_phases"]),
+                "acc_skills": list(template["acc_skills"]),
+                "redirect": {
+                    "write_to": template["acc_output"],
+                    "do_not_write_to": list(template.get("foreign_outputs") or ()),
+                    "reason": "acc-owns-artifacts",
+                },
+                "health": chosen.get("health"),
+                "fallback": chosen.get("fallback")
+                or {
+                    "owner": "acc",
+                    "route": "local-acc",
+                    "reason": "capability-unavailable",
+                },
+                "workflow_owner": "acc",
+                "process_authority": "advisory",
+            }
+        )
+
+    # OpenSpec/superpowers-bridge: prefer subagent-driven execute; do not let
+    # executing-plans silently compete when the stronger path is available.
+    available_ids = {
+        item["id"] for item in bindings if item.get("available") and item.get("precheck") == "ok"
+    }
+    if "subagent-driven-development" in available_ids:
+        for item in bindings:
+            if item.get("id") == "executing-plans" and item.get("available"):
+                item["available"] = False
+                item["precheck"] = "alternate-not-preferred"
+                item["fallback"] = {
+                    "owner": "acc",
+                    "route": "use-subagent-driven-development",
+                    "reason": "prefer-subagent-driven-when-available",
+                }
+
+    available_count = sum(1 for item in bindings if item.get("available"))
+    return {
+        "schema": "acc-tool-interop-v1",
+        "pattern": "openspec-style-bindings",
+        "workflow_owner": "acc",
+        "instruction": TOOL_INTEROP_INSTRUCTION,
+        "bindings": bindings,
+        "available_count": available_count,
+        "binding_count": len(bindings),
+    }
 
 
 def requested_specialist_intents(request: str) -> list[dict[str, Any]]:
@@ -724,7 +1042,7 @@ def choose_plugin_route(
         overlap = request_tokens & meaningful_tokens(capability_text)
         explicit_name = name in request_text or name.replace("-", " ") in request_text
         skill_match = any(
-            normalize_text(skill) in request_text
+            skill_mentioned_in_request(skill, request_text)
             for skill in capability.get("skills", [])
             if normalize_text(skill)
         )
@@ -991,6 +1309,7 @@ def route_request(
                 allowed_output="bounded technical result for the matched capability",
             ),
         }
+    tool_interop = build_tool_interop(request, bridge_plugins, active_route)
     result = {
         "entry_mode": entry_mode,
         "entry_mode_source": entry_mode_source,
@@ -1008,6 +1327,7 @@ def route_request(
         "patch_retry": build_patch_retry_policy(context),
         "mechanics_docs_gate": build_mechanics_docs_gate(request, context),
         "bridge": bridge,
+        "tool_interop": tool_interop,
         "git_mode": resolve_git_mode(context),
     }
     result["session_audit_checklist"] = session_audit_checklist(context, result)
@@ -1039,6 +1359,13 @@ def smoke_check() -> tuple[bool, str]:
         return False, "idea route mismatch"
     if bug["route"] != ["fix", "verify"]:
         return False, "bug route mismatch"
+    interop = idea.get("tool_interop") or {}
+    if interop.get("schema") != "acc-tool-interop-v1" or interop.get("workflow_owner") != "acc":
+        return False, "tool interop contract missing"
+    if not skill_mentioned_in_request("writing-plans", "use writing-plans now"):
+        return False, "skill mention whole-phrase check broken"
+    if skill_mentioned_in_request("auth", "plan the auth feature"):
+        return False, "short skill name still steals generic requests"
     specialist_results = {
         item["requested"]: item for item in specialists.get("requested_specialists", [])
     }
@@ -1108,7 +1435,8 @@ def smoke_check() -> tuple[bool, str]:
     return (
         True,
         "idea -> intake; bug -> fix; capability probe and fallback ready; "
-        "requested specialist accounting ready; memory preflight required; "
+        "requested specialist accounting ready; tool interop bindings ready; "
+        "memory preflight required; "
         "command guard ready; usage checkpoint ready; patch retry ready; "
         "mechanics docs gate ready; ownership containment ready",
     )
