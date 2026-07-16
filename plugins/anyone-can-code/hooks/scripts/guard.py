@@ -214,6 +214,10 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
     except Exception:
         pass
 
+    interop_line = build_tool_interop_line(prompt)
+    if interop_line:
+        lines.append(interop_line)
+
     try:
         import inbox as _inbox
         inbox_result = _inbox.process_prompt(prompt, repo_root)
@@ -223,6 +227,49 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
         pass
 
     return "\n".join(lines)[:MAX_TURN_CONTEXT_CHARS]
+
+
+def build_tool_interop_line(prompt: str) -> str:
+    """One compact OpenSpec-style interop line for the turn hook.
+
+    Keeps Superpowers-style bindings visible even when skills menu is full.
+    Never raises; empty string means no usable installed bindings.
+    """
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import front_door as _front_door
+
+        interop = _front_door.build_tool_interop(
+            prompt,
+            _front_door.scan_installed_plugins(),
+            _front_door.ROUTES.get(
+                _front_door.classify_entry_mode(prompt),
+                ["plan", "execute", "verify"],
+            ),
+        )
+        available = [
+            item
+            for item in (interop.get("bindings") or [])
+            if item.get("available") and item.get("precheck") == "ok"
+        ]
+        if not available:
+            return ""
+        bits = []
+        for item in available[:4]:
+            skill = str(item.get("skill") or item.get("id") or "").strip()
+            out = str((item.get("redirect") or {}).get("write_to") or "")
+            leaf = out.rsplit("/", 1)[-1] if out else ""
+            if skill and leaf:
+                bits.append(f"{skill}→{leaf}")
+            elif skill:
+                bits.append(skill)
+        if not bits:
+            return ""
+        return "Interop: " + "; ".join(bits) + ". ACC owns workflow + redirects."
+    except Exception:
+        return ""
 
 
 def handle_user_prompt_submit(payload: dict, repo_root: Path) -> None:

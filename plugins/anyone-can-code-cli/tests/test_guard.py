@@ -9,6 +9,61 @@ import guard
 import state
 
 
+def test_tool_interop_line_empty_without_plugins(monkeypatch):
+    import front_door as fd
+
+    monkeypatch.setattr(fd, "scan_installed_plugins", lambda: [])
+    # Import path used inside guard may already hold front_door; patch after ensure
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    import front_door as front_door_mod
+
+    monkeypatch.setattr(front_door_mod, "scan_installed_plugins", lambda: [])
+    line = guard.build_tool_interop_line("Add password reset to this existing repo")
+    assert line == ""
+
+
+def test_tool_interop_line_lists_available_bindings(monkeypatch):
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    import front_door as front_door_mod
+
+    plugins = [
+        {
+            "name": "superpowers",
+            "description": "Planning and TDD.",
+            "skills": ["writing-plans", "test-driven-development"],
+            "capability_text": "superpowers writing-plans tdd",
+            "manifest": "plugin.json",
+        }
+    ]
+    monkeypatch.setattr(front_door_mod, "scan_installed_plugins", lambda: plugins)
+    line = guard.build_tool_interop_line("Add password reset to this existing repo")
+    assert line.startswith("Interop:")
+    assert "writing-plans" in line
+    assert "ACC owns" in line
+
+
+def test_turn_context_can_include_interop(tmp_path, monkeypatch):
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    import front_door as front_door_mod
+
+    plugins = [
+        {
+            "name": "superpowers",
+            "description": "Planning and TDD.",
+            "skills": ["writing-plans", "test-driven-development"],
+            "capability_text": "superpowers writing-plans tdd",
+            "manifest": "plugin.json",
+        }
+    ]
+    monkeypatch.setattr(front_door_mod, "scan_installed_plugins", lambda: plugins)
+    ctx = guard.build_turn_context("Add password reset to this existing repo", tmp_path)
+    assert "Interop:" in ctx
+    assert len(ctx) <= guard.MAX_TURN_CONTEXT_CHARS
+
+
 def test_verbatim_repeat_detected(tmp_path):
     """Guard must signal repeated_prompt when user sends same message twice."""
     prompt = "what is the status of the project"
