@@ -1,8 +1,10 @@
 """Beta.4 locked-rule guards (T5 + T6).
 
 Two standing product rules, enforced forever by CI:
-- Caveman budget: every SKILL.md stays at or under 4000 characters, and
-  hook-injected turn context keeps a cap no larger than 4000.
+- ACC house body budget: every SKILL.md stays at or under 4000 characters
+  (ACC caveman rule — NOT the Codex skills-list budget). Codex docs cap the
+  initial skills *list* (names + descriptions) at 2% of context or 8,000
+  chars when unknown. Hook turn context keeps a separate small cap.
 - Codex-native only: plugin Python needs nothing outside the standard
   library, so no user ever runs a dependency install.
 """
