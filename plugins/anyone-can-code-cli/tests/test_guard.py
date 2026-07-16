@@ -45,6 +45,11 @@ def test_deploy_blocked_when_mock_db_set(tmp_path, monkeypatch):
 def test_deploy_checklist_injected_when_safe(tmp_path, monkeypatch):
     """PreToolUse must inject pre-deploy checklist when mock DB not set."""
     monkeypatch.delenv("USE_MOCK_DB", raising=False)
+
+    def _ok_gate(repo_root, command):
+        return None
+
+    monkeypatch.setattr(guard, "security_gate_for_deploy", _ok_gate)
     payload = {
         "hook_event_name": "PreToolUse",
         "tool_name": "Bash",
@@ -56,6 +61,35 @@ def test_deploy_checklist_injected_when_safe(tmp_path, monkeypatch):
     assert hook_out.get("permissionDecision") != "deny"
     ctx = hook_out.get("additionalContext", "")
     assert "checklist" in ctx.lower() or "deploy" in ctx.lower()
+
+
+def test_deploy_blocked_when_security_gate_errors(tmp_path, monkeypatch):
+    """Deploy must fail closed if security gate cannot run."""
+    monkeypatch.delenv("USE_MOCK_DB", raising=False)
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    import security_gate as sg
+
+    def _boom(_root):
+        raise RuntimeError("gate broken")
+
+    monkeypatch.setattr(sg, "scan_project", _boom)
+    reason = guard.security_gate_for_deploy(tmp_path, "vercel deploy --prod")
+    assert reason is not None
+    assert "could not run" in reason.lower()
+    assert "RuntimeError" in reason
+
+    result = guard.handle_payload(
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Bash",
+            "tool_input": {"command": "vercel deploy --prod"},
+        },
+        tmp_path,
+    )
+    hook_out = result.get("hookSpecificOutput", {})
+    assert hook_out.get("permissionDecision") == "deny"
+    assert "could not run" in hook_out.get("permissionDecisionReason", "").lower()
 
 
 def test_git_push_blocked_when_mock_db_set(tmp_path, monkeypatch):

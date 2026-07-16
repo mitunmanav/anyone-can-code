@@ -258,7 +258,11 @@ def handle_user_prompt_submit(payload: dict, repo_root: Path) -> None:
 
 
 def security_gate_for_deploy(repo_root: Path, command: str) -> str | None:
-    """If deploy command, run production security scan. Plain reason or None."""
+    """If deploy command, run production security scan. Plain reason or None.
+
+    Fail closed: if the gate cannot run (import/scan error), return a block
+    reason so deploy does not slip through silently.
+    """
     if not is_deploy_command(command):
         return None
     try:
@@ -267,8 +271,13 @@ def security_gate_for_deploy(repo_root: Path, command: str) -> str | None:
             sys.path.insert(0, str(scripts))
         import security_gate as _security_gate
         result = _security_gate.scan_project(repo_root)
-    except Exception:
-        return None
+    except Exception as exc:
+        return (
+            "Security gate could not run "
+            f"({type(exc).__name__}). Fix the gate or project path before deploy."
+        )
+    if not isinstance(result, dict):
+        return "Security gate returned no usable result. Block deploy until gate works."
     if result.get("ok"):
         return None
     lines = result.get("summary_lines") or [result.get("user_line") or "Security gate fail."]
