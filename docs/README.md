@@ -6,10 +6,12 @@
 
 | Doc | What |
 |-----|------|
+| [FIRST_DAY.md](FIRST_DAY.md) | Plain-English first day after install |
 | [PRIVACY.md](PRIVACY.md) | What the plugin stores; no telemetry |
 | [TERMS.md](TERMS.md) | License, warranty, responsibilities |
 | [CREDITS.md](CREDITS.md) | Attribution |
-| [plugin README](../plugins/anyone-can-code/README.md) | Skills, memory, tests |
+| [plugin README (Desktop)](../plugins/anyone-can-code/README.md) | Skills, memory, tests |
+| [plugin README (CLI)](../plugins/anyone-can-code-cli/README.md) | CLI package install + skills |
 | [CHANGELOG](../CHANGELOG.md) | Release history |
 | [media/install-setup.gif](media/install-setup.gif) | Install walkthrough (GitHub README) |
 | [media/install-setup.mp4](media/install-setup.mp4) | Full install video |

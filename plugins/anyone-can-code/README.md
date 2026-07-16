@@ -19,7 +19,7 @@
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
-**New here?** Full install (with hooks): [root README — How to install](../../README.md#how-to-install)  
+**New here?** [First day guide](../../docs/FIRST_DAY.md) · Full install: [root README — Desktop](../../README.md#install--desktop)  
 
 **Install GIF (in this repo):** [docs/media/install-setup.gif](../../docs/media/install-setup.gif)  
 **Full video:** [docs/media/install-setup.mp4](../../docs/media/install-setup.mp4) · [website player](https://anyone-can-code.vercel.app/#install)  
@@ -37,6 +37,17 @@
 5. Restart · open a project · `$setup` · say what you want  
 
 **Current version:** [plugin.json](.codex-plugin/plugin.json) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
+
+### If install fails
+
+| What you see | What to try |
+|--------------|-------------|
+| Marketplace not found / add fails | Paste the **full** GitHub URL: `https://github.com/mitunmanav/anyone-can-code` — not a short name |
+| Plugin missing after restart | Re-open Plugins, confirm **Anyone Can Code** is installed and **on** |
+| Installed but nothing works | Hooks → enable + **trust every ACC hook** → restart / new chat |
+| `$setup` no reply | Open a **project folder**, start a **new chat**, run `$setup` again |
+
+More: [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Install issue form](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) · [root troubleshooting](../../README.md#if-something-fails)
 
 ---
 

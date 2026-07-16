@@ -187,6 +187,16 @@ Full detail: **[ROADMAP.md](ROADMAP.md)** · [pinned issue](https://github.com/m
 
 ---
 
+## Help
+
+| Link | What |
+|------|------|
+| [First day with ACC](docs/FIRST_DAY.md) | Install check → `$setup` → first ask → `$status` / `$help` |
+| [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) | Common questions |
+| [Website install](https://anyone-can-code.vercel.app/#install) | Desktop + CLI steps + video |
+
+---
+
 ## Links
 
-[Website](https://anyone-can-code.vercel.app/) · [Roadmap](ROADMAP.md) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)
+[Website](https://anyone-can-code.vercel.app/) · [Roadmap](ROADMAP.md) · [First day](docs/FIRST_DAY.md) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)
