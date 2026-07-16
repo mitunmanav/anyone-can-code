@@ -31,11 +31,19 @@ def plugin_root() -> Path:
 
 PLUGIN_ROOT = plugin_root()
 
-SKILL_BUDGET_CHARS = 4000
+# ACC house rule: keep each SKILL.md body short (caveman). This is NOT the
+# Codex skills-list budget. Codex docs: the initial skills list (names +
+# descriptions) is at most 2% of context or 8,000 chars when unknown — that
+# budget is for the menu list, not per-file SKILL.md body size.
+SKILL_BODY_HOUSE_BUDGET_CHARS = 4000
+# Codex skills list budget (names + descriptions), from official skills docs.
+CODEX_SKILLS_LIST_BUDGET_CHARS = 8000
+# Back-compat alias for tests/imports that still use the old name.
+SKILL_BUDGET_CHARS = SKILL_BODY_HOUSE_BUDGET_CHARS
 
 
 def run_skill_budget(skills_root: Path | None = None) -> list[dict]:
-    """Check every SKILL.md against the caveman token budget."""
+    """Check every SKILL.md against ACC house body budget (not Codex list limit)."""
     root = skills_root or (PLUGIN_ROOT / "skills")
     results: list[dict] = []
     for skill_md in sorted(root.glob("*/SKILL.md")):
@@ -43,7 +51,7 @@ def run_skill_budget(skills_root: Path | None = None) -> list[dict]:
             size = len(skill_md.read_text(encoding="utf-8"))
         except OSError:
             continue
-        status = "FAIL" if size > SKILL_BUDGET_CHARS else "PASS"
+        status = "FAIL" if size > SKILL_BODY_HOUSE_BUDGET_CHARS else "PASS"
         results.append({"status": status, "detail": f"{skill_md.parent.name}: {size} chars"})
     return results
 PROJECT_ROOT = Path(os.environ.get("ACC_PROJECT_ROOT", Path.cwd()))
@@ -137,7 +145,7 @@ class Doctor:
     def run_hooks_bundle(self) -> None:
         hooks_json = PLUGIN_ROOT / "hooks" / "hooks.json"
         if hooks_json.exists():
-            self.check("capability", "bundled_hooks", "PASS", "info", "hooks/hooks.json present")
+            self.check("capability", "bundled_hooks", "PASS", "info", "hooks/hooks.json present (Desktop package)")
         else:
             self.check("capability", "bundled_hooks", "FAIL", "blocking", "hooks/hooks.json missing")
 
@@ -546,6 +554,25 @@ class Doctor:
             self.check("config", "project_hooks_mode", "PASS", "info", "Project config can keep hooks quiet here")
         else:
             self.check("config", "project_hooks_mode", "WARN", "warning", "Project config does not disable hooks here")
+        # Item 13: native memories should stay off
+        try:
+            scripts = PLUGIN_ROOT / "scripts"
+            if str(scripts) not in sys.path:
+                sys.path.insert(0, str(scripts))
+            from native_memory_policy import check_memories_off
+            mem = check_memories_off(config_path)
+            if mem["ok"]:
+                self.check("config", "native_memories_off", "PASS", "info", mem["detail"])
+            else:
+                self.check(
+                    "config",
+                    "native_memories_off",
+                    "WARN",
+                    "warning",
+                    f"Native Codex memories not off ({mem['detail']}). ACC uses two-drawer memory instead.",
+                )
+        except Exception:
+            self.check("config", "native_memories_off", "WARN", "warning", "Could not check native memories flag")
 
     def run_default_prompts(self) -> None:
         path = PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
@@ -614,6 +641,34 @@ class Doctor:
             self.check("verification", "front_door_smoke", "PASS", "info", evidence)
         else:
             self.check("verification", "front_door_smoke", "FAIL", "blocking", evidence)
+
+    def run_tool_interop(self) -> None:
+        result = front_door.route_request(
+            "Add password reset to this existing repo",
+            plugins=[],
+        )
+        interop = result.get("tool_interop") or {}
+        if (
+            interop.get("schema") == "acc-tool-interop-v1"
+            and interop.get("workflow_owner") == "acc"
+            and interop.get("pattern") == "openspec-style-bindings"
+            and isinstance(interop.get("bindings"), list)
+        ):
+            self.check(
+                "verification",
+                "tool_interop",
+                "PASS",
+                "info",
+                "tool_interop schema present; ACC owns bindings and redirects",
+            )
+        else:
+            self.check(
+                "verification",
+                "tool_interop",
+                "FAIL",
+                "blocking",
+                "tool_interop contract missing or not ACC-owned",
+            )
 
     def run_command_guard(self) -> None:
         assessment = front_door.assess_command_guidance(
@@ -903,18 +958,23 @@ class Doctor:
             )
 
     def run_token_budget(self) -> None:
-        """Plugin's own text is a per-session token tax; keep it caveman-small."""
+        """ACC house body budget for SKILL.md files (not Codex list limit)."""
         results = run_skill_budget()
         over = [r for r in results if r["status"] == "FAIL"]
         if over:
             self.check(
                 "skills", "skill_token_budget", "FAIL", "blocking",
-                "Skill docs over budget: " + "; ".join(r["detail"] for r in over),
+                "Skill bodies over ACC house budget "
+                f"({SKILL_BODY_HOUSE_BUDGET_CHARS} chars/file, not Codex list limit): "
+                + "; ".join(r["detail"] for r in over),
             )
         else:
             self.check(
                 "skills", "skill_token_budget", "PASS", "info",
-                f"All {len(results)} skill docs within {SKILL_BUDGET_CHARS} chars",
+                f"ACC house body budget: all {len(results)} skill docs "
+                f"≤ {SKILL_BODY_HOUSE_BUDGET_CHARS} chars each. "
+                f"Codex skills-list budget is separate: ≤{CODEX_SKILLS_LIST_BUDGET_CHARS} "
+                "chars (or 2% of context) for names+descriptions total — not per file.",
             )
 
     def run_all(self) -> dict:
@@ -941,6 +1001,7 @@ class Doctor:
             self.run_installed_qa_support()
             self.run_product_intake()
             self.run_front_door()
+            self.run_tool_interop()
             self.run_command_guard()
             self.run_memory_preflight()
             self.run_status_model()

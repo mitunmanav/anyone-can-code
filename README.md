@@ -18,7 +18,8 @@
 </p>
 
 <p align="center">
-  <strong>A Codex Desktop plugin for people who are not engineers.</strong><br/>
+  <strong>Plain English → plan → build → check.</strong><br/>
+  Free Codex plugins (Desktop + CLI) for people who are not engineers.<br/>
   Say what you want in plain English. ACC helps you plan, build, and check that it actually works.
 </p>
 
@@ -29,17 +30,35 @@
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
-  <img src="https://img.shields.io/badge/Windows%20·%20Codex-0078D4?style=flat-square" alt="Platform"/>
+  <img src="https://img.shields.io/badge/Desktop-0078D4?style=flat-square" alt="Desktop"/>
+  <img src="https://img.shields.io/badge/CLI-111827?style=flat-square" alt="CLI"/>
   <img src="https://img.shields.io/badge/beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
 ---
 
+## Two packages, one marketplace
+
+Same GitHub repo. Same marketplace URL. **Two separate plugins.**  
+Codex does **not** auto-pick — install the one that matches how you use Codex.
+
+| | **Anyone Can Code** (Desktop) | **Anyone Can Code CLI** |
+|--|------------------------------|-------------------------|
+| **Use when** | Codex Desktop app | Codex CLI terminal (`codex`) |
+| **Marketplace name** | Anyone Can Code | Anyone Can Code CLI |
+| **Folder in repo** | `plugins/anyone-can-code/` | `plugins/anyone-can-code-cli/` |
+| **Install UI** | App → **Plugins** | CLI → **`/plugins`** |
+| **Trust hooks** | Hooks settings in the app | CLI → **`/hooks`** |
+| **Hooks style** | Windows-first PowerShell launcher | Portable `python3` + `PLUGIN_ROOT` (short timeouts) |
+| **More detail** | [plugins/anyone-can-code/README.md](plugins/anyone-can-code/README.md) | [plugins/anyone-can-code-cli/README.md](plugins/anyone-can-code-cli/README.md) |
+
+**Do not install both** unless you really use both hosts. Pick one per machine.
+
+---
+
 ## What it is
 
-**Anyone Can Code (ACC)** is a free plugin for **Codex Desktop** on Windows. It is built for non-technical people — including me.
-
-You describe an idea, a fix, or a project in normal words. ACC walks you through:
+You describe an idea, a fix, or a project in normal words. ACC helps you:
 
 | Step | What you get |
 |------|----------------|
@@ -47,34 +66,55 @@ You describe an idea, a fix, or a project in normal words. ACC walks you through
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass, not just “looks fine” |
 
-It is a **native Codex** plugin — written from [Codex official docs](https://openai.com/codex/), not ported from Claude, Cursor, or other agents.
+Native Codex plugins — built from [Codex official docs](https://openai.com/codex/), not ported from Claude, Cursor, or other agents.
 
-I’m **Mitun**. I use ACC myself. One real product I shipped with it: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2). Open beta: **v1.1.0-beta.3**.
+I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2). Open beta.
 
-**You need:** Windows · [Codex Desktop](https://openai.com/codex/) · Python
+**You need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python
 
 ---
 
-## Install
+## Install — Desktop
 
 <p align="center">
   <img src="docs/media/install-setup.gif" alt="Install Anyone Can Code in Codex Desktop" width="640"/>
 </p>
 
-1. Copy this URL: `https://github.com/mitunmanav/anyone-can-code`
-2. In Codex → **Plugins** → **+** → **Add a Marketplace** → paste the URL
-3. Find **Anyone Can Code** → **Install**
-4. Open **Hooks** → turn on every ACC hook and **trust** each one (required — Codex does not auto-trust)
-5. **Restart** Codex and confirm the plugin tools are on
-6. Open a project folder → run `$setup` → say what you want to build
+1. Copy: `https://github.com/mitunmanav/anyone-can-code`
+2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste the URL  
+3. Find **Anyone Can Code** (Desktop package) → **Install**  
+   - Do **not** pick **Anyone Can Code CLI** here unless you also use the terminal CLI  
+4. **Hooks** → enable + **trust** every ACC hook (required — Codex does not auto-trust)  
+5. **Restart** Codex · confirm tools are on  
+6. Open a project folder → `$setup` → say what you want  
 
-Optional (marketplace only — you still need hooks, restart, then `$setup`):
+Video: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · [website walkthrough](https://anyone-can-code.vercel.app/#install)
 
-```powershell
+---
+
+## Install — CLI
+
+For the **terminal** Codex app only.
+
+1. Add the marketplace (once):
+
+```bash
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
-Video file: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · Full walkthrough on the site: [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/#install)
+2. Start Codex in a project folder: `codex`  
+3. Type **`/plugins`** → install **Anyone Can Code CLI**  
+   - Not the Desktop-only package name  
+4. Type **`/hooks`** → review + **trust** ACC hooks (required)  
+5. New thread → `$setup` → say what you want  
+
+Optional check after install:
+
+```bash
+# from this repo (developers)
+python3 -m pytest plugins/anyone-can-code-cli/tests -q
+python3 plugins/anyone-can-code-cli/scripts/doctor.py --json
+```
 
 ---
 
@@ -82,27 +122,55 @@ Video file: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · Full
 
 | What you see | What to try |
 |--------------|-------------|
-| Marketplace / install fails | Paste the **full** GitHub URL above, not a short name |
-| Plugin installed but nothing works | Trust **all** ACC hooks, then fully restart Codex |
+| Marketplace / install fails | Paste the **full** GitHub URL, not a short name |
+| Installed wrong package | Uninstall the other one; install Desktop **or** CLI name that matches your host |
+| Plugin installed but nothing works | **Trust all ACC hooks**, then restart / new thread |
+| CLI hooks never run | `/hooks` → trust (Codex skips untrusted plugin hooks) |
 | `$setup` does nothing | Open a **project folder** first, start a **new chat**, try `$setup` again |
 | Still stuck | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) or [report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
 
-[Discord](https://discord.gg/qgS29y7TqP) is fine for quick questions. Use Issues when something is broken.
+[Discord](https://discord.gg/qgS29y7TqP) for quick questions. Issues when something is broken.
 
 ---
 
-## Useful commands
+## Useful commands (both packages)
 
-You can also just talk in plain English. These help when you want a clear switch:
+You can also talk in plain English.
 
 | Command | When to use it |
 |---------|----------------|
-| `$setup` | First time in a project — get ready to work |
-| `$orchestrator` | Main front door when you are not sure where to start |
+| `$setup` | First time in a project |
+| `$orchestrator` | Front door when you are not sure where to start |
 | `$help` / `$status` | Where you are and what is next |
 | `$resume` | Continue after a break |
 | `$verify` | Check that work is really done |
 | `$fix` | When the same thing keeps failing |
+
+CLI-only tips: long job → `/goal` · before ship → `/review` · model → `/model`
+
+---
+
+## Repo layout (developers)
+
+```
+plugins/anyone-can-code/       # Desktop package
+plugins/anyone-can-code-cli/   # CLI package (full copy + CLI-tuned hooks)
+.agents/plugins/marketplace.json
+```
+
+Local gate (Desktop package):
+
+```bash
+python3 -m pytest plugins/anyone-can-code/tests -q
+python3 plugins/anyone-can-code/scripts/doctor.py --json
+```
+
+Local gate (CLI package):
+
+```bash
+python3 -m pytest plugins/anyone-can-code-cli/tests -q
+python3 plugins/anyone-can-code-cli/scripts/doctor.py --json
+```
 
 ---
 
@@ -119,6 +187,16 @@ Full detail: **[ROADMAP.md](ROADMAP.md)** · [pinned issue](https://github.com/m
 
 ---
 
+## Help
+
+| Link | What |
+|------|------|
+| [First day with ACC](docs/FIRST_DAY.md) | Install check → `$setup` → first ask → `$status` / `$help` |
+| [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) | Common questions |
+| [Website install](https://anyone-can-code.vercel.app/#install) | Desktop + CLI steps + video |
+
+---
+
 ## Links
 
-[Website](https://anyone-can-code.vercel.app/) · [Roadmap](ROADMAP.md) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)
+[Website](https://anyone-can-code.vercel.app/) · [Roadmap](ROADMAP.md) · [First day](docs/FIRST_DAY.md) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)

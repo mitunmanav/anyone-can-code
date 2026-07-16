@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>You describe what you want in plain English.</strong><br/>
-  Idea → plan → build → verify. Codex plugin for Windows. No programming background required.
+  Idea → plan → build → verify. Codex plugin for Desktop + CLI. No programming background required.
 </p>
 
 <p align="center">
@@ -15,11 +15,11 @@
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
   <a href="../../LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
-  <img src="https://img.shields.io/badge/platform-Codex%20·%20Windows-0078D4?style=flat-square" alt="Platform"/>
+  <img src="https://img.shields.io/badge/platform-Codex%20Desktop%20%2B%20CLI-0078D4?style=flat-square" alt="Platform"/>
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
-**New here?** Full install (with hooks): [root README — How to install](../../README.md#how-to-install)  
+**New here?** [First day guide](../../docs/FIRST_DAY.md) · Full install: [root README — Desktop](../../README.md#install--desktop)  
 
 **Install GIF (in this repo):** [docs/media/install-setup.gif](../../docs/media/install-setup.gif)  
 **Full video:** [docs/media/install-setup.mp4](../../docs/media/install-setup.mp4) · [website player](https://anyone-can-code.vercel.app/#install)  
@@ -28,51 +28,63 @@
 
 ### Install (short)
 
+**This is the Desktop package.** For Codex CLI, install **Anyone Can Code CLI** from the same marketplace.
+
 1. Copy `https://github.com/mitunmanav/anyone-can-code`  
 2. Codex → **Plugins** → **+** → **Add a Marketplace** → paste URL  
-3. Scroll → **Anyone Can Code** → **Install**  
-4. **Hooks → Settings → enable + trust every ACC hook** (required; not automatic)  
-5. Restart Codex · enable tools · open a project · `$setup` · say what you want  
-
-Optional terminal: `codex plugin marketplace add mitunmanav/anyone-can-code --ref main` — then still do steps 3–5.
+3. **Anyone Can Code** (Desktop) → **Install**  
+4. Trust every ACC hook (required)  
+5. Restart · open a project · `$setup` · say what you want  
 
 **Current version:** [plugin.json](.codex-plugin/plugin.json) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
+
+### If install fails
+
+| What you see | What to try |
+|--------------|-------------|
+| Marketplace not found / add fails | Paste the **full** GitHub URL: `https://github.com/mitunmanav/anyone-can-code` — not a short name |
+| Plugin missing after restart | Re-open Plugins, confirm **Anyone Can Code** is installed and **on** |
+| Installed but nothing works | Hooks → enable + **trust every ACC hook** → restart / new chat |
+| `$setup` no reply | Open a **project folder**, start a **new chat**, run `$setup` again |
+
+More: [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Install issue form](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) · [root troubleshooting](../../README.md#if-something-fails)
 
 ---
 
 ## Everyday commands (start here)
 
-Type these in the Codex chat. You can also just talk in plain English.
+Type these in the Codex chat (or pick the short **ACC …** name in the app). You can also just talk in plain English.
 
-| Type this | What it does (simple) |
-|-----------|------------------------|
-| `$setup` | First-time setup for this project |
-| `$orchestrator` | Front door — helps pick the next step |
-| `$help` | “Where am I?” in plain language |
-| `$status` | Current task and what’s next |
-| `$resume` | Continue after a break |
-| `$verify` | Check the work with proof |
-| `$fix` | Help when the same thing keeps failing |
+| In app | Type this | What it does (simple) |
+|--------|-----------|------------------------|
+| ACC setup | `$setup` | First-time setup for this project |
+| ACC home | `$orchestrator` | Front door — helps pick the next step |
+| ACC help | `$help` | “Where am I?” in plain language |
+| ACC status | `$status` | Current task and what’s next |
+| ACC resume | `$resume` | Continue after a break |
+| ACC check | `$verify` | Check the work with proof |
+| ACC fix | `$fix` | Help when the same thing keeps failing |
 
 ---
 
 ## More skills (optional)
 
-| Skill | What it does |
-|-------|-------------|
-| `$onboard` | Idea / existing project / bug starting points |
-| `$clarify` | Only the questions needed to unblock you |
-| `$plan` | Ordered task plan |
-| `$execute` | Build from the plan |
-| `$learn` | Save a lesson to memory |
-| `$capture` | Record a decision or blocker |
-| `$govern` | Guard against silent scope change |
-| `$readable` | Keep work understandable |
-| `$bridge` | Play nice with other plugins |
-| `$usage` | Token usage view |
-| `$settings` | Preferences |
-| `$update` | After a plugin upgrade |
-| `$handoff` | Pass work to a later session |
+| In app | Type this | What it does |
+|--------|-----------|-------------|
+| ACC start | `$onboard` | Idea / existing project / bug starting points |
+| ACC clarify | `$clarify` | Only the questions needed to unblock you |
+| ACC plan | `$plan` | Ordered task plan |
+| ACC build | `$execute` | Build from the plan |
+| ACC learn | `$learn` | Save a lesson to memory |
+| ACC wiki | `$wiki` | Save, ask, or clean project notebook (ACC only; no Codex native memory) |
+| ACC note | `$capture` | Record a decision or blocker |
+| ACC scope | `$govern` | Guard against silent scope change |
+| ACC clear | `$readable` | Keep work understandable |
+| ACC plugins | `$bridge` | Play nice with other plugins |
+| ACC usage | `$usage` | Token usage view |
+| ACC settings | `$settings` | Preferences |
+| ACC update | `$update` | After a plugin upgrade |
+| ACC handoff | `$handoff` | Pass work to a later session |
 
 ---
 

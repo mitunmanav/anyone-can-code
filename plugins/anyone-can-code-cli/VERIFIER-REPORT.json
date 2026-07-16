@@ -1,0 +1,64 @@
+{
+  "report": {
+    "title": "ACC Setup Drift Verification",
+    "timestamp": "2026-06-19T08:50:00+05:30",
+    "overall": "PASS",
+    "overall_reason": "All 158 tests pass (3 skipped Windows-only). Doctor: 32 PASS, 3 WARN, 0 FAIL. plugin.json updated with marketplace fields. PNG assets generated.",
+    "current_results": [
+      {
+        "check": "skills_count",
+        "passed": true,
+        "evidence": "19 skill folders present (bridge, capture, clarify, execute, fix, govern, help, learn, onboard, orchestrator, plan, readable, resume, settings, setup, status, update, usage, verify)"
+      },
+      {
+        "check": "skills_frontmatter",
+        "passed": true,
+        "evidence": "All 19 skills have name: and description: frontmatter fields"
+      },
+      {
+        "check": "doctor",
+        "passed": true,
+        "evidence": "Doctor: 32 PASS, 3 WARN, 0 FAIL. Warnings are environment-only (Codex not installed on WSL — expected)"
+      },
+      {
+        "check": "tests",
+        "passed": true,
+        "evidence": "158 tests pass, 3 skipped (Windows-only powershell tests guarded with @unittest.skipUnless(os.name == 'nt', ...))"
+      },
+      {
+        "check": "python_compile",
+        "passed": true,
+        "evidence": "plugin.json valid JSON; all scripts compile"
+      },
+      {
+        "check": "plugin_json_marketplace_fields",
+        "passed": true,
+        "evidence": "Added websiteURL, privacyPolicyURL, termsOfServiceURL, screenshots[] to plugin.json"
+      },
+      {
+        "check": "asset_format",
+        "passed": true,
+        "evidence": "PNG assets generated: icon.png (17K), logo.png (12K), screenshot-1.png (5.8K). plugin.json composerIcon and logo updated to .png references"
+      },
+      {
+        "check": "marketplace_source",
+        "passed": true,
+        "evidence": "Personal marketplace points to local ACC plugin source path"
+      },
+      {
+        "check": "runtime_cache",
+        "passed": false,
+        "evidence": "No installed runtime in Codex cache — WSL environment. Install in Codex Desktop to activate."
+      }
+    ],
+    "warnings": [
+      "Runtime cache not present (WSL dev environment — install plugin in Codex Desktop to test end-to-end).",
+      "Plugin not yet in Codex managed marketplace list. Run: codex plugin marketplace add \"<repo-path>\""
+    ],
+    "notes": [
+      "WSL test skipping: 3 powershell-dependent tests correctly skip on Linux via @unittest.skipUnless(os.name == 'nt', ...).",
+      "SVG originals kept alongside PNG outputs in assets/ folder.",
+      "No GitHub push, PR update, tag, publish, or release performed."
+    ]
+  }
+}

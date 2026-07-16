@@ -530,7 +530,8 @@ class ProjectStateTests(unittest.TestCase):
         self.assertIn("useful-context", hooks["proof"])
         self.assertIn("durable-receipt", hooks["proof"])
         self.assertIn("stop-state-write", hooks["proof"])
-        self.assertIn("ambiguous-skip-receipt", hooks["proof"])
+        self.assertIn("ambiguous-skip-clean", hooks["proof"])
+        self.assertIn("bare-skip-clean", hooks["proof"])
         self.assertIn("redacted-prompt", hooks["proof"])
         self.assertIn(".codex/anyone-can-code/state/turn-ledger.jsonl", hooks["details"]["stop_state_paths"])
 
@@ -647,6 +648,51 @@ class ProjectStateTests(unittest.TestCase):
         self.assertEqual(health["hooks"]["save_session"]["status"], "fail")
         self.assertEqual(health["hooks"]["save_session"]["consecutive_failures"], 1)
 
+    def test_hooks_skip_when_acc_not_setup_even_if_git_exists(self) -> None:
+        """Hooks must not run (or create ACC state) until $setup made the project."""
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "bare-repo"
+            (repo / ".git").mkdir(parents=True)
+            payload = {
+                "hook_event_name": "SessionStart",
+                "session_id": "s-bare",
+                "cwd": str(repo),
+            }
+
+            resolution = hook_state.resolve_hook_project(payload)
+            result = hook_state.run_hook_attempt(
+                resolution,
+                "load_session",
+                payload,
+                lambda: {
+                    "hookSpecificOutput": {
+                        "hookEventName": "SessionStart",
+                        "additionalContext": "should not inject",
+                    }
+                },
+            )
+            acc_root = repo / ".codex" / "anyone-can-code"
+
+        self.assertEqual(resolution["status"], "unresolved")
+        self.assertEqual(resolution["reason"], "no-project")
+        self.assertEqual(result, {})
+        self.assertFalse(acc_root.exists())
+
+    def test_hook_finds_nested_acc_under_bare_git_monorepo(self) -> None:
+        """Monorepo git root without ACC still finds one nested ACC-setup child."""
+        with tempfile.TemporaryDirectory() as tmp:
+            mono = Path(tmp) / "mono"
+            (mono / ".git").mkdir(parents=True)
+            nested = mono / "app"
+            nested.mkdir()
+            hook_state.ensure_project_layout(nested)
+            payload = {"hook_event_name": "SessionStart", "cwd": str(mono)}
+
+            resolution = hook_state.resolve_hook_project(payload)
+
+        self.assertEqual(resolution["status"], "resolved")
+        self.assertEqual(Path(resolution["project_root"]), nested.resolve())
+
     def test_hook_resolver_selects_single_nested_project_from_non_git_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp) / "workspace"
@@ -706,32 +752,20 @@ class ProjectStateTests(unittest.TestCase):
                 "cwd": str(workspace),
             }
 
-            with mock.patch.object(hook_state, "git_root_from_ancestors", return_value=None):
-                resolution = hook_state.resolve_hook_project(payload)
+            resolution = hook_state.resolve_hook_project(payload)
             result = hook_state.run_hook_attempt(
                 resolution,
                 "guard",
                 payload,
                 lambda: {"ran": True},
             )
-            receipt = json.loads(
-                (
-                    workspace
-                    / ".codex"
-                    / "anyone-can-code"
-                    / "logs"
-                    / "hook-receipts.jsonl"
-                )
-                .read_text(encoding="utf-8")
-                .splitlines()[-1]
-            )
+            # No chosen ACC project → no receipt writes (must not create ACC on parent).
+            parent_layout = workspace / ".codex" / "anyone-can-code"
 
         self.assertEqual(result, {})
         self.assertEqual(resolution["status"], "ambiguous")
-        self.assertEqual(receipt["resolution_state"], "ambiguous")
-        self.assertEqual(receipt["final_effectiveness"], "skipped")
-        self.assertNotEqual(receipt["skip_reason"], "")
-        self.assertEqual(len(receipt["resolver_candidates"]), 2)
+        self.assertEqual(len(resolution["candidates"]), 2)
+        self.assertFalse(parent_layout.exists())
 
     def test_save_session_skips_when_project_root_is_ambiguous(self) -> None:
         # D-039/D-044: ambiguous project cannot be chosen silently; hook skips.
@@ -1892,6 +1926,10 @@ class ProjectStateTests(unittest.TestCase):
             self.assertEqual(agents_path.read_text(encoding="utf-8"), "project rules stay\n")
             self.assertTrue(snapshot_path.exists())
 
+    def _windows_hook_command(self, hook: dict) -> str:
+        """Desktop package uses PowerShell in command."""
+        return str(hook.get("command") or "")
+
     @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
     def test_hook_commands_survive_powershell_outer_shell(self) -> None:
         hooks = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
@@ -1901,7 +1939,9 @@ class ProjectStateTests(unittest.TestCase):
         env["PLUGIN_ROOT"] = str(marketplace_repo)
         env.pop("CLAUDE_PLUGIN_ROOT", None)
 
-        command = hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"]
+        command = self._windows_hook_command(
+            hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]
+        )
         payload = {
             "hook_event_name": "UserPromptSubmit",
             "prompt": "test",
@@ -1932,7 +1972,7 @@ class ProjectStateTests(unittest.TestCase):
 
         cases = [
             (
-                hooks["hooks"]["PreToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PreToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PreToolUse",
                     "tool_name": "Bash",
@@ -1941,7 +1981,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["PostToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PostToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PostToolUse",
                     "tool_name": "Bash",
@@ -1951,7 +1991,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["Stop"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["Stop"][0]["hooks"][0]),
                 {
                     "hook_event_name": "Stop",
                     "turn_id": "test-turn",
@@ -1986,7 +2026,9 @@ class ProjectStateTests(unittest.TestCase):
 
         cases = [
             (
-                hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"],
+                self._windows_hook_command(
+                    hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]
+                ),
                 {
                     "hook_event_name": "UserPromptSubmit",
                     "prompt": "test",
@@ -1994,7 +2036,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["PreToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PreToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PreToolUse",
                     "tool_name": "Bash",
@@ -2003,7 +2045,7 @@ class ProjectStateTests(unittest.TestCase):
                 },
             ),
             (
-                hooks["hooks"]["PostToolUse"][0]["hooks"][0]["command"],
+                self._windows_hook_command(hooks["hooks"]["PostToolUse"][0]["hooks"][0]),
                 {
                     "hook_event_name": "PostToolUse",
                     "tool_name": "Bash",
