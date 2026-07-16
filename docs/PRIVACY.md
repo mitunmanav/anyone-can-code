@@ -4,7 +4,7 @@ _Last updated: 2026-07-11_
 
 ## Short version
 
-Anyone Can Code is a local Codex Desktop plugin. It does not collect, transmit, or sell your data. There is no account and no waitlist signup through the plugin.
+Anyone Can Code is a local Codex plugin (Desktop package and CLI package). It does not collect, transmit, or sell your data. There is no account and no waitlist signup through the plugin.
 
 ## Product website
 

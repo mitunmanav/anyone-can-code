@@ -1,6 +1,9 @@
 # First day with Anyone Can Code
 
-Plain English. About one screen. No jargon.
+Plain English. About one screen.
+
+**What ACC is:** a reliability workflow plugin for OpenAI Codex.  
+Codex does the coding. ACC helps you **plan → build → resume → verify** so “done” is not a guess.
 
 ## 1. Install check
 
@@ -44,7 +47,7 @@ Plan a tiny first version. Do not write lots of code yet.
 Or, if the project already exists:
 
 ```text
-Look around and tell me what this project is, in plain English.
+Look around and tell me what this project is, in plain English. Separate facts from guesses.
 ```
 
 ## 5. Know where you are
@@ -53,7 +56,8 @@ Look around and tell me what this project is, in plain English.
 |------|------|
 | `$status` | “What are we doing right now?” |
 | `$help` | “What can I do next?” |
-| `$verify` | “Is this actually done?” |
+| `$resume` | “Continue after I stopped” |
+| `$verify` | “Is this actually done? Show evidence.” |
 | `$fix` | Same problem keeps failing |
 
 ## Stuck?
@@ -62,4 +66,4 @@ Look around and tell me what this project is, in plain English.
 2. [Discord](https://discord.gg/qgS29y7TqP)  
 3. [Report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)
 
-You do not need to be an engineer. Say what you want; ACC helps you plan, build, and check.
+You do not need to be an engineer. You still own what ships: ACC helps you plan, recover, and check — it does not guarantee perfect software.

@@ -1,13 +1,16 @@
 <p align="center">
-  <img src="plugins/anyone-can-code/assets/logo.png" alt="Anyone Can Code" width="280"/>
+  <img src="plugins/anyone-can-code/assets/logo.png" alt="Anyone Can Code logo" width="280"/>
 </p>
 
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>Build with Codex in plain English.</strong><br/>
-  Free <strong>Codex Desktop + CLI</strong> plugin. Plan → build → check.<br/>
-  Apps, docs, fixes — say what you want, get a path that actually finishes.
+  <strong>A reliability workflow plugin for OpenAI Codex.</strong><br/>
+  Say what you want. ACC helps Codex <strong>plan it, build it, and prove it works</strong>.
+</p>
+
+<p align="center">
+  Codex does the coding. ACC gives the work a reliable path from idea to verified result—so you can build without blindly trusting “done.”
 </p>
 
 <p align="center">
@@ -30,178 +33,319 @@
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
-  <img src="https://img.shields.io/badge/Desktop-0078D4?style=flat-square" alt="Desktop"/>
-  <img src="https://img.shields.io/badge/CLI-111827?style=flat-square" alt="CLI"/>
-  <img src="https://img.shields.io/badge/beta-orange?style=flat-square" alt="Beta"/>
+  <img src="https://img.shields.io/badge/Desktop-0078D4?style=flat-square" alt="Codex Desktop package"/>
+  <img src="https://img.shields.io/badge/CLI-111827?style=flat-square" alt="Codex CLI package"/>
+  <img src="https://img.shields.io/badge/beta-orange?style=flat-square" alt="Open beta"/>
+</p>
+
+<p align="center">
+  <a href="https://anyone-can-code.vercel.app/#install"><strong>Install free</strong></a>
+  ·
+  <a href="docs/FIRST_DAY.md">First day</a>
+  ·
+  <a href="https://github.com/mitunmanav/anyone-can-code/releases">Releases</a>
+  ·
+  <a href="https://discord.gg/qgS29y7TqP">Discord</a>
+  ·
+  <a href="https://github.com/mitunmanav/anyone-can-code/issues/new/choose">Report a problem</a>
 </p>
 
 ---
 
-## What it is
+## The problem
 
-Anyone Can Code is a **plugin** for [OpenAI Codex](https://openai.com/codex/) — not a new agent, not a framework.
+Codex can write a lot of code fast. That is not the hard part.
 
-You describe work in normal words. ACC helps you:
+The hard part is:
 
-| | |
-|--|--|
-| **Plan** | Clear path before big changes |
-| **Build** | Step by step, with memory that stays on your machine |
-| **Check** | Real “done” with proof — not “looks fine” |
+- Starting from a vague idea and ending with a **clear path**
+- Keeping work **alive across sessions** when you stop, hit limits, or restart
+- Knowing what is **actually done** vs what only *looks* done
+- Recovering after errors, thrash, and half-finished attempts
+- Trusting “done” when you **cannot** confidently read every line
 
-Use it for apps, docs, bug fixes, and ideas from zero.
-
-Native Codex plugins — built from [official Codex docs](https://openai.com/codex/), not ported from Claude, Cursor, or other tools.
-
-I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2). Open beta **v1.1.0-beta.4**.
-
-**You need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python
-
-**New here?** [First day guide](docs/FIRST_DAY.md) · [Website install](https://anyone-can-code.vercel.app/#install)
+Without structure, sessions drift: chaotic changes, forgotten context, repeated mistakes, and confident claims with thin proof.
 
 ---
 
-## Two packages, one marketplace
+## What ACC changes
 
-Same GitHub repo. Same marketplace URL. **Two separate plugins.**  
-Codex does **not** auto-pick — install the one that matches how you use Codex.
+Anyone Can Code (ACC) is a **free, open-source plugin for OpenAI Codex** — not a new coding agent, not an IDE, not a replacement for Codex.
 
-| | **Anyone Can Code** (Desktop) | **Anyone Can Code CLI** |
-|--|------------------------------|-------------------------|
-| **Use when** | Codex Desktop app | Codex CLI terminal (`codex`) |
+It is a **reliability and execution layer** on top of Codex:
+
+| Outcome | What that means in practice |
+|---------|------------------------------|
+| **Plain English** | Describe the result you want without learning a long command language first |
+| **Structure** | Clarify → plan → execute in steps, with tracked tasks and boundaries |
+| **Continuity** | Local project state and notes so work can resume later |
+| **Honest progress** | Separate implemented, verified, blocked, deferred, and uncertain |
+| **Verification** | “Done” needs evidence (tests, checks, observed behaviour) — or a clear gap |
+| **Recovery** | Resume, reconstruct, or repair after interrupts and failures |
+| **Local control** | Workflow state lives under `.codex/anyone-can-code/` on your machine |
+| **Native Codex** | Official plugin shape (skills + hooks + marketplace) for Desktop and CLI |
+
+**Primary statement:** ACC turns plain-English requests into **planned, resumable, verified** Codex work.
+
+---
+
+## How Plan → Build → Check works
+
+| Stage | Skill path | What happens |
+|-------|------------|--------------|
+| **Plan** | `$clarify` · `$plan` · `$orchestrator` | Make the request concrete. Build an ordered path with dependencies and check targets — not one uncontrolled generation. |
+| **Build** | `$execute` · `$status` · `$capture` · `$learn` | Work step by step. Keep useful project context and progress on disk. |
+| **Check** | `$verify` · `$fix` · review | Record what passed, failed, or stays uncertain. Built ≠ verified. |
+
+**Codex does the coding.** ACC shapes how the work is planned, remembered, recovered, and claimed complete.
+
+You can type skill names or just talk in normal English after `$setup`.
+
+---
+
+## Who it is for
+
+| Audience | Why ACC helps |
+|----------|----------------|
+| **Primary — non-technical builders** | Founders, students, operators, creators who use Codex but should not have to trust “looks fine” |
+| **Secondary — developers** | People who want repeatable plan/memory/verify/recover behaviour in Codex |
+| **Tertiary — plugin builders** | People studying Codex-native reliability workflows (hooks, skills, local state) |
+
+ACC is **not** “for everyone” in the abstract. It is for people who want a **reliable path through Codex work**, especially when they cannot audit every line themselves.
+
+---
+
+## What makes it different
+
+Codex plugins today include integrations, skill packs, role packs, and planning or review helpers. ACC’s category is narrower:
+
+**A Codex reliability workflow** — one continuous path:
+
+**Plain English → clarify → plan → build → remember → recover → verify → report honestly.**
+
+| Category | Typical focus | ACC |
+|----------|---------------|-----|
+| General AI coding assistant | Write code in chat | Uses Codex; does not replace it |
+| Prompt / skill collections | Reusable instructions | Full workflow + local state + hooks |
+| Planning-only tools | Specs and task lists | Plan **and** execute, resume, verify |
+| Review / test-only plugins | Diffs and QA after the fact | Verification is built into the loop |
+| Multi-agent orchestration platforms | Many agents / hosts | Stays **inside** Codex (Desktop or CLI) |
+| No-code app builders | Drag-and-drop products | Software work through Codex, not a new builder |
+
+No competitor attacks. Own the category: **Codex reliability workflow.**
+
+Native implementation from [official Codex patterns](https://openai.com/codex/) — not a loose port of Claude Code / Cursor rule packs.
+
+---
+
+## Desktop vs CLI (pick one)
+
+Same GitHub marketplace. **Two separate packages.** Codex does **not** auto-pick.
+
+| | **Anyone Can Code** | **Anyone Can Code CLI** |
+|--|---------------------|-------------------------|
+| **Host** | Codex **Desktop** app | Codex **CLI** (`codex` in terminal) |
 | **Marketplace name** | Anyone Can Code | Anyone Can Code CLI |
-| **Folder in repo** | `plugins/anyone-can-code/` | `plugins/anyone-can-code-cli/` |
+| **Repo folder** | `plugins/anyone-can-code/` | `plugins/anyone-can-code-cli/` |
 | **Install UI** | App → **Plugins** | CLI → **`/plugins`** |
-| **Trust hooks** | Hooks settings in the app | CLI → **`/hooks`** |
-| **More detail** | [plugins/anyone-can-code/README.md](plugins/anyone-can-code/README.md) | [plugins/anyone-can-code-cli/README.md](plugins/anyone-can-code-cli/README.md) |
+| **Trust hooks** | App Hooks settings | CLI → **`/hooks`** |
+| **Package README** | [Desktop package](plugins/anyone-can-code/README.md) | [CLI package](plugins/anyone-can-code-cli/README.md) |
 
-**Do not install both** unless you really use both hosts. Pick one per machine.
+**Do not install both** unless you use both hosts. Wrong package + untrusted hooks = “installed but nothing works.”
 
 ---
 
-## Install — Desktop
+## Fast installation
+
+### Desktop
 
 <p align="center">
-  <img src="docs/media/install-setup.gif" alt="Install Anyone Can Code in Codex Desktop" width="640"/>
+  <img src="docs/media/install-setup.gif" alt="Install Anyone Can Code in Codex Desktop: add marketplace, install plugin, trust hooks" width="640"/>
 </p>
 
 1. Copy: `https://github.com/mitunmanav/anyone-can-code`
 2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste the URL  
-3. Find **Anyone Can Code** (Desktop package) → **Install**  
-   - Do **not** pick **Anyone Can Code CLI** here unless you also use the terminal CLI  
-4. **Hooks** → enable + **trust** every ACC hook (required — Codex does not auto-trust)  
-5. **Restart** Codex · confirm tools are on  
-6. Open a project folder → `$setup` → say what you want  
+3. Install **Anyone Can Code** (Desktop) — not **Anyone Can Code CLI** unless you also use the terminal  
+4. **Hooks** → enable + **trust** every ACC hook (required; Codex does not auto-trust)  
+5. Restart Codex · open a **project folder** · new chat → `$setup` → say what you want  
 
-Video: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · [website walkthrough](https://anyone-can-code.vercel.app/#install)
+Video: [docs/media/install-setup.mp4](docs/media/install-setup.mp4) · [Website walkthrough](https://anyone-can-code.vercel.app/#install)
 
----
+### CLI
 
-## Install — CLI
-
-For the **terminal** Codex app only.
-
-1. Add the marketplace (once):
+1. Add marketplace (once):
 
 ```bash
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
-2. Start Codex in a project folder: `codex`  
-3. Type **`/plugins`** → install **Anyone Can Code CLI**  
-   - Not the Desktop-only package name  
-4. Type **`/hooks`** → review + **trust** ACC hooks (required)  
+2. In a project folder: `codex`  
+3. **`/plugins`** → install **Anyone Can Code CLI**  
+4. **`/hooks`** → review + **trust** ACC hooks  
 5. New thread → `$setup` → say what you want  
 
-Optional check after install:
+**You need:** [OpenAI Codex](https://openai.com/codex/) (Desktop and/or CLI) · **Python 3** on the machine (plugin scripts)
 
-```bash
-# from this repo (developers)
-python3 -m pytest plugins/anyone-can-code-cli/tests -q
-python3 plugins/anyone-can-code-cli/scripts/doctor.py --json
+**Open beta:** [v1.1.0-beta.4](https://github.com/mitunmanav/anyone-can-code/releases/tag/v1.1.0-beta.4) · [First day guide](docs/FIRST_DAY.md)
+
+---
+
+## First five minutes
+
+1. Install the package that matches your host and **trust hooks**.  
+2. Open the project folder; start a **new** chat/thread.  
+3. Run `$setup` and answer the short questions.  
+4. Try a small ask:
+
+```text
+Plan a tiny first version. Do not write lots of code yet.
 ```
+
+5. Check orientation: `$status` or `$help`. Before you trust “done”: `$verify`.
+
+---
+
+## What you can say (examples)
+
+These show the **workflow**, not only command names:
+
+| You say | What ACC optimises for |
+|---------|-------------------------|
+| “Build a simple expense tracker and explain each decision in plain English.” | Clarify scope → plan → build in steps → check |
+| “Continue the unfinished authentication work and tell me what is actually complete.” | Resume from local state · honest progress |
+| “Fix this recurring error, test the fix, and show me the evidence.” | `$fix` / repair path · verification record |
+| “Review this project and separate verified problems from guesses.” | Evidence levels · uncertainty named |
+| “Prepare this project for release and clearly list anything still unsafe or unverified.” | Ship gate mindset · gaps explicit |
+
+Useful short commands (both packages):
+
+| Command | When |
+|---------|------|
+| `$setup` | First time in a project |
+| `$orchestrator` | Not sure where to start |
+| `$help` / `$status` | Orientation |
+| `$plan` / `$execute` | Structured plan and build |
+| `$resume` | Continue after a break or interrupt |
+| `$verify` | Evidence before “done” |
+| `$fix` | Same failure keeps repeating |
+| `$handoff` | Leave a clean next-session packet |
+
+CLI-only tips: long job → `/goal` · before ship → `/review` · model → `/model`
+
+Full skill list: [Desktop package README](plugins/anyone-can-code/README.md) · [CLI package README](plugins/anyone-can-code-cli/README.md)
+
+---
+
+## Verification and honest completion
+
+`$verify` writes an evidence-oriented record (typically under `.codex/anyone-can-code/artifacts/`). Workflow language separates:
+
+- **implemented** — built, not yet proven  
+- **verified** — evidence exists for the claim  
+- **blocked** / **deferred** / **uncertain** — named gaps  
+
+ACC does **not** guarantee bug-free software. It makes completion **checkable**: what ran, what passed, what did not, what remains unknown.
+
+---
+
+## Local state, privacy, and safety
+
+| Topic | Fact |
+|-------|------|
+| **Where state lives** | Project-local `.codex/anyone-can-code/` (workflow, notes, artifacts, logs) |
+| **Telemetry** | Plugin does not run a product analytics backend; no ACC account |
+| **Network** | Work goes through Codex under your control; see [PRIVACY.md](docs/PRIVACY.md) |
+| **Hooks** | Must be **trusted** or the plugin is effectively inert |
+| **Safety** | Security/deploy-style gates fail closed when checks cannot run; see [.github/SAFETY.md](.github/SAFETY.md) |
+| **Secrets** | Never commit keys or paste them into issues; private vulns → [SECURITY.md](.github/SECURITY.md) |
+
+Delete `.codex/anyone-can-code/` in a project to remove that project’s ACC data.
+
+---
+
+## Current beta status and limitations
+
+| Status | Detail |
+|--------|--------|
+| **Version** | **1.1.0-beta.4** open beta ([releases](https://github.com/mitunmanav/anyone-can-code/releases)) |
+| **Hosts** | Codex Desktop **or** Codex CLI (separate packages) |
+| **OS** | Windows-first heritage; Desktop/CLI also used on macOS/Linux where Codex runs — still beta |
+| **Runtime** | Python 3 for plugin scripts |
+| **Not claimed** | Zero bugs · full autonomy · guaranteed completion · guaranteed security · “never need technical help” |
+| **Known friction** | Wrong package, untrusted hooks, or no project folder → silent failure feel |
+
+Plans can change: **[ROADMAP.md](ROADMAP.md)** · [roadmap issue](https://github.com/mitunmanav/anyone-can-code/issues/14)
+
+---
+
+## Demonstrated real-world use
+
+Built with ACC by the author (Mitun): **[Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2)** — one real product path, not a lab demo count.
+
+---
+
+## Roadmap (short)
+
+| When | Focus |
+|------|--------|
+| **Now · beta.4** | Desktop + CLI · local two-drawer memory · lessons reload · plain progress · honest push-back · fail-closed safety checks |
+| **Next · beta.5** | Plays-nice plugin list · smarter model suggestions · stronger handoff at usage limits |
+
+Full text: [ROADMAP.md](ROADMAP.md) · [Discussion](https://github.com/mitunmanav/anyone-can-code/discussions/13)
 
 ---
 
 ## If something fails
 
-| What you see | What to try |
-|--------------|-------------|
-| Marketplace / install fails | Paste the **full** GitHub URL, not a short name |
-| Installed wrong package | Uninstall the other one; install Desktop **or** CLI name that matches your host |
-| Plugin installed but nothing works | **Trust all ACC hooks**, then restart / new thread |
-| CLI hooks never run | `/hooks` → trust (Codex skips untrusted plugin hooks) |
-| `$setup` does nothing | Open a **project folder** first, start a **new chat**, try `$setup` again |
-| Still stuck | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) or [report a problem](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) |
-
-[Discord](https://discord.gg/qgS29y7TqP) for quick questions. Issues when something is broken.
+| Symptom | Try |
+|---------|-----|
+| Marketplace add fails | Full URL `https://github.com/mitunmanav/anyone-can-code` |
+| Wrong package | Uninstall; install Desktop **or** CLI name for your host |
+| Installed but idle | Trust **all** ACC hooks · restart / new thread |
+| `$setup` silent | Open a **project folder** first · new chat |
+| Still stuck | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [report](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) · [Discord](https://discord.gg/qgS29y7TqP) |
 
 ---
 
-## Useful commands (both packages)
+## Contributing
 
-You can also talk in plain English.
+Human contributors welcome. See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
-| Command | When to use it |
-|---------|----------------|
-| `$setup` | First time in a project |
-| `$orchestrator` | Front door when you are not sure where to start |
-| `$help` / `$status` | Where you are and what is next |
-| `$resume` | Continue after a break |
-| `$verify` | Check that work is really done |
-| `$fix` | When the same thing keeps failing |
-
-CLI-only tips: long job → `/goal` · before ship → `/review` · model → `/model`
-
----
-
-## Repo layout (developers)
-
-```
-plugins/anyone-can-code/       # Desktop package
-plugins/anyone-can-code-cli/   # CLI package (full copy + CLI-tuned hooks)
-.agents/plugins/marketplace.json
-```
-
-Local gate (Desktop package):
+Local gate (match the package you touch):
 
 ```bash
 python3 -m pytest plugins/anyone-can-code/tests -q
 python3 plugins/anyone-can-code/scripts/doctor.py --json
-```
 
-Local gate (CLI package):
-
-```bash
 python3 -m pytest plugins/anyone-can-code-cli/tests -q
 python3 plugins/anyone-can-code-cli/scripts/doctor.py --json
 ```
 
----
+Repo layout:
 
-## Roadmap
-
-What is next (plain words, no hard dates — plans can change):
-
-| When | Focus |
-|------|--------|
-| **Now · beta.4** | Two-drawer memory · never repeat a lesson · plain-words progress · honest push-back · safety guards |
-| **Next · beta.5** | Plays-nice plugin list · smarter model choice · never lose work at usage limits |
-
-Full detail: **[ROADMAP.md](ROADMAP.md)** · [pinned issue](https://github.com/mitunmanav/anyone-can-code/issues/14) · [Discussion](https://github.com/mitunmanav/anyone-can-code/discussions/13) · [website](https://anyone-can-code.vercel.app/#roadmap)
+```text
+plugins/anyone-can-code/       # Desktop package
+plugins/anyone-can-code-cli/   # CLI package
+.agents/plugins/marketplace.json
+```
 
 ---
 
-## Help
+## Support and community
 
-| Link | What |
-|------|------|
-| [First day with ACC](docs/FIRST_DAY.md) | Install check → `$setup` → first ask → `$status` / `$help` |
+| Link | Use |
+|------|-----|
+| [Website](https://anyone-can-code.vercel.app/) | Install + product story |
+| [First day](docs/FIRST_DAY.md) | First successful session |
 | [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) | Common questions |
-| [Website install](https://anyone-can-code.vercel.app/#install) | Desktop + CLI steps + video |
+| [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) | Ideas and show-and-tell |
+| [Discord](https://discord.gg/qgS29y7TqP) | Live chat |
+| [Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose) | Bugs and install failures |
+| [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) | Legal |
+| [Support](.github/SUPPORT.md) | Where to get help |
 
 ---
 
-## Links
+## License
 
-[Website](https://anyone-can-code.vercel.app/) · [Roadmap](ROADMAP.md) · [First day](docs/FIRST_DAY.md) · [Discussions](https://github.com/mitunmanav/anyone-can-code/discussions) · [Privacy](docs/PRIVACY.md) · [Terms](docs/TERMS.md) · [Contributing](.github/CONTRIBUTING.md)
+[MIT](LICENSE) · Built by [Mitun](https://github.com/mitunmanav) · Site: [anyone-can-code.vercel.app](https://anyone-can-code.vercel.app/)

@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code-cli",
   "version": "1.1.0-beta.4",
-  "description": "Codex CLI plugin: plan, build, and check work in plain English. Apps, docs, fixes. Trust hooks via /hooks.",
+  "description": "Reliability workflow for Codex CLI. Plan, build, resume, recover, and verify from plain-English requests. Trust hooks via /hooks.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -12,9 +12,11 @@
   "license": "MIT",
   "keywords": [
     "codex",
+    "codex-plugin",
     "windows",
     "workflow",
     "verification",
+    "reliability",
     "plugin",
     "cli",
     "codex-cli",
@@ -31,8 +33,8 @@
   ],
   "interface": {
     "displayName": "Anyone Can Code CLI",
-    "shortDescription": "Codex CLI plugin: plan \u2192 build \u2192 check in plain English.",
-    "longDescription": "Anyone Can Code CLI is the terminal package of Anyone Can Code for OpenAI Codex. Free open-source plugin. Install from /plugins, trust hooks with /hooks, run $setup. For apps, docs, bugs, and ideas.",
+    "shortDescription": "Reliability workflow for Codex CLI: plan \u2192 build \u2192 verify.",
+    "longDescription": "Anyone Can Code CLI is the terminal reliability workflow package for OpenAI Codex. Free open-source plugin: plan, build, resume, recover, and verify from plain English. Install from /plugins, trust hooks with /hooks, run $setup. Open beta.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [
