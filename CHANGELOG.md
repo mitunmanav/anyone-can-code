@@ -2,7 +2,7 @@
 
 All notable public changes to Anyone Can Code will be documented here.
 
-## 1.1.0-beta.4 - 2026-07-15
+## 1.1.0-beta.4 - 2026-07-16
 
 Beta.4 locked-rule finish. Beta: rough edges expected — please report failures via GitHub Issues.
 
