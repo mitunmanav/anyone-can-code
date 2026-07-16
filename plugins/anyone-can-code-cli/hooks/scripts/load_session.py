@@ -5,6 +5,7 @@ Load small session context.
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -178,17 +179,41 @@ def build_context(repo_root: Path, source: str) -> str:
         )
     except Exception:
         pass
+    # PLUGIN_ROOT is hook-only (Codex hooks docs). Inject real path so skills
+    # can run scripts without assuming the agent shell has PLUGIN_ROOT.
+    acc_plugin_root = (
+        os.environ.get("PLUGIN_ROOT")
+        or os.environ.get("CLAUDE_PLUGIN_ROOT")
+        or str(Path(__file__).resolve().parents[2])
+    )
+    context_lines.append(
+        f"ACC_PLUGIN_ROOT={acc_plugin_root}. "
+        "Run scripts: python3 \"{0}/scripts/<name>.py\". "
+        "PLUGIN_ROOT is hooks-only; agent shell uses this path.".format(acc_plugin_root)
+    )
     try:
         scripts = Path(__file__).resolve().parents[2] / "scripts"
         if str(scripts) not in sys.path:
             sys.path.insert(0, str(scripts))
         import loop_registry as _loop_registry
 
-        context_lines.append(
-            "Loops: work always on; scheduled + self-improve opt-in. "
-            "Run python \"$PLUGIN_ROOT/scripts/loop_registry.py\" for menu."
-        )
-        _ = _loop_registry.list_loops()  # prove module loads in product path
+        # Real product call: inject live loop status from list_loops(), not a
+        # discarded import-proof. Full menu stays available via CLI / $status.
+        loops = _loop_registry.list_loops()
+        bits = []
+        for loop in loops:
+            lid = str(loop.get("id") or "")
+            if not lid:
+                continue
+            if loop.get("opt_in"):
+                bits.append(f"{lid}=opt-in")
+            else:
+                bits.append(f"{lid}=on")
+        if bits:
+            context_lines.append(
+                "Loops: " + ", ".join(bits) + ". "
+                + _loop_registry.plain_menu().splitlines()[0]
+            )
     except Exception:
         pass
     try:

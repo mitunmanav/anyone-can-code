@@ -87,3 +87,13 @@ def test_recall_skips_revoked_and_caps_size(tmp_path):
     joined = "\n".join(lessons)
     assert "Old wrong lesson" not in joined
     assert len(joined) <= 1200
+
+
+def test_session_context_includes_loops_and_plugin_root(tmp_path):
+    """SessionStart must call loop_registry for real and inject ACC_PLUGIN_ROOT."""
+    out = load_session.build_context(tmp_path, "startup")
+    assert "ACC_PLUGIN_ROOT=" in out
+    assert "Loops:" in out
+    assert "work=on" in out
+    assert "scheduled=opt-in" in out
+    assert "self_improve=opt-in" in out
