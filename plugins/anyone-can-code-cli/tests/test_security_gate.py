@@ -15,6 +15,15 @@ def test_clean_project_passes(tmp_path):
     result = security_gate.scan_project(tmp_path)
     assert result["ok"] is True
     assert result["findings"] == []
+    assert result["files_scanned"] >= 1
+
+
+def test_empty_scan_is_not_pass(tmp_path):
+    """Fail closed: 0 files scanned must never report ok/PASS."""
+    result = security_gate.scan_project(tmp_path)
+    assert result["files_scanned"] == 0
+    assert result["ok"] is False
+    assert "0 file" in result["user_line"].lower() or "scanned 0" in result["user_line"].lower()
 
 
 def test_open_signup_and_admin123_fail(tmp_path):

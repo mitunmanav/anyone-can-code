@@ -156,16 +156,26 @@ def scan_project(root: Path, *, max_file_bytes: int = 400_000) -> dict[str, Any]
         unique.append(f)
 
     failed_ids = sorted({f["id"] for f in unique})
-    ok = len(unique) == 0
     summary_lines = []
-    if ok:
-        summary_lines.append("Security gate: PASS. No open-signup / default-password / placeholder-secret hits.")
-    else:
+    # Fail closed on empty scan: 0 files is not "safe" — wrong cwd/root or empty tree.
+    if files_scanned == 0:
+        ok = False
+        summary_lines.append(
+            "Security gate: FAIL. Scanned 0 files (wrong project root, empty tree, "
+            "or nothing readable). Not a PASS — fix the path, then re-scan."
+        )
+    elif unique:
+        ok = False
         summary_lines.append(
             f"Security gate: FAIL ({len(unique)} hit(s)). Do not ship until fixed or user explicitly accepts risk."
         )
         for f in unique[:12]:
             summary_lines.append(f"- {f['title']} in {f['file']}: {f['plain']}")
+    else:
+        ok = True
+        summary_lines.append(
+            "Security gate: PASS. No open-signup / default-password / placeholder-secret hits."
+        )
 
     return {
         "ok": ok,
