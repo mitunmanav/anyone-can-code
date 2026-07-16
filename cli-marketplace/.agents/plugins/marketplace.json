@@ -1,0 +1,22 @@
+{
+  "name": "anyone-can-code-cli-marketplace",
+  "interface": {
+    "displayName": "Anyone Can Code CLI"
+  },
+  "plugins": [
+    {
+      "name": "anyone-can-code-cli",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/mitunmanav/anyone-can-code.git",
+        "path": "./plugins/anyone-can-code-cli",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

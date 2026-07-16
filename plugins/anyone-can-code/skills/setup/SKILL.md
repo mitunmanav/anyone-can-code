@@ -14,7 +14,7 @@ Reply rule:
 
 ## Host
 
-This package is **Codex Desktop**. For Codex CLI, install **Anyone Can Code CLI** from the same marketplace (separate plugin). Desktop: Plugins UI → trust hooks → `$setup`. No trust = hooks do nothing.
+This package is **Codex Desktop**. For Codex CLI, install **Anyone Can Code CLI** from the CLI marketplace (`--sparse cli-marketplace`). Desktop: Plugins UI → trust hooks → `$setup`. No trust = hooks do nothing.
 
 ## What it does
 

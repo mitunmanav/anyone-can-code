@@ -14,7 +14,7 @@ Reply rule:
 
 ## Host (CLI package)
 
-This package is **Codex CLI only**. Desktop users install **Anyone Can Code** (Desktop) from the same marketplace.
+This package is **Codex CLI only**. Desktop users paste the repo URL and install **Anyone Can Code** (Desktop catalog only).
 CLI: `codex` → `/plugins` → install **Anyone Can Code CLI** → `/hooks` trust → `$setup`.
 Optional: `codex plugin marketplace add <repo|path>`. No trust = hooks do nothing.
 

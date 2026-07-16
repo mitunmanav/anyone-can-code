@@ -29,7 +29,7 @@
 
 ### Install (short)
 
-**This is the Desktop package.** For Codex CLI, install **Anyone Can Code CLI** from the same marketplace.
+**This is the Desktop package.** For Codex CLI, install **Anyone Can Code CLI** from the CLI marketplace (`--sparse cli-marketplace`).
 
 1. Copy `https://github.com/mitunmanav/anyone-can-code`  
 2. Codex → **Plugins** → **+** → **Add a Marketplace** → paste URL  

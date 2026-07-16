@@ -69,14 +69,14 @@ Open beta **v1.1.0-beta.4**.
 
 ## Pick one package
 
-Same GitHub repo. Same marketplace. **Two plugins.**  
-Install the one that matches how you use Codex. Do **not** install both unless you use both.
+Same GitHub repo. **Two plugins. Two marketplaces** (so Desktop paste does not list CLI).
 
-| You use | Install this |
-|---------|----------------|
-| Codex **Desktop** app | **Anyone Can Code** |
-| Codex **CLI** terminal | **Anyone Can Code CLI** |
+| You use | Install this | Marketplace |
+|---------|----------------|-------------|
+| Codex **Desktop** app | **Anyone Can Code** | Paste repo URL (Desktop catalog only) |
+| Codex **CLI** terminal | **Anyone Can Code CLI** | CLI catalog (`--sparse cli-marketplace`) |
 
+Do **not** install both unless you use both hosts.  
 More detail: [Desktop](plugins/anyone-can-code/README.md) · [CLI](plugins/anyone-can-code-cli/README.md)
 
 ---
@@ -89,7 +89,7 @@ More detail: [Desktop](plugins/anyone-can-code/README.md) · [CLI](plugins/anyon
 
 1. Copy: `https://github.com/mitunmanav/anyone-can-code`
 2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste  
-3. Install **Anyone Can Code** (not the CLI name)  
+3. Install **Anyone Can Code** (only package in this marketplace)  
 4. **Hooks** → enable + **trust every ACC hook** (required)  
 5. Restart → open a project folder → `$setup` → say what you want  
 
@@ -100,13 +100,16 @@ Video: [website](https://anyone-can-code.vercel.app/#install) · [mp4](docs/medi
 ## Install — CLI
 
 ```bash
-codex plugin marketplace add mitunmanav/anyone-can-code --ref main
+codex plugin marketplace add mitunmanav/anyone-can-code --ref main --sparse cli-marketplace
 ```
 
 1. In a project folder: `codex`  
 2. `/plugins` → install **Anyone Can Code CLI**  
 3. `/hooks` → **trust** every ACC hook  
 4. New thread → `$setup` → say what you want  
+
+If sparse fails on your Codex version, clone the repo and run:  
+`codex plugin marketplace add ./cli-marketplace`
 
 ---
 
