@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code-cli",
   "version": "1.1.0-beta.4",
-  "description": "ACC harness for Codex CLI: vibe coding + apps, docs, fixes. Plain-English plan \u2192 build \u2192 verify. Trust hooks via /hooks.",
+  "description": "Codex CLI plugin: plan, build, and check work in plain English. Apps, docs, fixes. Trust hooks via /hooks.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -31,8 +31,8 @@
   ],
   "interface": {
     "displayName": "Anyone Can Code CLI",
-    "shortDescription": "Codex CLI harness: plan \u2192 build \u2192 verify in plain English.",
-    "longDescription": "Anyone Can Code CLI is the terminal package of the ACC harness for OpenAI Codex. Use it for apps, docs, bugs, and ideas \u2014 not chat thrash. Install from /plugins, trust hooks with /hooks, run $setup.",
+    "shortDescription": "Codex CLI plugin: plan \u2192 build \u2192 check in plain English.",
+    "longDescription": "Anyone Can Code CLI is the terminal package of Anyone Can Code for OpenAI Codex. Free open-source plugin. Install from /plugins, trust hooks with /hooks, run $setup. For apps, docs, bugs, and ideas.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [
