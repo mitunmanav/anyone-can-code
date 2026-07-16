@@ -288,8 +288,8 @@ Built with ACC by the author (Mitun): **[Everything AI v0.4.2](https://github.co
 
 | When | Focus |
 |------|--------|
-| **Now · beta.4** | Desktop + CLI · local two-drawer memory · lessons reload · plain progress · honest push-back · fail-closed safety checks |
-| **Next · beta.5** | Plays-nice plugin list · smarter model suggestions · stronger handoff at usage limits |
+| **Now · beta.4 (shipped open beta)** | Desktop + CLI · local two-drawer memory · lessons reload · plain progress · honest push-back · fail-closed safety checks |
+| **Next · beta.5 (planned)** | Plays-nice plugin list · smarter model suggestions · stronger handoff at usage limits |
 
 Full text: [ROADMAP.md](ROADMAP.md) · [Discussion](https://github.com/mitunmanav/anyone-can-code/discussions/13)
 
@@ -310,6 +310,8 @@ Full text: [ROADMAP.md](ROADMAP.md) · [Discussion](https://github.com/mitunmana
 ## Contributing
 
 Human contributors welcome. See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
+
+Good first issues (when open): keep language READMEs aligned with English positioning, shrink large media in `docs/media/` and package `assets/`, and document Desktop vs CLI edge cases you hit while installing.
 
 Local gate (match the package you touch):
 
