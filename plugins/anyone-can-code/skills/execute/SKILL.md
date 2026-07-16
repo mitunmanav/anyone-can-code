@@ -18,6 +18,8 @@ Use `$execute` when the work is planned or concrete enough to implement.
 - `.codex/anyone-can-code/state/task-queue.md`
 - relevant repo files
 
+- tool_interop execute bindings: use installed skill; ACC redirect only; PRECHECK fail → local ACC + reason.
+
 ## Rules
 
 - Extend existing code instead of rebuilding blindly.

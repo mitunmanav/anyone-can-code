@@ -12,6 +12,13 @@ Reply rule:
 
 Use `$verify` before saying the work is complete.
 
+## External tool interop (Superpowers-style)
+
+If front door `tool_interop` has available verify/review/finish bindings, use
+those installed skills as evidence helpers. Write the durable record only to
+ACC `VERIFICATION.md` (or the binding redirect). Never hand workflow ownership
+to the foreign skill.
+
 ## Output
 
 Write a verification record to:

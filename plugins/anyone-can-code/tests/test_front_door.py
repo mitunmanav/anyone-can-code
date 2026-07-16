@@ -723,6 +723,111 @@ class FrontDoorTests(unittest.TestCase):
         self.assertTrue(result["matched"])
         self.assertEqual(result["plugin"], "vercel")
 
+    def test_short_skill_name_does_not_steal_generic_auth_request(self) -> None:
+        # Live bug: Vercel skill "auth" matched "plan the auth feature" via
+        # substring skill match and hijacked ACC routing.
+        plugins = [
+            {
+                "name": "vercel",
+                "description": "Deploy and monitor apps on Vercel.",
+                "skills": ["auth", "ai-gateway", "bootstrap"],
+                "capability_text": "deploy vercel auth feature login",
+                "manifest": "plugin.json",
+            }
+        ]
+
+        result = front_door.choose_plugin_route("plan the auth feature", plugins)
+
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["source"], "acc")
+        self.assertFalse(front_door.skill_mentioned_in_request("auth", "plan the auth feature"))
+        self.assertTrue(
+            front_door.skill_mentioned_in_request("writing-plans", "use writing-plans for this")
+        )
+
+    def test_tool_interop_binds_superpowers_skills_with_acc_redirect(self) -> None:
+        plugins = [
+            {
+                "name": "superpowers",
+                "description": "Planning, TDD, debugging workflows.",
+                "skills": [
+                    "brainstorming",
+                    "writing-plans",
+                    "test-driven-development",
+                    "verification-before-completion",
+                ],
+                "capability_text": "superpowers brainstorming writing-plans tdd",
+                "manifest": "plugin.json",
+            }
+        ]
+
+        result = front_door.route_request(
+            "Add password reset to this existing repo",
+            plugins=plugins,
+        )
+        interop = result["tool_interop"]
+
+        self.assertEqual(interop["schema"], "acc-tool-interop-v1")
+        self.assertEqual(interop["pattern"], "openspec-style-bindings")
+        self.assertEqual(interop["workflow_owner"], "acc")
+        self.assertGreaterEqual(interop["available_count"], 2)
+
+        by_id = {item["id"]: item for item in interop["bindings"]}
+        plan_binding = by_id["writing-plans"]
+        self.assertTrue(plan_binding["available"])
+        self.assertEqual(plan_binding["precheck"], "ok")
+        self.assertEqual(plan_binding["provider"], "superpowers")
+        self.assertEqual(
+            plan_binding["redirect"]["write_to"],
+            ".codex/anyone-can-code/artifacts/PLAN.md",
+        )
+        self.assertIn(
+            "docs/superpowers/plans/",
+            plan_binding["redirect"]["do_not_write_to"],
+        )
+        execute_binding = by_id["test-driven-development"]
+        self.assertIn("execute", execute_binding["acc_phases"])
+        self.assertEqual(execute_binding["workflow_owner"], "acc")
+
+    def test_tool_interop_prefers_subagent_over_executing_plans(self) -> None:
+        plugins = [
+            {
+                "name": "superpowers",
+                "description": "Planning and execution workflows.",
+                "skills": [
+                    "subagent-driven-development",
+                    "executing-plans",
+                    "test-driven-development",
+                ],
+                "capability_text": "superpowers subagent executing-plans tdd",
+                "manifest": "plugin.json",
+            }
+        ]
+        result = front_door.route_request(
+            "Add password reset to this existing repo",
+            plugins=plugins,
+        )
+        by_id = {item["id"]: item for item in result["tool_interop"]["bindings"]}
+        self.assertTrue(by_id["subagent-driven-development"]["available"])
+        self.assertFalse(by_id["executing-plans"]["available"])
+        self.assertEqual(by_id["executing-plans"]["precheck"], "alternate-not-preferred")
+
+    def test_tool_interop_precheck_fails_loud_when_skill_missing(self) -> None:
+        result = front_door.route_request(
+            "Use writing-plans for the feature",
+            plugins=[],
+        )
+        interop = result["tool_interop"]
+        missing = [item for item in interop["bindings"] if item["id"] == "writing-plans"]
+        self.assertEqual(len(missing), 1)
+        self.assertFalse(missing[0]["available"])
+        self.assertEqual(missing[0]["precheck"], "missing-skill")
+        self.assertEqual(missing[0]["fallback"]["owner"], "acc")
+        self.assertEqual(
+            missing[0]["redirect"]["write_to"],
+            ".codex/anyone-can-code/artifacts/PLAN.md",
+        )
+
     def test_live_cache_does_not_capture_generic_feature_request(self) -> None:
         result = front_door.route_request(
             "Add password reset to this existing repo",
@@ -737,6 +842,7 @@ class FrontDoorTests(unittest.TestCase):
 
         self.assertTrue(ok)
         self.assertIn("capability probe and fallback ready", evidence)
+        self.assertIn("tool interop bindings ready", evidence)
         self.assertIn("ownership containment ready", evidence)
 
     def test_resolve_entry_mode_skips_disk_io_for_nonexistent_project_root(self) -> None:
