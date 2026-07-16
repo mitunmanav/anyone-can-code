@@ -5,9 +5,9 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>Vibe coding with an AI agent just got a real harness.</strong><br/>
-  Free <strong>Codex Desktop + CLI</strong> plugins. Plan → build → verify in plain English.<br/>
-  Apps, docs, fixes, whole projects — not chat thrash.
+  <strong>Build with Codex in plain English.</strong><br/>
+  Free <strong>Codex Desktop + CLI</strong> plugin. Plan → build → check.<br/>
+  Apps, docs, fixes — say what you want, get a path that actually finishes.
 </p>
 
 <p align="center">
@@ -37,20 +37,21 @@
 
 ---
 
-## Why ACC
+## What it is
 
-Codex can do almost anything: ship product, write docs, fix bugs, start from a one-line idea.  
-What people get stuck on is the **session** — scope, memory, “is it done?”, endless thrash.
+Anyone Can Code is a **plugin** for [OpenAI Codex](https://openai.com/codex/) — not a new agent, not a framework.
 
-**Anyone Can Code is the harness** for that work:
+You describe work in normal words. ACC helps you:
 
 | | |
 |--|--|
 | **Plan** | Clear path before big changes |
 | **Build** | Step by step, with memory that stays on your machine |
-| **Verify** | Real “done” with proof — not “looks fine” |
+| **Check** | Real “done” with proof — not “looks fine” |
 
-Native Codex plugins — built from [Codex official docs](https://openai.com/codex/), not ported from Claude, Cursor, or other agents.
+Use it for apps, docs, bug fixes, and ideas from zero.
+
+Native Codex plugins — built from [official Codex docs](https://openai.com/codex/), not ported from Claude, Cursor, or other tools.
 
 I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2). Open beta **v1.1.0-beta.4**.
 
