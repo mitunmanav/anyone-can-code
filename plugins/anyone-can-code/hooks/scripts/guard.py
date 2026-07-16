@@ -173,6 +173,9 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
 
     Codex drops skills from its menu when the skill list is full, but hooks
     always fire — so this injection is the one carrier that cannot vanish.
+
+    Safety lines (rate-limit, interop, browser, host) are reserved and never
+    truncated by the soft body budget.
     """
     preferences = state.read_preferences(repo_root)
     workflow = state.read_state(repo_root)
@@ -181,7 +184,7 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
     goal = workflow.get("active_goal") or workflow.get("active_task") or "Not set."
     next_action = workflow.get("next_action") or workflow.get("next_step") or "Not set."
 
-    lines = [
+    body_lines = [
         f"Comm rule: {preferences.get('communication_mode', 'caveman-strict')}. Talk short.",
         "Build rules: say assumptions before building. Simplest thing that works. "
         "Touch only what the task needs. Say how you will verify before you start.",
@@ -199,42 +202,70 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
     except Exception:
         pass
     if lessons:
-        lines.append("Lessons (do not repeat):")
-        lines.extend(lessons)
+        body_lines.append("Lessons (do not repeat):")
+        body_lines.extend(lessons)
 
-    lines.append(f"Unclear: {uncertainty}.")
+    body_lines.append(f"Unclear: {uncertainty}.")
 
+    try:
+        import inbox as _inbox
+        inbox_result = _inbox.process_prompt(prompt, repo_root)
+        if inbox_result["context"]:
+            body_lines.append(inbox_result["context"])
+    except Exception:
+        pass
+
+    # Safety lines: reserved budget, never sliced off by body growth.
+    safety_lines: list[str] = []
     try:
         scripts = Path(__file__).resolve().parents[2] / "scripts"
         if str(scripts) not in sys.path:
             sys.path.insert(0, str(scripts))
         import rate_limit_guard as _rate_limit_guard
         for line in _rate_limit_guard.build_guard_lines():
-            lines.append(line)
+            if line:
+                safety_lines.append(line)
     except Exception:
         pass
 
     interop_line = build_tool_interop_line(prompt)
     if interop_line:
-        lines.append(interop_line)
+        safety_lines.append(interop_line)
 
     browser_line = build_browser_policy_line(prompt)
     if browser_line:
-        lines.append(browser_line)
+        safety_lines.append(browser_line)
 
     host_line = build_host_detect_line()
     if host_line:
-        lines.append(host_line)
+        safety_lines.append(host_line)
 
-    try:
-        import inbox as _inbox
-        inbox_result = _inbox.process_prompt(prompt, repo_root)
-        if inbox_result["context"]:
-            lines.append(inbox_result["context"])
-    except Exception:
-        pass
+    return _join_body_and_safety(body_lines, safety_lines, MAX_TURN_CONTEXT_CHARS)
 
-    return "\n".join(lines)[:MAX_TURN_CONTEXT_CHARS]
+
+def _join_body_and_safety(
+    body_lines: list[str],
+    safety_lines: list[str],
+    budget: int,
+) -> str:
+    """Join turn context so safety lines always fit inside budget."""
+    safety = "\n".join(s for s in safety_lines if s).strip()
+    body = "\n".join(body_lines).strip()
+    if not safety:
+        return body[:budget]
+    # Reserve room for safety + separator newline.
+    reserved = len(safety) + (1 if body else 0)
+    if reserved >= budget:
+        return safety[:budget]
+    body_budget = budget - reserved
+    if len(body) > body_budget:
+        cut = body.rfind("\n", 0, body_budget)
+        if cut < body_budget // 2:
+            cut = body_budget
+        body = body[:cut].rstrip()
+    if body:
+        return f"{body}\n{safety}"
+    return safety
 
 
 def build_browser_policy_line(prompt: str) -> str:
@@ -321,38 +352,6 @@ def build_tool_interop_line(prompt: str) -> str:
         return ""
 
 
-def handle_user_prompt_submit(payload: dict, repo_root: Path) -> None:
-    prompt = payload.get("prompt", "")
-    blocked_pattern = check_injection(prompt)
-    if blocked_pattern:
-        log_blocked(repo_root, payload, f"injection pattern: {blocked_pattern}")
-        print(
-            json.dumps(
-                {
-                    "decision": "block",
-                    "reason": f"Guard stop. Found '{blocked_pattern}'.",
-                }
-            )
-        )
-        return
-
-    for signal_type, detail in detect_prompt_signals(payload, repo_root):
-        log_signal(repo_root, signal_type, detail, payload)
-
-    context = build_turn_context(prompt, repo_root)
-
-    print(
-        json.dumps(
-            {
-                "hookSpecificOutput": {
-                    "hookEventName": "UserPromptSubmit",
-                    "additionalContext": context,
-                }
-            }
-        )
-    )
-
-
 def security_gate_for_deploy(repo_root: Path, command: str) -> str | None:
     """If deploy command, run production security scan. Plain reason or None.
 
@@ -378,52 +377,6 @@ def security_gate_for_deploy(repo_root: Path, command: str) -> str | None:
         return None
     lines = result.get("summary_lines") or [result.get("user_line") or "Security gate fail."]
     return " ".join(lines[:4])
-
-
-def handle_pre_tool_use(payload: dict, repo_root: Path) -> None:
-    blocked = check_destructive_command(payload.get("tool_input", {}))
-    if blocked:
-        log_blocked(repo_root, payload, f"destructive command: {blocked}")
-        print(
-            json.dumps(
-                {
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "deny",
-                        "permissionDecisionReason": f"Guard stop bad command: {blocked}",
-                    }
-                }
-            )
-        )
-        return
-
-    tool_input = payload.get("tool_input") or {}
-    command = ""
-    if isinstance(tool_input, dict):
-        command = str(tool_input.get("command") or "")
-    elif isinstance(tool_input, str):
-        command = tool_input
-    gate_reason = security_gate_for_deploy(repo_root, command)
-    if gate_reason:
-        log_blocked(repo_root, payload, f"security gate: {gate_reason[:200]}")
-        print(
-            json.dumps(
-                {
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "deny",
-                        "permissionDecisionReason": (
-                            "Security gate stop. Fix open signup / default password / "
-                            f"secrets first. {gate_reason[:400]} "
-                            "User must explicitly accept risk to override later."
-                        ),
-                    }
-                }
-            )
-        )
-        return
-
-    print(json.dumps({}))
 
 
 def handle_payload(payload: dict, repo_root: Path) -> dict:

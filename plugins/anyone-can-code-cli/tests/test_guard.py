@@ -83,6 +83,46 @@ def test_turn_context_can_include_interop(tmp_path, monkeypatch):
     assert len(ctx) <= guard.MAX_TURN_CONTEXT_CHARS
 
 
+def test_safety_lines_never_truncated_when_body_is_huge(tmp_path, monkeypatch):
+    """Interop/browser/host must survive the turn-context budget."""
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    import front_door as front_door_mod
+
+    plugins = [
+        {
+            "name": "superpowers",
+            "description": "Planning and TDD.",
+            "skills": ["writing-plans", "test-driven-development"],
+            "capability_text": "superpowers writing-plans tdd",
+            "manifest": "plugin.json",
+        }
+    ]
+    monkeypatch.setattr(front_door_mod, "scan_installed_plugins", lambda: plugins)
+    # Stuff workflow so body alone would exceed budget without reservation.
+    state.write_state(
+        tmp_path,
+        {
+            "active_goal": "G" * 800,
+            "next_action": "N" * 800,
+        },
+    )
+    # Flood mistake log lessons
+    for i in range(10):
+        state.append_jsonl(
+            state.mistake_log_path(tmp_path),
+            {"detail": f"lesson-{i}-" + ("x" * 200)},
+        )
+    ctx = guard.build_turn_context(
+        "Add password reset; also Chrome visual QA please",
+        tmp_path,
+    )
+    assert len(ctx) <= guard.MAX_TURN_CONTEXT_CHARS
+    assert "Host:" in ctx
+    assert "Interop:" in ctx
+    assert "chrome" in ctx.lower() or "browser" in ctx.lower()
+
+
 def test_verbatim_repeat_detected(tmp_path):
     """Guard must signal repeated_prompt when user sends same message twice."""
     prompt = "what is the status of the project"
