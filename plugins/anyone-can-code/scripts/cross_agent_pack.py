@@ -107,17 +107,24 @@ def env_howto() -> dict[str, Any]:
 def pickup_howto() -> dict[str, Any]:
     return {
         "id": "pickup",
-        "native": "ACC handoff + $resume + bridge (create_thread)",
+        "native": (
+            "ACC PORTABLE_HANDOFF.md + $resume; Codex native "
+            "codex resume / thread/resume (docs)"
+        ),
         "cost": "cheap",
         "user_line": _tag(
             "cheap",
             "Picking up work from another chat or agent? Say 'continue' or 'handoff'. "
-            "ACC loads goal, next step, git, memory. You decide. Nothing forced.",
+            "Open .codex/anyone-can-code/artifacts/PORTABLE_HANDOFF.md first. "
+            "Same goal, plan, next step, memory. You decide. Nothing forced.",
         ),
         "agent_line": (
-            "Pickup: run build_handoff or $resume. Same project local. "
-            "create_thread with full prompt — no fork_thread unless user says fork. "
-            "Bridge only for installed plugins. Never auto-delegate."
+            "Pickup: open PORTABLE_HANDOFF.md first, then workflow.json. "
+            "Still on Codex with session_id: native `codex resume` / "
+            "`codex exec resume` / app-server `thread/resume` first. "
+            "New Codex thread: app-server `thread/start` (or Desktop new task) "
+            "with build_handoff prompt — `thread/fork` only if user says fork. "
+            "Any other tool/model: read the portable file only. Never auto-delegate."
         ),
     }
 
@@ -127,7 +134,7 @@ def pickup_howto() -> dict[str, Any]:
 def model_switch_howto() -> dict[str, Any]:
     return {
         "id": "model_switch",
-        "native": "Desktop model control / CLI /model + create_thread handoff",
+        "native": "Desktop model control / CLI /model + new chat (app-server thread/start) handoff",
         "cost": "cheap",
         "user_line": _tag(
             "cheap",
@@ -136,7 +143,9 @@ def model_switch_howto() -> dict[str, Any]:
         ),
         "agent_line": (
             "Do not invent a model-switch API. Small: native UI /model. "
-            "Big: build_handoff --model --reasoning + create_thread. User decides."
+            "Big: build_handoff --model --reasoning writes PORTABLE_HANDOFF.md "
+            "then new thread via app-server thread/start (or Desktop new task). "
+            "User decides."
         ),
     }
 

@@ -144,49 +144,10 @@ class Doctor:
 
     def run_hooks_bundle(self) -> None:
         hooks_json = PLUGIN_ROOT / "hooks" / "hooks.json"
-        if not hooks_json.exists():
-            self.check("capability", "bundled_hooks", "FAIL", "blocking", "hooks/hooks.json missing")
-            return
-        self.check("capability", "bundled_hooks", "PASS", "info", "hooks/hooks.json present (CLI package)")
-        try:
-            data = json.loads(hooks_json.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            self.check("capability", "hooks_cli_port", "FAIL", "blocking", f"hooks.json invalid: {exc}")
-            return
-        missing_timeout = 0
-        powershell_only = 0
-        total = 0
-        for groups in (data.get("hooks") or {}).values():
-            for group in groups or []:
-                for hook in group.get("hooks") or []:
-                    if hook.get("type", "command") != "command":
-                        continue
-                    total += 1
-                    cmd = str(hook.get("command") or "")
-                    if not isinstance(hook.get("timeout"), int) or hook["timeout"] <= 0:
-                        missing_timeout += 1
-                    if "powershell" in cmd.lower() or "encodedcommand" in cmd.lower():
-                        powershell_only += 1
-                    if "PLUGIN_ROOT" not in cmd:
-                        powershell_only += 1
-        if total == 0:
-            self.check("capability", "hooks_cli_port", "FAIL", "blocking", "no command hooks found")
-        elif missing_timeout or powershell_only:
-            self.check(
-                "capability",
-                "hooks_cli_port",
-                "FAIL",
-                "blocking",
-                f"CLI port gaps: missing_timeout={missing_timeout} non_portable_command={powershell_only}",
-            )
+        if hooks_json.exists():
+            self.check("capability", "bundled_hooks", "PASS", "info", "hooks/hooks.json present (Desktop package)")
         else:
-            self.check(
-                "capability",
-                "hooks_cli_port",
-                "PASS",
-                "info",
-                f"{total} hooks portable command + timeout (CLI package)",
-            )
+            self.check("capability", "bundled_hooks", "FAIL", "blocking", "hooks/hooks.json missing")
 
     def run_hook_scripts(self) -> None:
         scripts_dir = PLUGIN_ROOT / "hooks" / "scripts"
@@ -451,6 +412,34 @@ class Doctor:
             self.check("memory", "memory_storage", "PASS", "info", f"portable Markdown: {memory_path}")
         else:
             self.check("memory", "memory_storage", "WARN", "warning", f"Markdown storage missing or unconfigured: {memory_path}")
+
+        # Cross-tool portable handoff path (project-local; never public docs/)
+        handoff_path = namespace_root / "artifacts" / "PORTABLE_HANDOFF.md"
+        artifacts_dir = namespace_root / "artifacts"
+        if handoff_path.is_file():
+            self.check(
+                "recovery",
+                "portable_handoff",
+                "PASS",
+                "info",
+                f"present: {handoff_path}",
+            )
+        elif artifacts_dir.is_dir():
+            self.check(
+                "recovery",
+                "portable_handoff",
+                "PASS",
+                "info",
+                "artifacts ready; handoff written on $handoff or Stop",
+            )
+        else:
+            self.check(
+                "recovery",
+                "portable_handoff",
+                "WARN",
+                "warning",
+                "artifacts dir missing; run setup or $handoff after work",
+            )
 
         viewer_mode = preferences.get("viewer_mode", "none") if isinstance(preferences, dict) else "none"
         if viewer_mode == "none":

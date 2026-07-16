@@ -197,15 +197,6 @@ def durable_memory_writes(repo_root: Path, signals: list[dict], summary: str) ->
 
 def write_resume_artifacts(repo_root: Path, payload: dict, summary: str, workflow: dict) -> None:
     layout = state.ensure_project_layout(repo_root)
-    turn_id = payload.get("turn_id", "unknown")
-    checkpoint = {
-        "timestamp": state.utc_now(),
-        "turn_id": turn_id,
-        "summary": summary,
-        "phase": workflow.get("phase", "idle"),
-        "route": workflow.get("route", "unknown"),
-    }
-    state.append_jsonl(layout["state"] / "turn-ledger.jsonl", checkpoint)
     (layout["state"] / "state-current.md").write_text(
         "\n".join(
             [
@@ -222,12 +213,29 @@ def write_resume_artifacts(repo_root: Path, payload: dict, summary: str, workflo
         + "\n",
         encoding="utf-8",
     )
-    (layout["artifacts"] / "resume-note.md").write_text(
-        "# Resume Note\n\n"
-        f"Last: {summary or 'No summary.'}\n\n"
-        f"Next: {workflow.get('next_step', 'N/A')}\n",
-        encoding="utf-8",
-    )
+    # Portable cross-tool bag (docs: wrap native resume; ACC owns work truth).
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import portable_handoff as _portable_handoff  # type: ignore
+
+        session_id = str(payload.get("session_id") or "")
+        _portable_handoff.write_portable_handoff(
+            repo_root,
+            workflow,
+            tool_left="codex",
+            session_id=session_id,
+            summary=summary or "",
+            skip_if_empty=True,
+        )
+    except Exception:
+        (layout["artifacts"] / "resume-note.md").write_text(
+            "# Resume Note\n\n"
+            f"Last: {summary or 'No summary.'}\n\n"
+            f"Next: {workflow.get('next_step') or workflow.get('next_action') or 'N/A'}\n",
+            encoding="utf-8",
+        )
 
 
 def wiki_stop_proposals(repo_root: Path, summary: str, write_proof: str) -> str:
@@ -280,6 +288,7 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
         updates["memory_write_proof"] = write_proof
     workflow = state.write_state(repo_root, updates)
     write_session_snapshot(repo_root, summary, workflow)
+    write_resume_artifacts(repo_root, payload, summary, workflow)
     state.append_jsonl(
         state.ensure_project_layout(repo_root)["state"] / "turn-ledger.jsonl",
         {

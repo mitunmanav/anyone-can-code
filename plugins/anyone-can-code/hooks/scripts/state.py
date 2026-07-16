@@ -579,6 +579,7 @@ def declared_state_writes(hook_name: str, event: str, result: dict) -> list[str]
             ".codex/anyone-can-code/state/turn-ledger.jsonl",
             ".codex/anyone-can-code/state/session-snapshot.md",
             ".codex/anyone-can-code/artifacts/resume-note.md",
+            ".codex/anyone-can-code/artifacts/PORTABLE_HANDOFF.md",
         ]
     if not result:
         return []
