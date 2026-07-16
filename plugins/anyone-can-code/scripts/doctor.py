@@ -413,6 +413,34 @@ class Doctor:
         else:
             self.check("memory", "memory_storage", "WARN", "warning", f"Markdown storage missing or unconfigured: {memory_path}")
 
+        # Cross-tool portable handoff path (project-local; never public docs/)
+        handoff_path = namespace_root / "artifacts" / "PORTABLE_HANDOFF.md"
+        artifacts_dir = namespace_root / "artifacts"
+        if handoff_path.is_file():
+            self.check(
+                "recovery",
+                "portable_handoff",
+                "PASS",
+                "info",
+                f"present: {handoff_path}",
+            )
+        elif artifacts_dir.is_dir():
+            self.check(
+                "recovery",
+                "portable_handoff",
+                "PASS",
+                "info",
+                "artifacts ready; handoff written on $handoff or Stop",
+            )
+        else:
+            self.check(
+                "recovery",
+                "portable_handoff",
+                "WARN",
+                "warning",
+                "artifacts dir missing; run setup or $handoff after work",
+            )
+
         viewer_mode = preferences.get("viewer_mode", "none") if isinstance(preferences, dict) else "none"
         if viewer_mode == "none":
             self.check("memory", "memory_viewer", "PASS", "info", "Optional viewer not selected")

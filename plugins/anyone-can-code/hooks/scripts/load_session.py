@@ -262,6 +262,18 @@ def build_context(repo_root: Path, source: str) -> str:
     if mistake_lines:
         context_lines.append("Recent mistakes (do not repeat):")
         context_lines.extend(mistake_lines)
+    # Portable handoff inject (docs: SessionStart additionalContext; any tool can open the file).
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import portable_handoff as _portable_handoff  # type: ignore
+
+        portable_block = _portable_handoff.inject_summary(repo_root)
+        if portable_block:
+            context_lines.append(portable_block)
+    except Exception:
+        pass
     if wiki_brief:
         context_lines.append(wiki_brief)
     if memory_lines:

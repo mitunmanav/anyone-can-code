@@ -94,6 +94,7 @@ def state_paths(repo_root: Path) -> dict[str, Path]:
         "snapshot": root / "state" / "session-snapshot.md",
         "history": root / "state" / "state-history.jsonl",
         "resume": root / "artifacts" / "resume-note.md",
+        "portable_handoff": root / "artifacts" / "PORTABLE_HANDOFF.md",
         "guidance": root / "artifacts" / "active-guidance.md",
         "capsule": root / "artifacts" / "active-task-capsule.md",
         "progress": root / "PROGRESS.md",

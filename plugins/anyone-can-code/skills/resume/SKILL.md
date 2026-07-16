@@ -15,6 +15,11 @@ Reply rule:
 - keep answer short
 - choose light fix first
 
+## Docs (Codex native)
+
+If still on Codex: try native first — `codex resume` / `--last`, or `codex exec resume`,
+or app-server `thread/resume`. ACC portable file is for work truth across tools/models.
+
 ## Recovery modes
 
 - `resume`: continue from intact state
@@ -22,16 +27,20 @@ Reply rule:
 - `repair`: fix stale or corrupt workflow state
 - `abandon`: start a fresh run while preserving artifacts
 
-## Read from
+## Read from (order)
 
-Run `python3 "<ACC_PLUGIN_ROOT>/scripts/runtime_info.py" --resolve-project "."`
-first. Use returned `project_root`. If result is `ambiguous`, block recovery
-and show candidates; never merge or replace competing state automatically.
+0. **Portable handoff first (any tool):**
+   `.codex/anyone-can-code/artifacts/PORTABLE_HANDOFF.md`
+   Goal, plan, next step, memory pointers, optional session_id.
 
-Start with canonical
-`.codex/anyone-can-code/state/workflow.json`. Confirm derived files carry same
-transaction ID. Use history, ledgers, artifacts, and `AGENTS.md` only as
-supporting evidence.
+1. Run `python3 "<ACC_PLUGIN_ROOT>/scripts/runtime_info.py" --resolve-project "."`
+   Use returned `project_root`. If result is `ambiguous`, block recovery
+   and show candidates; never merge or replace competing state automatically.
+
+2. Canonical
+   `.codex/anyone-can-code/state/workflow.json`. Confirm derived files carry same
+   transaction ID. Use history, ledgers, artifacts, and `AGENTS.md` only as
+   supporting evidence.
 
 Use `scripts/canonical_state.py` recovery behavior to re-anchor from canonical
 state. Read `active_task_capsule` for goal, task, decisions, boundaries,

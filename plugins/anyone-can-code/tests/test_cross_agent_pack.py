@@ -43,7 +43,7 @@ def test_pickup_howto_wraps_native_not_rebuild():
     h = cap.pickup_howto()
     assert h["cost"] == "cheap"
     assert "handoff" in h["native"].lower() or "resume" in h["native"].lower()
-    assert "create_thread" in h["agent_line"].lower() or "handoff" in h["agent_line"].lower()
+    assert "thread/start" in h["agent_line"].lower() or "handoff" in h["agent_line"].lower()
     assert "choose" in h["user_line"].lower() or "decide" in h["user_line"].lower()
 
 
