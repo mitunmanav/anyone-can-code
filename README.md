@@ -1,8 +1,14 @@
 <p align="center">
-  <img src="plugins/anyone-can-code/assets/logo.png" alt="Anyone Can Code" width="420"/>
+  <img src="plugins/anyone-can-code/assets/logo.png" alt="Anyone Can Code" width="280"/>
 </p>
 
 <h1 align="center">Anyone Can Code</h1>
+
+<p align="center">
+  <strong>Vibe coding with an AI agent just got a real harness.</strong><br/>
+  Free <strong>Codex Desktop + CLI</strong> plugins. Plan → build → verify in plain English.<br/>
+  Apps, docs, fixes, whole projects — not chat thrash.
+</p>
 
 <p align="center">
   <strong>Languages:</strong>
@@ -15,12 +21,6 @@
   <a href="readmes/README.hi.md">हिन्दी</a> ·
   <a href="readmes/README.fr.md">Français</a> ·
   <a href="readmes/README.de.md">Deutsch</a>
-</p>
-
-<p align="center">
-  <strong>Plain English → plan → build → check.</strong><br/>
-  Free Codex plugins (Desktop + CLI) for people who are not engineers.<br/>
-  Say what you want in plain English. ACC helps you plan, build, and check that it actually works.
 </p>
 
 <p align="center">
@@ -37,6 +37,29 @@
 
 ---
 
+## Why ACC
+
+Codex can do almost anything: ship product, write docs, fix bugs, start from a one-line idea.  
+What people get stuck on is the **session** — scope, memory, “is it done?”, endless thrash.
+
+**Anyone Can Code is the harness** for that work:
+
+| | |
+|--|--|
+| **Plan** | Clear path before big changes |
+| **Build** | Step by step, with memory that stays on your machine |
+| **Verify** | Real “done” with proof — not “looks fine” |
+
+Native Codex plugins — built from [Codex official docs](https://openai.com/codex/), not ported from Claude, Cursor, or other agents.
+
+I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2). Open beta **v1.1.0-beta.4**.
+
+**You need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python
+
+**New here?** [First day guide](docs/FIRST_DAY.md) · [Website install](https://anyone-can-code.vercel.app/#install)
+
+---
+
 ## Two packages, one marketplace
 
 Same GitHub repo. Same marketplace URL. **Two separate plugins.**  
@@ -49,28 +72,9 @@ Codex does **not** auto-pick — install the one that matches how you use Codex.
 | **Folder in repo** | `plugins/anyone-can-code/` | `plugins/anyone-can-code-cli/` |
 | **Install UI** | App → **Plugins** | CLI → **`/plugins`** |
 | **Trust hooks** | Hooks settings in the app | CLI → **`/hooks`** |
-| **Hooks style** | Windows-first PowerShell launcher | Portable `python3` + `PLUGIN_ROOT` (short timeouts) |
 | **More detail** | [plugins/anyone-can-code/README.md](plugins/anyone-can-code/README.md) | [plugins/anyone-can-code-cli/README.md](plugins/anyone-can-code-cli/README.md) |
 
 **Do not install both** unless you really use both hosts. Pick one per machine.
-
----
-
-## What it is
-
-You describe an idea, a fix, or a project in normal words. ACC helps you:
-
-| Step | What you get |
-|------|----------------|
-| **Plan** | A clear path before big changes |
-| **Build** | Work done step by step in your project |
-| **Check** | A real “is it done?” pass, not just “looks fine” |
-
-Native Codex plugins — built from [Codex official docs](https://openai.com/codex/), not ported from Claude, Cursor, or other agents.
-
-I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2). Open beta.
-
-**You need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python
 
 ---
 
