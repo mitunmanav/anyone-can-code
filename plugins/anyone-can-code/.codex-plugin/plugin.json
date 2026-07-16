@@ -22,12 +22,6 @@
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "hooks": "./hooks/hooks.json",
-  "websiteURL": "https://anyone-can-code.vercel.app/",
-  "privacyPolicyURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/PRIVACY.md",
-  "termsOfServiceURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/TERMS.md",
-  "screenshots": [
-    "./assets/screenshot-1.png"
-  ],
   "interface": {
     "displayName": "Anyone Can Code",
     "shortDescription": "Reliability workflow for Codex Desktop: plan \u2192 build \u2192 verify.",
@@ -45,6 +39,12 @@
     ],
     "brandColor": "#10A37F",
     "composerIcon": "./assets/icon.png",
-    "logo": "./assets/logo.png"
+    "logo": "./assets/logo.png",
+    "websiteURL": "https://anyone-can-code.vercel.app/",
+    "privacyPolicyURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/TERMS.md",
+    "screenshots": [
+      "./assets/screenshot-1.png"
+    ]
   }
 }

@@ -197,10 +197,19 @@ class Doctor:
         except json.JSONDecodeError as exc:
             self.check("config", "mcp_config", "FAIL", "blocking", f"Invalid .mcp.json: {exc}")
             return
-        if "mcp_servers" in payload:
-            self.check("config", "mcp_schema", "FAIL", "blocking", "Use camelCase 'mcpServers', not legacy 'mcp_servers'")
-            return
-        servers = payload.get("mcpServers", {})
+        # Codex .mcp.json accepts a direct server map or a wrapped
+        # `mcp_servers` object. `mcpServers` (camelCase) is kept for
+        # back-compat. See Codex docs: plugins/build.
+        if isinstance(payload.get("mcp_servers"), dict):
+            servers = payload["mcp_servers"]
+        elif isinstance(payload.get("mcpServers"), dict):
+            servers = payload["mcpServers"]
+        else:
+            servers = {
+                name: server
+                for name, server in payload.items()
+                if isinstance(server, dict) and server.get("command")
+            }
         if not servers:
             self.check("config", "mcp_config", "FAIL", "blocking", "No bundled MCP server declared")
             return

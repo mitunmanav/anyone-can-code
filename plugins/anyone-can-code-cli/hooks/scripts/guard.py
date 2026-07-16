@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -56,6 +57,15 @@ DESTRUCTIVE_COMMANDS = [
     "git reset --hard",
 ]
 
+# Download-and-run: fetch a remote script and pipe it straight into a shell.
+# Classic remote-code-execution pattern; block it for non-technical users.
+PIPE_TO_SHELL_RE = re.compile(
+    r"(curl|wget|iwr|invoke-webrequest|fetch)\b[^\n]*\|\s*(sudo\s+)?"
+    r"(bash|sh|zsh|dash|pwsh|powershell)\b"
+    r"|(bash|sh|zsh|dash|pwsh|powershell)\s+<\(\s*(curl|wget|iwr|fetch)\b",
+    re.IGNORECASE,
+)
+
 DEPLOY_PATTERNS = [
     "vercel deploy",
     "netlify deploy",
@@ -89,6 +99,8 @@ def check_destructive_command(tool_input) -> str | None:
     for pattern in DESTRUCTIVE_COMMANDS:
         if lower.startswith(pattern) or pattern in lower:
             return pattern
+    if PIPE_TO_SHELL_RE.search(command):
+        return "download piped to shell"
     return None
 
 
