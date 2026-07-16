@@ -5,6 +5,8 @@ description: "Manages communication mode, learning preference, and automation pr
 
 # Settings
 
+Script root: `ACC_PLUGIN_ROOT` from SessionStart (hooks inject). PLUGIN_ROOT is hooks-only.
+
 Use `$settings` to inspect or change user preferences.
 
 Reply rule:
@@ -36,7 +38,7 @@ Communication mode changes surfaced communication only. It does not control hidd
 When showing or changing communication mode, dry-run tone with the live helper:
 
 ```
-python "$PLUGIN_ROOT/scripts/comm_contract.py" caveman-strict "Feature implemented successfully."
+python3 "<ACC_PLUGIN_ROOT>/scripts/comm_contract.py" caveman-strict "Feature implemented successfully."
 ```
 
 That script is product path (not tests).

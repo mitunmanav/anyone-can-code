@@ -5,6 +5,8 @@ description: "Reads the local workflow files and explains where the project stan
 
 # Help
 
+Script root: `ACC_PLUGIN_ROOT` from SessionStart (hooks inject). PLUGIN_ROOT is hooks-only.
+
 Reply rule:
 
 - talk strict caveman only
@@ -14,7 +16,7 @@ Use `$help` when the user asks what is happening, what is next, or what is block
 
 Before reading state, run:
 
-`python "$PLUGIN_ROOT/scripts/runtime_info.py" --resolve-project "."`
+`python3 "<ACC_PLUGIN_ROOT>/scripts/runtime_info.py" --resolve-project "."`
 
 Use returned `project_root`. If status is `ambiguous`, stop and show candidates;
 never report root idle state as final and never choose silently.
@@ -37,4 +39,4 @@ terms as product workflow.
 
 Also say: This is the **CLI** package. Desktop users install **Anyone Can Code** (separate). Ports to Claude/Cursor = later.
 
-Host wording: run `python "$PLUGIN_ROOT/scripts/host_detect.py" --guidance` and use those install/review lines so CLI vs Desktop advice stays honest.
+Host wording: run `python3 "<ACC_PLUGIN_ROOT>/scripts/host_detect.py" --guidance` and use those install/review lines so CLI vs Desktop advice stays honest.

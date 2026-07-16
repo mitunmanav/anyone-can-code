@@ -5,6 +5,8 @@ description: "Evidence-first verification for code, plans, and repairs. Distingu
 
 # Verify
 
+Script root: `ACC_PLUGIN_ROOT` from SessionStart (hooks inject). PLUGIN_ROOT is hooks-only.
+
 Reply rule:
 
 - talk strict caveman only
@@ -47,7 +49,7 @@ Never claim from memory or from an old run. Timeout (exit 124) = NOT ready.
 Need eyes on the page. Run first:
 
 ```
-python "$PLUGIN_ROOT/scripts/browser_policy.py"
+python3 "<ACC_PLUGIN_ROOT>/scripts/browser_policy.py"
 ```
 
 Prefer connected Chrome (`@Chrome`) — safer. Built-in in-app browser (`@Browser`) can crash (Codex bug).
@@ -70,7 +72,7 @@ Only use these workflow states: `in scope`, `designed`, `approved`,
 
 Use `verified` only when evidence exists. If a check did not run, say
 `implemented` or `blocked`, then name the missing proof.
-No "done" without proof: run `python "$PLUGIN_ROOT/scripts/cross_agent_pack.py"`
+No "done" without proof: run `python3 "<ACC_PLUGIN_ROOT>/scripts/cross_agent_pack.py"`
 logic via `claim_done` — product needs real-use path, not unit tests alone.
 Do not say interactive work `works` without interaction evidence.
 Build, audit, source scan, HTTP 200 are not interaction evidence.

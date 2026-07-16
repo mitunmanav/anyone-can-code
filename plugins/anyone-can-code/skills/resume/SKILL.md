@@ -5,6 +5,8 @@ description: "Resumes, reconstructs, repairs, or abandons stale workflow state u
 
 # Resume
 
+Script root: `ACC_PLUGIN_ROOT` from SessionStart (hooks inject). PLUGIN_ROOT is hooks-only.
+
 Use `$resume` when a session was interrupted or the state looks stale.
 
 Reply rule:
@@ -22,7 +24,7 @@ Reply rule:
 
 ## Read from
 
-Run `python "$PLUGIN_ROOT/scripts/runtime_info.py" --resolve-project "."`
+Run `python3 "<ACC_PLUGIN_ROOT>/scripts/runtime_info.py" --resolve-project "."`
 first. Use returned `project_root`. If result is `ambiguous`, block recovery
 and show candidates; never merge or replace competing state automatically.
 
@@ -50,5 +52,5 @@ failed, or circuit-broken. Do not treat hook output as canonical truth.
 ## Past questions
 
 "What did we decide about X?" — do not shrug. Run
-`python "$PLUGIN_ROOT/scripts/past_answer.py" "<keywords>"` and answer with
+`python3 "<ACC_PLUGIN_ROOT>/scripts/past_answer.py" "<keywords>"` and answer with
 the date of each record. Nothing found: say "no record" honestly.

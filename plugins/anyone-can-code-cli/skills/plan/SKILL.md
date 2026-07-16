@@ -5,6 +5,8 @@ description: "Turns the accepted spec or concrete request into an executable loc
 
 # Plan
 
+Script root: `ACC_PLUGIN_ROOT` from SessionStart (hooks inject). PLUGIN_ROOT is hooks-only.
+
 Reply rule:
 
 - talk strict caveman only
@@ -45,7 +47,7 @@ For product-intake plans, generate the adapted checklist through `scripts/produc
 
 After generating the engineering checklist, route included domains to execution instructions:
 
-1. Call `python "$PLUGIN_ROOT/scripts/domain_router.py" --checklist <path>` or invoke `route_domains(checklist, product_type)` directly.
+1. Call `python3 "<ACC_PLUGIN_ROOT>/scripts/domain_router.py" --checklist <path>` or invoke `route_domains(checklist, product_type)` directly.
 2. Each returned domain has `instructions` — use them when building that area.
 3. All UX domains (theme, responsive, accessibility, loading states, error states) are automatically included for web/app/dashboard products.
 4. Never skip a domain marked `include` without recording it as `deferred` in canonical state with reason.

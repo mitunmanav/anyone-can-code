@@ -12,7 +12,9 @@ Reply rule:
 - talk strict caveman only
 - keep answer short
 
-Run `python "$PLUGIN_ROOT/scripts/runtime_info.py" --resolve-project "."`
+Script root: use `ACC_PLUGIN_ROOT` from SessionStart context (hooks inject it).
+`PLUGIN_ROOT` is hooks-only — do not assume it in the agent shell.
+Run `python3 "<ACC_PLUGIN_ROOT>/scripts/runtime_info.py" --resolve-project "."`
 before reading state. Use returned `project_root`. If result is `ambiguous`,
 stop and show candidates instead of choosing or reporting root state.
 
@@ -75,15 +77,15 @@ interaction, visual QA, or user-acceptance evidence is recorded.
 
 ## Host + live scripts (not test-only)
 
-This is the **CLI** package. Desktop users install **Anyone Can Code**.
+This is the **Desktop** package. CLI users install **Anyone Can Code CLI**.
 
 Always run these cheap CLIs for truth (product path, not tests):
 
 ```
-python "$PLUGIN_ROOT/scripts/host_detect.py" --guidance
-python "$PLUGIN_ROOT/scripts/loop_registry.py"
-python "$PLUGIN_ROOT/scripts/ai_observability.py" --project-root .
-python "$PLUGIN_ROOT/scripts/walkaway_pack.py" --goal
+python3 "<ACC_PLUGIN_ROOT>/scripts/host_detect.py" --guidance
+python3 "<ACC_PLUGIN_ROOT>/scripts/loop_registry.py"
+python3 "<ACC_PLUGIN_ROOT>/scripts/ai_observability.py" --project-root .
+python3 "<ACC_PLUGIN_ROOT>/scripts/walkaway_pack.py" --goal
 ```
 
 Show host line + loop menu + “What AI did” receipt + walk-away `/goal` tip in plain words.
@@ -91,5 +93,5 @@ Show host line + loop menu + “What AI did” receipt + walk-away `/goal` tip i
 ## Past questions
 
 "What did we decide about X?" — do not shrug. Run
-`python "$PLUGIN_ROOT/scripts/past_answer.py" "<keywords>"` and answer with
+`python3 "<ACC_PLUGIN_ROOT>/scripts/past_answer.py" "<keywords>"` and answer with
 the date of each record. Nothing found: say "no record" honestly.

@@ -5,13 +5,15 @@ description: "Moves work to a fresh Codex thread with full context: state, memor
 
 # Handoff
 
+Script root: `ACC_PLUGIN_ROOT` from SessionStart (hooks inject). PLUGIN_ROOT is hooks-only.
+
 Reply rule:
 - talk strict caveman only
 - keep answer short
 
 ## Steps
 
-1. Run: `python "$PLUGIN_ROOT/scripts/build_handoff.py" --project-root .`
+1. Run: `python3 "<ACC_PLUGIN_ROOT>/scripts/build_handoff.py" --project-root .`
    - Big model switch: add `--model <name> --reasoning <low|medium|high>`
 2. Take the printed prompt whole. Do not trim.
 3. Use Codex `create_thread` (same project, local env) with that prompt.

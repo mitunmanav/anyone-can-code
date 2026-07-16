@@ -5,13 +5,15 @@ description: "Front door for Anyone Can Code. Detects the starting point, shows 
 
 # Orchestrator
 
+Script root: `ACC_PLUGIN_ROOT` from SessionStart (hooks inject). PLUGIN_ROOT is hooks-only.
+
 Talk strict caveman. Short answers only.
 
 ## Do this
 
-- Run `python "$PLUGIN_ROOT/scripts/front_door.py" "<user request>"`. JSON = guidance, not permission to skip safety.
+- Run `python3 "<ACC_PLUGIN_ROOT>/scripts/front_door.py" "<user request>"`. JSON = guidance, not permission to skip safety.
 - Show banner + Route line, like: Detected: idea + website → Route: intake -> checklist -> plan.
-- If `memory_preflight` present: run `python "$PLUGIN_ROOT/scripts/memory_preflight.py" "<request>" --project-root "<project>"`; show line before plan/action. No match → `Relevant memory used: none found`.
+- If `memory_preflight` present: run `python3 "<ACC_PLUGIN_ROOT>/scripts/memory_preflight.py" "<request>" --project-root "<project>"`; show line before plan/action. No match → `Relevant memory used: none found`.
 - If `command_guard` present: before shell/Git/tool work. Windows: `npm.cmd`, no Bash-only `||`, Git from repo root. Failed commands stay visible.
 - If `usage_checkpoint` present: 85% checkpoint, 90% split, 94% stop unless told to continue.
 - If `patch_retry` present: reread target before retry after failed patch; stop/replan after limit.
@@ -26,7 +28,7 @@ Talk strict caveman. Short answers only.
 - High-impact unknown: stop, ask. Medium: options + recommend one. Low: proceed, mark inference.
 - Built ≠ verified. Never claim done/works/perfect without named proof (real-use for product).
 - Never end a meaningful routed turn without visible text: short summary + plain next action. Empty specialist → ACC fallback same turn. If Codex Desktop rendering hides text, record platform display failure, not plugin fixed.
-- Mid-work change: update plan + state. Docs first: `python "$PLUGIN_ROOT/scripts/docs_gate.py" "<request>"`.
+- Mid-work change: update plan + state. Docs first: `python3 "<ACC_PLUGIN_ROOT>/scripts/docs_gate.py" "<request>"`.
 - Never expose audit/phase-gate internals. Never call JSONL durable memory.
 - Browser/server/paid/login/destructive need permission. Prefer `@Chrome`; mini browser crash risk.
 - Long/big task: suggest `/goal` + Cloud remote background if GitHub; else Local. CLI `/goal` too. User decides.
