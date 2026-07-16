@@ -673,6 +673,34 @@ class Doctor:
         else:
             self.check("verification", "front_door_smoke", "FAIL", "blocking", evidence)
 
+    def run_tool_interop(self) -> None:
+        result = front_door.route_request(
+            "Add password reset to this existing repo",
+            plugins=[],
+        )
+        interop = result.get("tool_interop") or {}
+        if (
+            interop.get("schema") == "acc-tool-interop-v1"
+            and interop.get("workflow_owner") == "acc"
+            and interop.get("pattern") == "openspec-style-bindings"
+            and isinstance(interop.get("bindings"), list)
+        ):
+            self.check(
+                "verification",
+                "tool_interop",
+                "PASS",
+                "info",
+                "tool_interop schema present; ACC owns bindings and redirects",
+            )
+        else:
+            self.check(
+                "verification",
+                "tool_interop",
+                "FAIL",
+                "blocking",
+                "tool_interop contract missing or not ACC-owned",
+            )
+
     def run_command_guard(self) -> None:
         assessment = front_door.assess_command_guidance(
             "npm test || git status",
@@ -999,6 +1027,7 @@ class Doctor:
             self.run_installed_qa_support()
             self.run_product_intake()
             self.run_front_door()
+            self.run_tool_interop()
             self.run_command_guard()
             self.run_memory_preflight()
             self.run_status_model()
