@@ -218,6 +218,14 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
     if interop_line:
         lines.append(interop_line)
 
+    browser_line = build_browser_policy_line(prompt)
+    if browser_line:
+        lines.append(browser_line)
+
+    host_line = build_host_detect_line()
+    if host_line:
+        lines.append(host_line)
+
     try:
         import inbox as _inbox
         inbox_result = _inbox.process_prompt(prompt, repo_root)
@@ -227,6 +235,47 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
         pass
 
     return "\n".join(lines)[:MAX_TURN_CONTEXT_CHARS]
+
+
+def build_browser_policy_line(prompt: str) -> str:
+    """Safety: Chrome-first browser advice when the turn is about browsers/QA."""
+    text = (prompt or "").lower()
+    markers = (
+        "browser",
+        "chrome",
+        "@browser",
+        "@chrome",
+        "visual qa",
+        "screenshot",
+        "click through",
+    )
+    if not any(m in text for m in markers):
+        return ""
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import browser_policy as _browser_policy
+
+        return _trim(_browser_policy.AGENT_RULE, 200)
+    except Exception:
+        return ""
+
+
+def build_host_detect_line() -> str:
+    """Host wording so CLI/Desktop claims stay honest."""
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import host_detect as _host_detect
+
+        guide = _host_detect.host_guidance()
+        host = guide.get("host") or "unknown"
+        review = guide.get("review") or ""
+        return _trim(f"Host: {host}. {review}", 160)
+    except Exception:
+        return ""
 
 
 def build_tool_interop_line(prompt: str) -> str:

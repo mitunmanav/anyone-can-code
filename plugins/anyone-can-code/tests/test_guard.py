@@ -44,6 +44,25 @@ def test_tool_interop_line_lists_available_bindings(monkeypatch):
     assert "ACC owns" in line
 
 
+def test_browser_policy_line_only_when_browser_work(tmp_path):
+    assert guard.build_browser_policy_line("fix the login crash") == ""
+    line = guard.build_browser_policy_line("run visual QA in the browser")
+    assert line
+    assert "chrome" in line.lower() or "browser" in line.lower()
+
+
+def test_host_detect_line_present():
+    line = guard.build_host_detect_line()
+    assert line.startswith("Host:")
+
+
+def test_turn_context_includes_host_and_browser(tmp_path):
+    ctx = guard.build_turn_context("check this in Chrome visual QA", tmp_path)
+    assert "Host:" in ctx
+    assert "Browser" in ctx or "Chrome" in ctx or "chrome" in ctx.lower()
+    assert len(ctx) <= guard.MAX_TURN_CONTEXT_CHARS
+
+
 def test_turn_context_can_include_interop(tmp_path, monkeypatch):
     scripts = Path(__file__).resolve().parents[1] / "scripts"
     sys.path.insert(0, str(scripts))

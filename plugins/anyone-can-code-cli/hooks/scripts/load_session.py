@@ -165,6 +165,45 @@ def build_context(repo_root: Path, source: str) -> str:
         "Skills: use progressive load; do not re-read every skill file each turn.",
         "Proof: never claim done/works/perfect without named evidence. Built ≠ verified.",
     ]
+    # Live product paths for scripts that used to be test-only helpers.
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import host_detect as _host_detect
+
+        guide = _host_detect.host_guidance()
+        context_lines.append(
+            f"Host: {guide.get('host', 'unknown')}. {guide.get('review', '')}"
+        )
+    except Exception:
+        pass
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import loop_registry as _loop_registry
+
+        context_lines.append(
+            "Loops: work always on; scheduled + self-improve opt-in. "
+            "Run python \"$PLUGIN_ROOT/scripts/loop_registry.py\" for menu."
+        )
+        _ = _loop_registry.list_loops()  # prove module loads in product path
+    except Exception:
+        pass
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import ai_observability as _ai_obs
+
+        receipt = _ai_obs.build_plain_receipt(repo_root, limit=3)
+        if receipt.get("count"):
+            context_lines.append(str(receipt.get("user_block") or "")[:240])
+        else:
+            context_lines.append("What AI did: nothing recorded yet this project.")
+    except Exception:
+        pass
     if _cross_agent_pack is not None:
         try:
             context_lines.append(_cross_agent_pack.env_agent_line())
