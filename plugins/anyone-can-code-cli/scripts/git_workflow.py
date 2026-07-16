@@ -363,3 +363,29 @@ def git_workflow_manual(task_slug: str, summary: str) -> dict[str, Any]:
     receipt = write_git_receipt("git_workflow_manual", result, branch, [], "")
     result["receipt"] = receipt
     return result
+
+
+def main() -> int:
+    """CLI entry: report auto/manual mode guidance only (no network)."""
+    import argparse
+    import json
+    parser = argparse.ArgumentParser(description="ACC git workflow helper (local)")
+    parser.add_argument("--mode", choices=["auto", "manual"], default="manual")
+    parser.add_argument("--task", default="task")
+    parser.add_argument("--summary", default="work")
+    parser.add_argument("--dry-run", action="store_true", default=True)
+    args = parser.parse_args()
+    # Dry-run by default: only describe path, never push.
+    print(json.dumps({
+        "mode": args.mode,
+        "task": args.task,
+        "summary": args.summary,
+        "dry_run": True,
+        "note": "User must approve real git actions. No push from this CLI.",
+        "auto_entry": "git_workflow_auto" if args.mode == "auto" else "git_workflow_manual",
+    }, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

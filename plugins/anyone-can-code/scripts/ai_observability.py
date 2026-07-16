@@ -58,3 +58,18 @@ def build_plain_receipt(repo_root: Path, *, limit: int = 8) -> dict[str, Any]:
         }
     block = "What AI did (recent):\n" + "\n".join(lines)
     return {"count": len(lines), "lines": lines, "user_block": block}
+
+
+def main() -> int:
+    import argparse
+    parser = argparse.ArgumentParser(description="Plain receipt of recent AI tool actions")
+    parser.add_argument("--project-root", default=".")
+    parser.add_argument("--limit", type=int, default=8)
+    args = parser.parse_args()
+    receipt = build_plain_receipt(Path(args.project_root).resolve(), limit=args.limit)
+    print(receipt["user_block"])
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

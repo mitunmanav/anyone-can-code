@@ -48,3 +48,16 @@ def browser_test_advice(*, needs_login: bool = False, user_prefers_builtin: bool
         "user_line": USER_EXPLAIN + " " + reason + " Want Chrome, or try mini browser anyway?",
         "agent_line": AGENT_RULE,
     }
+
+
+def main() -> int:
+    import json
+    import sys
+    needs_login = "--login" in sys.argv
+    builtin = "--builtin" in sys.argv
+    print(json.dumps(browser_test_advice(needs_login=needs_login, user_prefers_builtin=builtin), indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

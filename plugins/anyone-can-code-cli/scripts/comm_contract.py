@@ -78,3 +78,19 @@ def apply_tone(text: str, mode: str | None = None) -> str:
 def skill_banner(skill_name: str, mode: str | None = None) -> str:
     name = skill_name.capitalize()
     return f"{name}: ready."
+
+
+def main() -> int:
+    import sys
+    mode = "caveman-strict"
+    args = sys.argv[1:]
+    if args and args[0] in {"normal", "caveman-strict", "caveman"}:
+        mode = "caveman-strict" if args[0] == "caveman" else args[0]
+        args = args[1:]
+    text = " ".join(args) if args else sys.stdin.read()
+    print(apply_tone(text, mode=mode))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

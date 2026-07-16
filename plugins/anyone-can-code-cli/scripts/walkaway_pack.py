@@ -274,3 +274,23 @@ def suggest_for_request(request: str) -> list[str]:
             seen.add(line)
             uniq.append(line)
     return uniq
+
+
+def main() -> int:
+    import json
+    import sys
+    if "--goal" in sys.argv or len(sys.argv) == 1:
+        print(json.dumps(goal_howto(), indent=2))
+    elif "--all" in sys.argv:
+        pack = {
+            "goal": goal_howto(),
+            "notifications": notifications_howto(),
+        }
+        print(json.dumps(pack, indent=2))
+    else:
+        print(json.dumps(goal_howto(), indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

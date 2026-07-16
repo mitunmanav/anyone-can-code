@@ -77,3 +77,17 @@ def scheduled_opt_in_question() -> str:
         "Set up scheduled checks? [HUNGRY each run] "
         "Only if you want. PC must stay on. YES = I help you paste a prompt in Codex Scheduled. NO = skip."
     )
+
+
+def main() -> int:
+    import json
+    import sys
+    if "--json" in sys.argv:
+        print(json.dumps(list_loops(), indent=2))
+    else:
+        print(plain_menu())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
