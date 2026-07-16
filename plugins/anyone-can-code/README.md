@@ -5,8 +5,9 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>You describe what you want in plain English.</strong><br/>
-  Idea → plan → build → verify. Codex plugin for Desktop + CLI. No programming background required.
+  <strong>Reliability workflow plugin for OpenAI Codex Desktop.</strong><br/>
+  Say what you want. ACC helps Codex plan it, build it, and prove it works.<br/>
+  <em>This package is for the Desktop app only.</em> Terminal users: install <strong>Anyone Can Code CLI</strong>.
 </p>
 
 <p align="center">
@@ -19,7 +20,7 @@
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
-**New here?** [First day guide](../../docs/FIRST_DAY.md) · Full install: [root README — Desktop](../../README.md#install--desktop)  
+**New here?** [First day guide](../../docs/FIRST_DAY.md) · Full install: [root README — Desktop](../../README.md#desktop)  
 
 **Install GIF (in this repo):** [docs/media/install-setup.gif](../../docs/media/install-setup.gif)  
 **Full video:** [docs/media/install-setup.mp4](../../docs/media/install-setup.mp4) · [website player](https://anyone-can-code.vercel.app/#install)  

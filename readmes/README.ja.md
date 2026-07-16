@@ -32,6 +32,8 @@
   <img src="https://img.shields.io/badge/beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
+> **Positioning (source of truth):** English [README](../README.md) — *A reliability workflow plugin for OpenAI Codex.* Translations below may lag; prefer English for category claims.
+
 ---
 
 ## これは何か
