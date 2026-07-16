@@ -202,7 +202,7 @@ SPECIALIST_INTENTS = (
     },
     {
         "requested": "writing-plans",
-        "markers": ("writing-plans", "writing plans", "implementation plan"),
+        "markers": ("writing-plans", "writing plans", "superpowers writing-plans"),
         "match_terms": ("writing-plans", "writing plans", "superpowers"),
     },
     {
@@ -256,13 +256,19 @@ SPECIALIST_INTENTS = (
     },
     {
         "requested": "ui skills",
-        "markers": ("ui skills", "ui skill", "ui design", "design skills"),
-        "match_terms": ("ui", "ui design", "visual design", "product design"),
+        "markers": ("ui skills", "ui skill", "ui design skills", "design skills"),
+        "match_terms": ("ui design", "visual design", "product design", "ui skills"),
     },
     {
         "requested": "browser",
-        "markers": ("browser", "browser-use"),
-        "match_terms": ("browser", "browser-use"),
+        "markers": (
+            "browser-use",
+            "use the browser",
+            "use browser",
+            "@browser",
+            "browser skill",
+        ),
+        "match_terms": ("browser-use", "browser skill", "agent-browser"),
     },
 )
 
@@ -274,8 +280,9 @@ SPECIALIST_INTENTS = (
 # - fail loud / ACC fallback when skill missing
 ACC_ARTIFACT_ROOT = ".codex/anyone-can-code/artifacts"
 
-# Short single-token skill names ("auth", "ai") must not steal generic requests.
-MIN_SKILL_NAME_LEN_FOR_ROUTE = 6
+# Short single-token skill names ("auth", "ai", "github") must not steal
+# generic requests. Hyphenated skill ids still match at any length.
+MIN_SKILL_NAME_LEN_FOR_ROUTE = 8
 
 TOOL_SKILL_BINDINGS = (
     {

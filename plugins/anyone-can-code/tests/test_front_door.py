@@ -741,9 +741,18 @@ class FrontDoorTests(unittest.TestCase):
         self.assertFalse(result["matched"])
         self.assertEqual(result["source"], "acc")
         self.assertFalse(front_door.skill_mentioned_in_request("auth", "plan the auth feature"))
+        self.assertFalse(front_door.skill_mentioned_in_request("github", "open the github issue"))
         self.assertTrue(
             front_door.skill_mentioned_in_request("writing-plans", "use writing-plans for this")
         )
+
+    def test_browser_word_alone_is_not_a_specialist_request(self) -> None:
+        result = front_door.route_request(
+            "Build a browser game for kids",
+            plugins=[],
+        )
+        specialists = result.get("requested_specialists") or []
+        self.assertEqual(specialists, [])
 
     def test_tool_interop_binds_superpowers_skills_with_acc_redirect(self) -> None:
         plugins = [
