@@ -1,0 +1,63 @@
+name: Install / setup problem
+description: Marketplace, plugin install, or $setup failed. Short form.
+title: "[Install]: "
+labels: ["install", "bug", "needs-triage", "windows"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Use this if you cannot get ACC installed or past `$setup`.**
+
+        Already installed and something else broke? Use **Something is broken** instead.
+
+        Official steps: [README Install](https://github.com/mitunmanav/anyone-can-code#install) · [Website](https://anyone-can-code.vercel.app/#install) · [Start here discussion](https://github.com/mitunmanav/anyone-can-code/discussions/5)
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Where did it stop?
+      options:
+        - Adding the marketplace command
+        - Finding / installing the plugin in Codex
+        - Restart after install
+        - Running $setup
+        - First real project request after setup
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Paste any error text. Remove secrets.
+      placeholder: I ran the marketplace command and saw…
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command or button you used (if any)
+      description: Optional. Helps a lot.
+      placeholder: codex plugin marketplace add mitunmanav/anyone-can-code --ref main
+  - type: input
+    id: env
+    attributes:
+      label: Your computer
+      placeholder: "Windows 11 · Codex Desktop"
+      description: Windows version + Codex if you know it
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Quick checks (tick what is true)
+      options:
+        - label: I have Codex Desktop installed
+        - label: I restarted Codex after install
+        - label: I opened a project folder before running $setup
+        - label: I removed secrets from this report
+          required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots as text, doctor output, etc. Optional.

@@ -1,0 +1,3 @@
+interface:
+  display_name: "ACC handoff"
+  short_description: "Move work to a new chat or model"

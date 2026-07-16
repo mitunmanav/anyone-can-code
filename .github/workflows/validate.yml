@@ -1,0 +1,85 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Secret hygiene (no committed secrets)
+        run: |
+          set -euo pipefail
+          # Fail if common secret-looking patterns appear outside docs/examples.
+          # GitHub secret scanning still runs on push; this is a second belt.
+          if git grep -nI -E \
+            '(AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|-----BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY-----)' \
+            -- \
+            ':!*.md' \
+            ':!.github/workflows/validate.yml' \
+            ':!**/fixtures/**' \
+            ':!**/testdata/**' \
+            ; then
+            echo "::error::Possible secret pattern found in tracked files. Remove it and rotate the key."
+            exit 1
+          fi
+          echo "Secret hygiene scan clean"
+
+      - name: Validate JSON
+        run: |
+          python -m json.tool plugins/anyone-can-code/.codex-plugin/plugin.json >/dev/null
+          python -m json.tool plugins/anyone-can-code/.mcp.json >/dev/null
+          python -m json.tool .agents/plugins/marketplace.json >/dev/null
+          python -m json.tool plugins/anyone-can-code/VERIFIER-REPORT.json >/dev/null
+
+      - name: Compile Python
+        run: |
+          # Compile all plugin Python so new scripts cannot ship broken
+          python - <<'PY'
+          from pathlib import Path
+          import py_compile
+          import sys
+          roots = [
+              Path("plugins/anyone-can-code/mcp"),
+              Path("plugins/anyone-can-code/hooks/scripts"),
+              Path("plugins/anyone-can-code/scripts"),
+          ]
+          files = []
+          for root in roots:
+              if root.exists():
+                  files.extend(sorted(root.rglob("*.py")))
+          failed = []
+          for f in files:
+              try:
+                  py_compile.compile(str(f), doraise=True)
+              except py_compile.PyCompileError as e:
+                  failed.append(str(e))
+          if failed:
+              print("\n".join(failed))
+              sys.exit(1)
+          print(f"Compiled {len(files)} files")
+          PY
+
+      - name: Run test suite
+        run: |
+          python -m pip install --quiet pytest pyyaml
+          python -m pytest plugins/anyone-can-code/tests -q
+
+      - name: Run doctor
+        working-directory: plugins/anyone-can-code
+        run: python scripts/doctor.py --json

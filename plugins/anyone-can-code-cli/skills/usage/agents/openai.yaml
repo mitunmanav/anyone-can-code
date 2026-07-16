@@ -1,0 +1,4 @@
+interface:
+  display_name: "ACC usage"
+  short_description: "Token usage from disk (free)"
+  default_prompt: "Use $usage to start the live token dashboard in your browser."

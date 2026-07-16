@@ -1,0 +1,106 @@
+name: Something is broken
+description: Crash, wrong result, or confusing failure — not a how-to question.
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Plain English is fine.** No engineering background needed.
+
+        - **How do I…?** → [Ask in Discussions Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a) (not here)
+        - **Security / private leak?** → [private advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new) only
+        - **Install / `$setup` failed?** You can use the dedicated **Install problem** template instead
+
+        Every issue gets an automatic **AI brief in plain English** for the maintainer.
+  - type: dropdown
+    id: area
+    attributes:
+      label: When did it go wrong?
+      options:
+        - Install / marketplace
+        - First setup ($setup)
+        - Everyday use ($orchestrator, plan, execute…)
+        - Memory / remembering things
+        - Verify / “is it done?”
+        - Update / upgrade
+        - Docs / website
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How bad is it?
+      options:
+        - Blocker — I cannot continue
+        - Annoying — workaround exists
+        - Minor — small glitch
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What went wrong?
+      description: One or two sentences in your own words.
+      placeholder: After I ran $setup, ACC said… but I expected…
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What did you do? (steps)
+      description: Numbered list if you can. “I don’t remember exact steps” is OK — still write what you recall.
+      placeholder: |
+        1. Added marketplace
+        2. Installed Anyone Can Code
+        3. Opened my project
+        4. Ran $setup
+        5. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+      placeholder: ACC should have…
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened?
+      description: Paste error text if you have it. Remove secrets first.
+      placeholder: Instead I saw…
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version (if you know it)
+      description: From [Releases](https://github.com/mitunmanav/anyone-can-code/releases) or `plugins/anyone-can-code/.codex-plugin/plugin.json`
+      placeholder: "1.1.0-beta.3"
+  - type: input
+    id: env
+    attributes:
+      label: Your computer
+      description: OS + Codex if known
+      placeholder: "Windows 11 · Codex Desktop"
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Doctor output (optional but helpful)
+      description: |
+        In the project folder (PowerShell), after removing secrets:
+
+        `python plugins\anyone-can-code\scripts\doctor.py --json`
+      render: text
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Before submit
+      options:
+        - label: I removed tokens, passwords, and private paths from this report
+          required: true
+        - label: This is a bug/failure, not a general “how do I…?” question
+          required: true

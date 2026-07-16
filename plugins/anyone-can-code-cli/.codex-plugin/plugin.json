@@ -1,0 +1,53 @@
+{
+  "name": "anyone-can-code-cli",
+  "version": "1.1.0-beta.4",
+  "description": "Reliability workflow for Codex CLI. Plan, build, resume, recover, and verify from plain-English requests. Trust hooks via /hooks.",
+  "author": {
+    "name": "Mitun",
+    "email": "238927830+mitunmanav@users.noreply.github.com",
+    "url": "https://github.com/mitunmanav"
+  },
+  "homepage": "https://anyone-can-code.vercel.app/",
+  "repository": "https://github.com/mitunmanav/anyone-can-code",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "codex-plugin",
+    "windows",
+    "workflow",
+    "verification",
+    "reliability",
+    "plugin",
+    "cli",
+    "codex-cli",
+    "terminal"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "websiteURL": "https://anyone-can-code.vercel.app/",
+  "privacyPolicyURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/PRIVACY.md",
+  "termsOfServiceURL": "https://github.com/mitunmanav/anyone-can-code/blob/main/docs/TERMS.md",
+  "screenshots": [
+    "./assets/screenshot-1.png"
+  ],
+  "interface": {
+    "displayName": "Anyone Can Code CLI",
+    "shortDescription": "Reliability workflow for Codex CLI: plan \u2192 build \u2192 verify.",
+    "longDescription": "Anyone Can Code CLI is the terminal reliability workflow package for OpenAI Codex. Free open-source plugin: plan, build, resume, recover, and verify from plain English. Install from /plugins, trust hooks with /hooks, run $setup. Open beta.",
+    "developerName": "Mitun",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "I want to build something, but I may be starting from an idea, a repo, or a bug.",
+      "Resume my last workflow and tell me the next best step.",
+      "Verify what changed and tell me what is still uncertain."
+    ],
+    "brandColor": "#10A37F",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
+}

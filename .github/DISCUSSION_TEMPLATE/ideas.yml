@@ -1,0 +1,46 @@
+title: "[Idea]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Share an idea** for Anyone Can Code. Soft proposals belong here.
+
+        If you already know the exact change and want engineering tracking, open a
+        [Feature issue](https://github.com/mitunmanav/anyone-can-code/issues/new?template=feature_request.yml) instead.
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What should ACC do better? Who does it help?
+      placeholder: When I am stuck on X, I wish ACC would…
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it matters
+      description: What problem does this solve for a non-technical user?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Install / first run
+        - Planning
+        - Building / execute
+        - Memory
+        - Verify / recovery
+        - Docs / website
+        - Community / GitHub
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Scope check
+      options:
+        - label: I am OK if this stays a discussion for a while (not every idea becomes a release item)
+          required: true

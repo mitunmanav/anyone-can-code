@@ -1,0 +1,46 @@
+title: "[Q&A]: "
+labels: ["question", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Use this for how-to questions** (install, `$setup`, skills, “where am I?”).
+
+        - **Bug / crash?** → [open a Bug issue](https://github.com/mitunmanav/anyone-can-code/issues/new?template=bug_report.yml)
+        - **Feature request?** → [Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas) or a Feature issue
+        - **Security?** → [private advisory](https://github.com/mitunmanav/anyone-can-code/security/advisories/new) only
+
+        Plain language is fine. No engineering background required.
+  - type: dropdown
+    id: topic
+    attributes:
+      label: What is this about?
+      options:
+        - Install / marketplace
+        - First setup ($setup)
+        - Everyday commands ($help, $status, $resume…)
+        - Memory / remembering decisions
+        - Verify / “is it done?”
+        - Windows / Codex Desktop
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What are you trying to do? What happened instead?
+      placeholder: I ran $setup and then…
+    validations:
+      required: true
+  - type: textarea
+    id: already-tried
+    attributes:
+      label: What you already tried (optional)
+      description: Commands, screenshots as text, or links. Remove secrets.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment (optional)
+      description: "Example: Windows 11 · Codex Desktop · ACC version from Releases"
+      placeholder: Windows 11 · Codex · v1.1.0-beta.3

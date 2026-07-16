@@ -1,0 +1,18 @@
+title: "[Chat]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **General chat** about Anyone Can Code.
+
+        Prefer **[Q&A](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=q-a)** for install/how-to,
+        **[Ideas](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=ideas)** for features,
+        and **[Show and tell](https://github.com/mitunmanav/anyone-can-code/discussions/new?category=show-and-tell)** for projects you built.
+  - type: textarea
+    id: message
+    attributes:
+      label: What do you want to say?
+      description: Introductions, feedback, or anything that does not fit the other categories.
+    validations:
+      required: true

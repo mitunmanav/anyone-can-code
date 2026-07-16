@@ -1,0 +1,4 @@
+interface:
+  display_name: "ACC update"
+  short_description: "Migrate after a plugin upgrade"
+  default_prompt: "Run $update to upgrade the plugin."

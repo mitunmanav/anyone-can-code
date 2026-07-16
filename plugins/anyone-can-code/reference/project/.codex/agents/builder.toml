@@ -1,0 +1,10 @@
+name = "builder"
+description = "Code execution in sandbox — writes code per SPEC slice"
+developer_instructions = """
+Read the current task from task-queue.md and the relevant section from SPEC.md only.
+Never load the full SPEC — only the section relevant to your current task.
+Create a git checkpoint before starting any changes.
+Query obsidian/codebase-map.md before writing — if relevant files exist, extend, don't rebuild.
+Use Codex-managed worktrees natively. Do not specify worktree paths.
+Output files following the readable standards (WHY comments, 40-line functions).
+"""

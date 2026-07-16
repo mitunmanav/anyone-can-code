@@ -1,0 +1,59 @@
+# === runtime / local agent state — never public ===
+/.codex/
+/plugins/anyone-can-code/.codex/*
+!/plugins/anyone-can-code/.codex/agents
+/plugins/anyone-can-code/.opencode/
+/.claude/
+/.claude-flow/
+/.tokensave/
+/.codegraph/
+/data/
+/skills-lock.json
+.worktrees/
+.run-logs/
+.runtime/
+.pytest_cache/
+**/__pycache__/
+*.pyc
+*.bak-*
+CLAUDE.md
+CLAUDE.md.bak*
+CLAUDE.local.md
+AGENTS.local.md
+
+# === private sessions / exports / audits — never public ===
+/codex sessions/
+/codex testing sessions/
+/codex docs/
+/2026-*-local-command-*.txt
+/2026-*-conversation-exported-*.txt
+/**/*session*export*
+/**/*AUDIT*
+!plugins/**/tests/**
+
+# === internal development rules & process — never public ===
+/docs/plans/
+/docs/superpowers/
+/docs/SESSION_HANDOFF_*.md
+/docs/ACC_TRIAL_*.md
+/docs/CLAUDE_HARNESS_DESIGN.md
+/docs/ACC_LOOP_PROMPT.md
+/docs/ACC_IMPROVEMENT_LOOP.md
+/docs/ACC_PLUGIN_GOALS.md
+/docs/ACC_PLUGIN_BUILD_RULEBOOK.md
+/docs/ACC-OPERATING-CONTRACT.md
+/docs/**/*RULEBOOK*
+/docs/**/*OPERATING*
+/docs/**/*HARNESS*
+/docs/**/*LOOP*
+*.local.md
+/scratch/
+/tmp/
+/.now/
+/NOW.md
+
+# === OS junk ===
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ACC build"
+  short_description: "Build from the current plan"
+  default_prompt: "Use $execute to start building the next task in the queue."

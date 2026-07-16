@@ -1,0 +1,32 @@
+{
+  "name": "anyone-can-code-marketplace",
+  "interface": {
+    "displayName": "Anyone Can Code"
+  },
+  "plugins": [
+    {
+      "name": "anyone-can-code",
+      "source": {
+        "source": "local",
+        "path": "./plugins/anyone-can-code"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "anyone-can-code-cli",
+      "source": {
+        "source": "local",
+        "path": "./plugins/anyone-can-code-cli"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
