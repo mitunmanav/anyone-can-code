@@ -57,7 +57,7 @@ Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a cle
 | **Plan** | A clear path before big changes |
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass — not just “looks fine” |
-| **Remember** | Wants, decisions, open work resume after crash/close — automatic when hooks trusted |
+| **Remember** | Auto memory — wants, decisions, and open work stick (see below) |
 
 Native Codex — built from [Codex docs](https://openai.com/codex/), not ported from Claude or Cursor.
 
@@ -91,7 +91,7 @@ More detail: [Desktop](plugins/anyone-can-code/README.md) · [CLI](plugins/anyon
 1. Copy: `https://github.com/mitunmanav/anyone-can-code`
 2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste  
 3. Install **Anyone Can Code** (not the CLI name)  
-4. **Hooks** → enable + **trust every ACC hook** (required)  
+4. **Hooks** → enable + **trust every ACC hook** (required — this is how memory works)  
 5. Restart → open a project folder → `$setup` → say what you want  
 
 Video: [website](https://anyone-can-code.vercel.app/#install) · [mp4](docs/media/install-setup.mp4)
@@ -106,8 +106,45 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 
 1. In a project folder: `codex`  
 2. `/plugins` → install **Anyone Can Code CLI**  
-3. `/hooks` → **trust** every ACC hook  
+3. `/hooks` → **trust** every ACC hook (required for memory)  
 4. New thread → `$setup` → say what you want  
+
+---
+
+## Memory (automatic)
+
+You do **not** type a “save this” command in normal use. After hooks are trusted, ACC writes and reloads memory for you.
+
+### What sticks
+
+| Kind | Example |
+|------|---------|
+| **Wants / prefs** | “Always use the blue theme.” |
+| **Decisions** | “We’ll use SQLite for storage.” |
+| **Corrections** | “No — contact page, not about.” |
+| **Open work** | Goal, next step, unfinished ask after a crash |
+
+### How it works (plain English)
+
+1. **You talk** — ACC’s hooks (small scripts Codex runs for you) quietly record what matters.  
+2. **You leave, crash, or hit a limit** — the last open request is marked so the next session can show a **crash-resume** line.  
+3. **You open a new chat** — SessionStart loads **NOW** (goal + next) plus top lessons. You should not re-explain everything.  
+4. **All of this stays on your machine** under `.codex/anyone-can-code/memory/` in the project (notes + a live `NOW.md`). Nothing is sent to ACC servers.
+
+**Desktop** has full offline auto-memory in **v1.1.0-beta.4**. Trust hooks once, and again after every plugin update (hook hash changes).
+
+### What you do *not* need
+
+- No `$learn` / `$capture` / “remember this” skill as the normal path. Those are **backup / force** only if something looks wrong.  
+- No Codex built-in `/memories` for ACC’s project memory. ACC keeps its own local notes.
+
+### If memory seems dead
+
+| Check | Fix |
+|-------|-----|
+| Forgot between sessions | **Trust all ACC hooks**, restart Codex, new chat |
+| After a plugin update | Trust hooks **again**, then restart |
+| Want a health check | Run `python3 plugins/anyone-can-code/scripts/memory_doctor.py` in the plugin folder — should say memory is running, or tell you to trust hooks |
 
 ---
 
@@ -135,6 +172,7 @@ Full first session: **[docs/FIRST_DAY.md](docs/FIRST_DAY.md)**
 |---------|-----|
 | Marketplace won’t add | Use the **full** GitHub URL above |
 | Nothing works after install | **Trust all ACC hooks**, then restart / new chat |
+| Forgets what you decided | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory-automatic) |
 | Wrong package | Uninstall; install Desktop **or** CLI for your host |
 | `$setup` silent | Open a **project folder** first |
 
@@ -146,7 +184,7 @@ Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) 
 
 | When | Focus |
 |------|--------|
-| **Now · beta.4** | Memory that sticks · plain progress · honest push-back · safety |
+| **Now · beta.4** | Auto memory (trust hooks) · plain progress · honest push-back · safety |
 | **Next · beta.5** | Plays-nice plugins · smarter model choice · less lost work at limits |
 
 Full detail: **[ROADMAP.md](ROADMAP.md)** · [website](https://anyone-can-code.vercel.app/#roadmap)
