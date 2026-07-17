@@ -37,6 +37,6 @@ def test_closed_turn_has_no_crash_line(tmp_path):
 
 
 def test_open_ask_is_scrubbed(tmp_path):
-    guard.mark_turn_open(tmp_path, "use api_key: sk-abcdefghijklmnop123456 please")
+    guard.mark_turn_open(tmp_path, "use api_key: sk-abcdefghijklmnop please")
     wf = state.read_state(tmp_path)
-    assert "sk-abcdefghijklmnop123456" not in wf["open_ask"]
+    assert "sk-abcdefghijklmnop" not in wf["open_ask"]

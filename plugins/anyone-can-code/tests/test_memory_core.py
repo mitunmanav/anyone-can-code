@@ -8,9 +8,10 @@ import memory_core
 
 
 def test_scrub_redacts_secrets():
-    dirty = "use api_key: sk-abcdefghijklmnop123456 and password=hunter2 ok"
+    # Fake key long enough for memory_core.scrub (sk- + 16), short of CI secret hygiene (20+)
+    dirty = "use api_key: sk-abcdefghijklmnop and password=hunter2 ok"
     clean = memory_core.scrub(dirty)
-    assert "sk-abcdefghijklmnop123456" not in clean
+    assert "sk-abcdefghijklmnop" not in clean
     assert "hunter2" not in clean
     assert "[REDACTED]" in clean
 
