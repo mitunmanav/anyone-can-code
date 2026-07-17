@@ -104,23 +104,6 @@ class WikiMemoryUnitTests(unittest.TestCase):
             codes2 = {i["code"] for i in linted["issues"]}
             self.assertIn("orphan_link", codes2)
 
-    def test_stop_proposals_do_not_write(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            wiki_memory.ensure_wiki_layout(root)
-            prompt = wiki_memory.stop_save_prompt(
-                [
-                    "We decided to ship Desktop wiki first",
-                    "ok",
-                    "CLI comes after Desktop gate is green",
-                ]
-            )
-            self.assertIn("Wiki save proposals", prompt)
-            self.assertIn("Desktop wiki", prompt)
-            # no extra note files created
-            self.assertEqual(list((root / "notes").rglob("*.md")), [])
-
-
 class WikiMcpIntegrationTests(unittest.TestCase):
     def test_store_feedback_writes_wiki_index(self) -> None:
         server = load_memory_server()
@@ -216,7 +199,8 @@ class WikiHookTests(unittest.TestCase):
             self.assertIn("Wiki brief", ctx)
             self.assertIn("verify before done", ctx.lower())
 
-    def test_save_session_proposes_without_auto_wiki_when_no_signal(self) -> None:
+    def test_save_session_auto_promotes_decision_without_proposal(self) -> None:
+        """Stop hooks write or discard — never propose wiki saves to the agent."""
         hooks = PLUGIN_ROOT / "hooks" / "scripts"
         sys.path.insert(0, str(hooks))
         import save_session  # type: ignore
@@ -235,11 +219,12 @@ class WikiHookTests(unittest.TestCase):
                 },
                 repo,
             )
-            self.assertIn("systemMessage", result)
-            self.assertIn("Wiki save proposals", result["systemMessage"])
-            # no durable notes auto-written from plain summary alone
+            self.assertNotIn("systemMessage", result)
             notes = list((repo / ".codex" / "anyone-can-code" / "memory" / "notes").rglob("*.md"))
-            self.assertEqual(notes, [])
+            self.assertTrue(notes, "decision should auto-promote to a durable note")
+            body = notes[0].read_text(encoding="utf-8")
+            self.assertIn("decision", body)
+            self.assertIn("wiki memory ACC-only", body)
 
 
 if __name__ == "__main__":

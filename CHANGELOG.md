@@ -8,6 +8,7 @@ Beta.4 locked-rule finish. Beta: rough edges expected — please report failures
 
 ### Added
 
+- **Offline auto-memory (Desktop)** — hooks write wants, decisions, corrections, and open work automatically (no save command). SessionStart injects NOW + crash-resume; durable fsynced journals; FTS5/LIKE note search; memory doctor detects untrusted hooks.
 - **Codex CLI package (separate plugin)** — `plugins/anyone-can-code-cli/` full copy, CLI-tuned hooks (`python3` + `PLUGIN_ROOT`, short timeouts); Desktop stays `plugins/anyone-can-code/`; same marketplace lists both; pick the name for your host (Codex does not auto-select).
 - **Two-drawer memory** — user taste (style, likes) lives in one global drawer; project lessons stay inside the project. Drawers never mix.
 - **Taste guard** — user drawer accepts only `preference` / `pattern`; project facts are rejected in plain words.

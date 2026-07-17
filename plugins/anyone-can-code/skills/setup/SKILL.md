@@ -14,7 +14,16 @@ Reply rule:
 
 ## Host
 
-This package is **Codex Desktop**. For Codex CLI, install **Anyone Can Code CLI** from the same marketplace (separate plugin). Desktop: Plugins UI → trust hooks → `$setup`. No trust = hooks do nothing.
+This package is **Codex Desktop**. For Codex CLI, install **Anyone Can Code CLI** from the same marketplace (separate plugin).
+
+## Step 1 — trust the hooks (one time)
+
+Run `/hooks`, trust **anyone-can-code**, then **restart Codex**.
+
+This is the plugin's memory. Without it, Codex forgets you between sessions.
+You must repeat this after every plugin update.
+
+No trust = hooks do nothing = auto-memory dead. Then `$setup`.
 
 ## What it does
 

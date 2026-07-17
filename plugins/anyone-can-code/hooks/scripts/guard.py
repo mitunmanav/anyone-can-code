@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import memory_core
+import memory_promote
 import state
 
 
@@ -391,6 +393,16 @@ def security_gate_for_deploy(repo_root: Path, command: str) -> str | None:
     return " ".join(lines[:4])
 
 
+def mark_turn_open(repo_root: Path, prompt: str) -> None:
+    """Crash-resume anchor: if the app dies before Stop, SessionStart still
+    knows what the user last asked for."""
+    try:
+        ask = memory_core.scrub((prompt or "").strip())[:200]
+        state.write_state(repo_root, {"turn_status": "open", "open_ask": ask})
+    except Exception:
+        pass  # memory must never block the prompt
+
+
 def handle_payload(payload: dict, repo_root: Path) -> dict:
     hook_event = payload.get("hook_event_name", "")
     if hook_event == "UserPromptSubmit":
@@ -405,6 +417,12 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
 
         for signal_type, detail in detect_prompt_signals(payload, repo_root):
             log_signal(repo_root, signal_type, detail, payload)
+        mark_turn_open(repo_root, prompt or "")
+        try:
+            for hit in memory_promote.detect_promotes(payload.get("prompt") or "", "prompt"):
+                memory_promote.write_promote_note(repo_root, hit["kind"], hit["excerpt"])
+        except Exception:
+            pass  # capture is best effort; the prompt log already has the raw line
         context = build_turn_context(prompt, repo_root)
         return {
             "hookSpecificOutput": {

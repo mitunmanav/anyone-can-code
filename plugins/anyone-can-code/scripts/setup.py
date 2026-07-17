@@ -637,8 +637,11 @@ def main() -> None:
     doctor = run_doctor(selected_target)
     info = runtime_info.build_runtime_info(selected_target, PLUGIN_ROOT)
     print(f"Setup done: {selected_target}")
+    print("Step 1 — trust the hooks (one time): run /hooks, trust anyone-can-code, restart Codex.")
+    print("This is the plugin's memory. Without it, Codex forgets you between sessions.")
+    print("Repeat after every plugin update.")
     print("Hooks:", "project" if args.project_hooks else "bundled")
-    print(f"Memory: portable Markdown at {receipt['memory_path']}")
+    print(f"Memory: portable Markdown at {receipt['memory_path']} (auto — no save command needed)")
     print(f"Viewer: {receipt['viewer']['mode']}. {receipt['viewer']['status']}.")
     print(
         f"Imports: {receipt['imports']['status']}; "
@@ -649,7 +652,6 @@ def main() -> None:
     if receipt["viewer"]["instructions"]:
         print(f"Viewer instructions: {receipt['viewer']['instructions']}")
     print(f"Receipt: {receipt['receipt_markdown']}")
-    print("Dev mode: hooks off here. Test hooks by hand.")
     if info.get("marketplace_root"):
         print(f"Market: {info['marketplace_root']}")
     if info.get("plugin_source_root"):
@@ -659,7 +661,7 @@ def main() -> None:
     if doctor and "summary" in doctor:
         summary = doctor["summary"]
         print(f"Doctor: {summary['pass']} PASS, {summary['warn']} WARN, {summary['fail']} FAIL")
-    print("Next: if plugin changed, restart Codex. Open new thread.")
+    print("Next: trust hooks if not yet, restart Codex, open new thread.")
 
 
 if __name__ == "__main__":

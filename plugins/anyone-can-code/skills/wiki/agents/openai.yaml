@@ -1,4 +1,4 @@
 interface:
   display_name: "ACC wiki"
-  short_description: "Save, ask, or clean project notebook"
-  default_prompt: "Use $wiki to save, recall, or clean ACC project wiki memory."
+  short_description: "Look at or repair auto project memory"
+  default_prompt: "Show what ACC remembers for this project, or run memory doctor if something looks broken."

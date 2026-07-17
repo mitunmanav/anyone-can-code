@@ -747,6 +747,41 @@ class Doctor:
         else:
             self.check("memory", "memory_preflight", "FAIL", "blocking", evidence)
 
+    def run_memory_hooks(self) -> None:
+        """Hook-trust detector: heartbeat means SessionStart ran; no heartbeat = trust needed."""
+        try:
+            import memory_doctor as _memory_doctor  # type: ignore
+
+            rep = _memory_doctor.report(PROJECT_ROOT)
+            if rep.get("hooks_alive"):
+                age = rep.get("heartbeat_age_s")
+                age_s = f"{age:.0f}s" if isinstance(age, (int, float)) else "unknown"
+                self.check(
+                    "memory",
+                    "auto_memory_hooks",
+                    "PASS",
+                    "info",
+                    f"hooks alive (heartbeat age {age_s}); backend={rep.get('backend')}; tier={rep.get('tier')}",
+                )
+            else:
+                # WARN not FAIL: untrusted hooks is install-time, not a code defect.
+                # Standalone memory_doctor.py still says NOT RUNNING with the fix text.
+                self.check(
+                    "memory",
+                    "auto_memory_hooks",
+                    "WARN",
+                    "warning",
+                    rep.get("fix") or "Memory hooks not running. Trust via /hooks then restart Codex.",
+                )
+        except Exception as exc:
+            self.check(
+                "memory",
+                "auto_memory_hooks",
+                "WARN",
+                "warning",
+                f"memory doctor unavailable: {exc}",
+            )
+
     def run_status_model(self) -> None:
         ok, evidence = status_model.smoke_check()
         if ok:
@@ -1041,6 +1076,7 @@ class Doctor:
             self.run_tool_interop()
             self.run_command_guard()
             self.run_memory_preflight()
+            self.run_memory_hooks()
             self.run_status_model()
             self.run_runtime_truth()
             self.run_plugin_conflicts()

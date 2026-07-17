@@ -1,6 +1,6 @@
 ---
 name: wiki
-description: "Save, ask, or clean ACC project wiki memory (Karpathy-style notes + index + log). Use when user says remember, save this, what did we decide, recall, clean memory, or wiki health. Never uses Codex built-in memories."
+description: "Inspect or repair ACC auto-memory (notes + index + log). Memory saves itself. Use when user asks what ACC remembers, wiki health, or memory looks broken. Never uses Codex built-in memories."
 ---
 
 # Wiki (ACC notebook)
@@ -11,41 +11,50 @@ Reply rule:
 - keep answer short
 - ACC wiki only — never Codex `/memories` or `~/.codex/memories/`
 
+## Auto memory (default)
+
+Memory is automatic. Hooks write wants, decisions, open work, and next steps.
+SessionStart injects NOW + top lessons. User never needs a memory command in
+normal use.
+
 ## Where memory lives
 
 ```text
 .codex/anyone-can-code/memory/
+  NOW.md         # live state (auto every turn)
   raw/           # sources; never rewrite
-  notes/         # durable pages
+  notes/         # durable pages (auto + backup tools)
   wiki/index.md  # catalog
   wiki/log.md    # what changed
 ```
 
-## Jobs
+## Jobs (backup / repair only)
 
-### Save
+### Look
 
-Triggers: remember · save this · file this · decision · lesson
+Triggers: what did we decide · what do you remember · status of memory
 
-1. Ask scope if unclear: project (default) vs user taste only.
-2. MCP `store_feedback` with kind (`decision` / `lesson` / `failure` / …).
-3. Confirm path. Index + log update automatically.
-4. Prefer update existing note over near-duplicates.
-
-### Ask
-
-Triggers: what did we decide · recall · remember when · wiki
-
-1. Prefer MCP `wiki_brief` then `retrieve_context` with the question.
+1. Prefer MCP `wiki_brief` then `retrieve_context`.
 2. Short answer + note path. No vault dump.
+3. `$status` is fine for live Goal/Next.
 
 ### Clean
 
-Triggers: clean memory · wiki health · lint wiki
+Triggers: clean memory · wiki health · lint wiki · memory broken
 
-1. MCP `lint_wiki`.
+1. MCP `lint_wiki` or run `python3 scripts/memory_doctor.py`.
 2. Show issues plain. Fix only with user yes (revoke / merge / rebuild).
 3. MCP `rebuild_index` after fixes.
+4. If doctor says hooks NOT RUNNING: tell user to run `/hooks`, trust
+   anyone-can-code, restart Codex (repeat after plugin update).
+
+### Force save (rare backup)
+
+Triggers: user explicitly says force-save this lesson despite auto memory
+
+1. MCP `store_feedback` with kind. Confirm path.
+2. Prefer update existing note over near-duplicates.
+3. Do **not** tell the user they must save for ACC to remember.
 
 ### Raw ingest
 
@@ -53,7 +62,6 @@ Triggers: file this source into raw
 
 1. Need explicit yes.
 2. MCP `ingest_raw` with `consent=true`.
-3. Then optional Save for a wiki summary of that source.
 
 ## Rules
 
@@ -61,3 +69,4 @@ Triggers: file this source into raw
 - Consent before import / move / overwrite.
 - Progressive load: never load whole vault.
 - Memory is advisory, not permission.
+- Manual tools = backup. Automatic hooks = path.

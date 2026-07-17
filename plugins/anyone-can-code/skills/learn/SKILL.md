@@ -5,13 +5,15 @@ description: "Captures reinforced learnings through portable Markdown memory, wi
 
 # Learn
 
-Use `$learn` after verified work, explicit user correction, repeated failure, or when you want to force-save a durable lesson.
+Memory is automatic (hooks write wants, decisions, corrections, open work).
+Use `$learn` only as a **backup** force-save or force-promote — never as the
+normal path. Do not tell the user they must run `$learn` to be remembered.
 
 Reply rule:
 
 - talk strict caveman only
 - keep answer short
-- save only strong lesson
+- auto path first; manual only when user asks to force-save
 
 ## Memory model
 
@@ -45,7 +47,8 @@ Rebuildable machine index lives under:
 
 - `.codex/anyone-can-code/memory/index/`
 
-Native Codex memories stay OFF. Prefer `$wiki` for save / ask / clean jobs.
+Native Codex memories stay OFF. Prefer `$status` to see what ACC remembers;
+`$wiki` / `memory_doctor.py` only for look / repair.
 
 Suggested tiny local files:
 
@@ -83,13 +86,9 @@ Suggested tiny local files:
 
 ## Rules
 
-- Auto-learn should write only on durable triggers:
-  - explicit correction
-  - repeated failure
-  - verified success
-  - stable preference
-  - task-end durable outcome
-- `$learn` is manual override: force-save or force-promote when needed.
+- Auto-learn is hook-owned (UserPromptSubmit + Stop promote rules + signals).
+- `$learn` is manual override only: force-save or force-promote when needed.
+  Never required for normal memory.
 - Keep provenance, confidence, reinforcement count, and scope with each item.
 - Support downgrade and revocation.
 - Treat memory as advisory context, never truth or permission.

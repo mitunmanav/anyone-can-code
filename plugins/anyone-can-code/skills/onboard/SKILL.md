@@ -12,7 +12,9 @@ Reply rule:
 
 Use `$onboard` when the plugin needs to understand the starting point before planning or building.
 
-If hooks never ran: CLI `/hooks` trust, or Desktop hook trust, then `$setup`.
+**Step 1 first:** run `/hooks`, trust anyone-can-code, restart Codex. That is
+auto-memory. Without it ACC forgets between sessions. Repeat after plugin
+updates. Then `$setup` if project folders are missing.
 
 ## Entry modes
 
