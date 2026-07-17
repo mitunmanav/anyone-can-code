@@ -334,13 +334,20 @@ def _rotate_jsonl_if_needed(path: Path) -> None:
     if len(lines) <= JSONL_ROTATE_THRESHOLD:
         return
     kept = lines[-JSONL_ROTATE_KEEP:]
-    path.write_text("\n".join(kept) + "\n", encoding="utf-8")
+    tmp = path.with_name(path.name + ".rot.tmp")
+    with tmp.open("w", encoding="utf-8") as handle:
+        handle.write("\n".join(kept) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(tmp, path)
 
 
 def append_jsonl(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
     _rotate_jsonl_if_needed(path)
 
 
@@ -363,8 +370,8 @@ def read_recent_jsonl(path: Path, limit: int = 25, signal_type: str | None = Non
                 continue
             try:
                 row = json.loads(line)
-            except json.JSONDecodeError:
-                continue
+            except (json.JSONDecodeError, ValueError):
+                continue  # torn tail from a killed writer — journal still valid
             if row.get("signal_type") == signal_type:
                 matches.append(row)
         return matches[-limit:]
@@ -374,8 +381,8 @@ def read_recent_jsonl(path: Path, limit: int = 25, signal_type: str | None = Non
             continue
         try:
             rows.append(json.loads(line))
-        except json.JSONDecodeError:
-            continue
+        except (json.JSONDecodeError, ValueError):
+            continue  # torn tail from a killed writer — journal still valid
     return rows
 
 

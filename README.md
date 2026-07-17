@@ -57,6 +57,7 @@ Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a cle
 | **Plan** | A clear path before big changes |
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass — not just “looks fine” |
+| **Remember** | Wants, decisions, open work resume after crash/close — automatic when hooks trusted |
 
 Native Codex — built from [Codex docs](https://openai.com/codex/), not ported from Claude or Cursor.
 

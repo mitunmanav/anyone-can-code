@@ -314,31 +314,3 @@ def sync_after_store(memory_root: Path, summary: str, kind: str = "note") -> dic
     }
 
 
-def propose_saves(candidates: list[str], limit: int = 3) -> list[str]:
-    """Plain-words Stop proposals. Does not write."""
-    out: list[str] = []
-    for raw in candidates:
-        text = str(raw or "").strip()
-        if len(text) < 12:
-            continue
-        # skip pure fluff
-        lower = text.lower()
-        if lower in {"ok", "done", "thanks", "yes", "no"}:
-            continue
-        out.append(text[:200])
-        if len(out) >= limit:
-            break
-    return out
-
-
-def stop_save_prompt(candidates: list[str]) -> str:
-    props = propose_saves(candidates)
-    if not props:
-        return ""
-    lines = [
-        "Wiki save proposals (ACC notebook — say yes to save with $wiki or $learn):",
-    ]
-    for i, item in enumerate(props, 1):
-        lines.append(f"  {i}) {item}")
-    lines.append("Native Codex /memories not used.")
-    return "\n".join(lines)

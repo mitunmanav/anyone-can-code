@@ -6,11 +6,12 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import memory_core
+import memory_promote
 import state
 import model_ledger as _model_ledger
 
@@ -238,23 +239,6 @@ def write_resume_artifacts(repo_root: Path, payload: dict, summary: str, workflo
         )
 
 
-def wiki_stop_proposals(repo_root: Path, summary: str, write_proof: str) -> str:
-    """Propose (not auto-write) 1–3 wiki saves when no durable write ran."""
-    if write_proof:
-        return ""
-    try:
-        scripts = Path(__file__).resolve().parents[2] / "scripts"
-        if str(scripts) not in sys.path:
-            sys.path.insert(0, str(scripts))
-        import wiki_memory as _wiki_memory  # type: ignore
-
-        # Prefer decision-like sentences from the turn summary.
-        chunks = [c.strip() for c in re.split(r"[.\n]+", summary or "") if c.strip()]
-        return _wiki_memory.stop_save_prompt(chunks)
-    except Exception:
-        return ""
-
-
 def handle_payload(payload: dict, repo_root: Path) -> dict:
     if payload.get("stop_hook_active"):
         return {}
@@ -277,16 +261,42 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
             _wiki_memory.append_log(mem, "session-save", write_proof[:160])
         except Exception:
             pass
+    last_decision = ""
+    try:
+        for hit in memory_promote.detect_promotes(summary, "stop"):
+            memory_promote.write_promote_note(repo_root, hit["kind"], hit["excerpt"])
+            if hit["kind"] == "decision" and not last_decision:
+                last_decision = hit["excerpt"]
+    except Exception:
+        pass
     updates = {
         "last_task": summary or "",
         "active_task": summary or "",
         "next_step": infer_next_step(summary),
         "next_action": infer_next_step(summary),
         "memory_mode": "portable-markdown",
+        "turn_status": "closed",
     }
+    if last_decision:
+        updates["last_decision"] = last_decision
     if write_proof:
         updates["memory_write_proof"] = write_proof
     workflow = state.write_state(repo_root, updates)
+    try:
+        mem_dir = state.ensure_project_layout(repo_root)["memory"]
+        now_text = "\n".join([
+            "# NOW — Anyone Can Code live state",
+            f"Updated: {state.utc_now()}",
+            f"Goal: {str(workflow.get('active_goal') or workflow.get('active_task') or 'not set')[:240]}",
+            f"Next: {str(workflow.get('next_step') or 'not set')[:240]}",
+            f"Turn: {workflow.get('turn_status', 'closed')}",
+            f"Last decision: {str(workflow.get('last_decision') or 'none')[:240]}",
+            "",
+            "This file is written automatically every turn. Safe to read, no need to edit.",
+        ]) + "\n"
+        memory_core.atomic_write_text(mem_dir / "NOW.md", now_text)
+    except Exception:
+        pass  # mirror is a convenience; canonical state already committed
     write_session_snapshot(repo_root, summary, workflow)
     write_resume_artifacts(repo_root, payload, summary, workflow)
     state.append_jsonl(
@@ -300,9 +310,6 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
             "transaction_id": workflow.get("transaction_id", ""),
         },
     )
-    proposal = wiki_stop_proposals(repo_root, summary, write_proof)
-    if proposal:
-        return {"systemMessage": proposal}
     return {}
 
 

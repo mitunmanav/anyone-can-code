@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import memory_core
 import state
 import first_run as _first_run
 import model_ledger as _model_ledger
@@ -44,7 +45,28 @@ def read_agents_md(repo_root: Path) -> str:
 
 
 MEMORY_RECALL_CHAR_CAP = 1200
-MEMORY_RECALL_KINDS = {"lesson", "mistake", "correction", "failure"}
+MEMORY_RECALL_KINDS = {"lesson", "mistake", "correction", "failure", "want", "decision"}
+MEMORY_BLOCK_CHAR_CAP = 1500
+
+
+def build_memory_block(repo_root: Path, source: str) -> str:
+    """Constant-size memory inject: NOW facts first, crash flag, top lessons.
+    Total never exceeds MEMORY_BLOCK_CHAR_CAP no matter how big the store is."""
+    workflow = state.read_state(repo_root)
+    lines = ["NOW:"]
+    goal = workflow.get("active_goal") or workflow.get("active_task")
+    if goal:
+        lines.append(f"  Goal: {str(goal)[:240]}")
+    lines.append(f"  Next: {str(workflow.get('next_step') or 'N/A')[:240]}")
+    decision = workflow.get("last_decision")
+    if decision:
+        lines.append(f"  Last decision: {str(decision)[:200]}")
+    if workflow.get("turn_status") == "open" and source in {"startup", "resume"}:
+        ask = str(workflow.get("open_ask") or "")[:200]
+        if ask:
+            lines.append(f"  CRASH RESUME: last request may be unfinished: {ask}")
+    block = "\n".join(lines)
+    return block[:MEMORY_BLOCK_CHAR_CAP]
 
 
 def recall_wiki_brief(repo_root: Path) -> str:
@@ -67,6 +89,21 @@ def recall_memory_notes(repo_root: Path) -> tuple[list[str], str]:
     notes_dir = layout["memory"] / "notes"
     if not notes_dir.exists():
         return [], ""
+    note_files = list(notes_dir.rglob("*.md")) if notes_dir.exists() else []
+    if len(note_files) > 50:
+        try:
+            import memory_index
+            workflow = state.read_state(repo_root)
+            query = " ".join(filter(None, [
+                str(workflow.get("active_goal") or ""),
+                str(workflow.get("next_step") or "")]))[:200]
+            hits = memory_index.search(layout["memory"], query, limit=5)
+            if hits:
+                lessons = [f"- {h['summary'][:160]}" for h in hits]
+                proof = f"{state.utc_now()} recalled {len(lessons)} lesson(s) via index"
+                return lessons, proof
+        except Exception:
+            pass  # fall through to the direct scan
     scored: list[tuple[int, str, str]] = []
     for note_file in notes_dir.rglob("*.md"):
         try:
@@ -144,9 +181,7 @@ def build_context(repo_root: Path, source: str) -> str:
         context_lines.append(
             "Context was compacted. Re-anchor on the state below; do not re-ask answered questions."
         )
-    goal = workflow.get("active_goal") or workflow.get("active_task")
-    if goal:
-        context_lines.append(f"Goal: {str(goal)[:240]}")
+    context_lines.append(build_memory_block(repo_root, source))
     reasoning = rec.get("reasoning") or "medium"
     context_lines += [
         f"State: {workflow.get('phase', 'idle')} / {workflow.get('route', 'unknown')}.",
@@ -293,6 +328,10 @@ def build_context(repo_root: Path, source: str) -> str:
 
 
 def handle_payload(payload: dict, repo_root: Path) -> dict:
+    try:
+        memory_core.write_heartbeat(state.ensure_project_layout(repo_root)["memory"])
+    except Exception:
+        pass
     source = payload.get("source", "startup")
     ctx = build_context(repo_root, source)
     if not _first_run.is_configured(repo_root):
