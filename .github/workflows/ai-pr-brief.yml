@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Write maintainer PR brief
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           MODEL: openai/gpt-4.1-mini
         with:
