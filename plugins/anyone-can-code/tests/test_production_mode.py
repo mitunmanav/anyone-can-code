@@ -17,3 +17,18 @@ def test_production_mode_blocks_force_push():
     result = safety_receipts.classify_action(action, production_mode=True)
     assert result["approval_required"] is True
     assert result.get("force_blocked") is True
+
+
+def test_validate_honors_production_mode_and_force_block():
+    blocked = safety_receipts.validate_action_authority(
+        {
+            "type": "push",
+            "command": "git push --force origin main",
+            "production_mode": True,
+            "user_approval": "yes",
+            "remote_authority": "user said push",
+            "sandbox": "codex-native",
+        }
+    )
+    assert blocked["allowed"] is False
+    assert "force flag blocked in production" in blocked["missing"]

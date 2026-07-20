@@ -147,7 +147,12 @@ def recall_memory_notes(repo_root: Path) -> tuple[list[str], str]:
     return lessons, proof
 
 
-def build_context(repo_root: Path, source: str) -> str:
+def build_context(
+    repo_root: Path,
+    source: str,
+    *,
+    session_id: str | None = None,
+) -> str:
     workflow = state.read_state(repo_root)
     prefs = state.read_preferences(repo_root)
     agents = read_agents_md(repo_root)
@@ -316,7 +321,7 @@ def build_context(repo_root: Path, source: str) -> str:
         context_lines.extend(f"  {line}" for line in memory_lines)
     if _rate_limit_guard is not None:
         try:
-            for line in _rate_limit_guard.build_guard_lines():
+            for line in _rate_limit_guard.build_guard_lines(session_id=session_id):
                 context_lines.append(line)
         except Exception:
             pass
@@ -333,7 +338,8 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
     except Exception:
         pass
     source = payload.get("source", "startup")
-    ctx = build_context(repo_root, source)
+    session_id = str(payload.get("session_id") or "") or None
+    ctx = build_context(repo_root, source, session_id=session_id)
     if not _first_run.is_configured(repo_root):
         ctx += (
             "\n\nFIRST RUN: Ask user one question only: non-tech, middle, or developer "

@@ -69,13 +69,20 @@ def classify_action(action: dict[str, Any], production_mode: bool = False) -> di
 
 
 def validate_action_authority(action: dict[str, Any]) -> dict[str, Any]:
-    classification = classify_action(action)
+    production_mode = bool(
+        action.get("production_mode")
+        if action.get("production_mode") is not None
+        else action.get("production")
+    )
+    classification = classify_action(action, production_mode=production_mode)
     approval = str(action.get("user_approval") or "").strip()
     rollback = str(action.get("rollback") or "").strip()
     remote_evidence = str(action.get("remote_authority") or "").strip()
     sandbox = str(action.get("sandbox") or "codex-native").strip()
 
     missing: list[str] = []
+    if classification.get("force_blocked"):
+        missing.append("force flag blocked in production")
     if classification["approval_required"] and not approval:
         missing.append("exact user approval")
     if classification["rollback_required"] and not rollback:
