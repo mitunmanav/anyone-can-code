@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Turns the accepted spec or concrete request into an executable local plan with ordered tasks, dependencies, and verification targets."
+description: "Use when goal/spec is clear and you need ordered tasks before writing code. Not while still clarifying."
 ---
 
 # Plan
@@ -80,3 +80,14 @@ Speak caveman style: simple, short, direct, step by step, clear YES/NO recommend
   record controlled proof plus uncertainty before platform mechanics code.
 - Never write a separate task queue that disagrees with canonical state.
 - Hide low-level tooling from builder-facing plan lines unless the user asks for technical detail.
+
+## Next skill
+
+Next: `$execute` when user says go. Do not build during plan.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

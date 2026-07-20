@@ -1,6 +1,6 @@
 ---
 name: resume
-description: "Resumes, reconstructs, repairs, or abandons stale workflow state using the local project artifacts."
+description: "Use when work was interrupted, state looks stale, or user says continue/where were we. Not for brand-new work."
 ---
 
 # Resume
@@ -63,3 +63,14 @@ failed, or circuit-broken. Do not treat hook output as canonical truth.
 "What did we decide about X?" — do not shrug. Run
 `python3 "<ACC_PLUGIN_ROOT>/scripts/past_answer.py" "<keywords>"` and answer with
 the date of each record. Nothing found: say "no record" honestly.
+
+## Next skill
+
+Next: continue with `$plan` / `$execute` / `$verify` / `$fix` from recovered state.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

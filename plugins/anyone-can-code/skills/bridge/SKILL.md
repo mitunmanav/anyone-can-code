@@ -1,6 +1,6 @@
 ---
 name: bridge
-description: "Installed plugin detection. Reads installed manifests, routes confident capability matches, and falls back to ACC when coverage is missing or unusable."
+description: "Use when another installed plugin/skill may do the job better, or to route specialists. ACC stays workflow owner."
 ---
 
 # Bridge
@@ -10,34 +10,15 @@ Reply rule:
 - talk strict caveman only
 - keep answer short
 
-Detect and route to other installed plugins. Also wire Superpowers-style
-skills through OpenSpec-style bindings so they help ACC instead of fighting it.
+Detect other plugins; wire external skills so they help ACC. ACC stays owner.
 
 ## How it works
 
-1. Use `scripts/front_door.py` to scan
-   `~/.codex/plugins/cache/*/*/*/.codex-plugin/plugin.json`.
-2. Read structured manifest name, descriptions, declared skills path, and skill
-   frontmatter descriptions.
-3. Build derived capability registry with provider, manifest source, health,
-   last probe, and ACC fallback. Registry is not durable workflow truth.
-4. Probe matched capability before important use.
-5. Skip malformed manifests, missing skill folders, weak matches, unhealthy
-   capabilities, and ACC itself.
-6. Account for every explicitly requested specialist or capability in
-   `requested_specialists`. For each one, record either the exact installed
-   provider and manifest-backed reason or the ACC fallback reason.
-7. Build a bounded specialist assignment through
-   `scripts/front_door.py`. ACC remains workflow owner.
-8. Assignment names exact request, allowed output, permissions, forbidden
-   workflow controls, project-context-first requirement, process authority,
-   and return path.
-9. Read `tool_interop` from front door. It is the OpenSpec-style binding table:
-   ACC phase → external skill, PRECHECK status, and output redirect.
-10. When a binding is `precheck: ok`, invoke that installed skill for the matching
-    ACC phase (plan/execute/fix/verify). Do not rebuild the skill inside ACC.
-11. Honor redirects: write durable notes only to `redirect.write_to` (ACC
-    artifacts). Never write to `redirect.do_not_write_to` (e.g.
+1. `scripts/front_door.py` scans installed plugin manifests under `~/.codex/plugins/cache`.
+2. Match capabilities; probe before important use; skip weak/broken/ACC-self.
+3. Specialist assignment stays bounded; ACC remains workflow owner.
+4. Use `tool_interop` bindings for plan/execute/fix/verify helpers when precheck ok.
+5. Write durable notes only to ACC redirect paths. Never foreign plan/verify defaults (
     `docs/superpowers/specs/`, `docs/superpowers/plans/`).
 12. Missing or unhealthy binding → PRECHECK fail → ACC local path with reason.
     No silent fallback that pretends the skill ran.
@@ -74,3 +55,10 @@ Workflow handoff is allowed only when user explicitly requests that exact
 plugin to become workflow owner.
 Never silently drop a user-requested specialist. If the bridge cannot prove it
 was loaded or usable, say that ACC is continuing locally and why.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

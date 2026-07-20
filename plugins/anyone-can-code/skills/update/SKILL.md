@@ -1,6 +1,6 @@
 ---
 name: update
-description: "Migrates project state to the current plugin version after the plugin source is refreshed in Codex. Backs up supported data, quarantines corrupt files, and records a migration journal."
+description: "Use after marketplace plugin refresh to migrate project state. Not for daily coding."
 ---
 
 # Update
@@ -55,3 +55,10 @@ Official Codex docs flow:
 
 - The plugin bundle was updated and the project needs migration.
 - You want a safe upgrade path with backups and compatibility notes.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

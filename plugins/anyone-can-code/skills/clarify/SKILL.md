@@ -1,6 +1,6 @@
 ---
 name: clarify
-description: "Structured intake for vague or partial requests. Asks only the questions needed to remove meaningful uncertainty, then writes a local spec draft."
+description: "Use when request is too vague to plan or build. Not when goal and constraints are already clear."
 ---
 
 # Clarify
@@ -54,3 +54,14 @@ Include:
 - High-impact unknown: stop and ask.
 - Medium-impact unknown: present ranked options and recommend one.
 - Low-impact convenience detail: proceed and mark inference.
+
+## Next skill
+
+Next: `$plan` after SPEC-DRAFT is good enough.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

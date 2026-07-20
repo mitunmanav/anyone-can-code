@@ -1,6 +1,6 @@
 ---
 name: capture
-description: "Explicit-only recording of decisions, blockers, and insights into the local project artifact history."
+description: "Use when user wants an explicit recorded decision or blocker saved to artifacts. Not silent monitoring."
 ---
 
 # Capture
@@ -28,3 +28,10 @@ Include:
 ## Rule
 
 This is not a silent prompt monitor. It is an explicit recording step.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

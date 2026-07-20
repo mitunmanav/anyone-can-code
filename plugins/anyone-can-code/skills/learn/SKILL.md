@@ -1,10 +1,11 @@
 ---
 name: learn
-description: "Captures reinforced learnings through portable Markdown memory, with tiny local fallback ledgers only."
+description: "Use when user wants force-save a lesson or promote a rule after a real win/fail. Not every turn — hooks auto-save memory."
 ---
 
 # Learn
 
+Main durable memory is **portable Markdown** under `.codex/anyone-can-code/memory/`.
 Memory is automatic (hooks write wants, decisions, corrections, open work).
 Use `$learn` only as a **backup** force-save or force-promote — never as the
 normal path. Do not tell the user they must run `$learn` to be remembered.
@@ -97,3 +98,14 @@ Suggested tiny local files:
   dedupe, provenance, scope label, and receipt before import.
 - Repeated import of same content must skip, not reinforce. Failed import must
   roll back Markdown and retain source.
+
+## Next skill
+
+Next: none required — memory is saved; back to normal.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

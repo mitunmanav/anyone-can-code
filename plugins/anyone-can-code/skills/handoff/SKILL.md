@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: "Moves work to a fresh thread or another tool with full context: portable handoff file, state, memory, git, style. Use when user says move to new chat, new thread, continue elsewhere, switch model mid-work, or context is near limit."
+description: "Use when moving to a new chat/thread/tool/model or context is near limit. Not for same-thread small questions."
 ---
 
 # Handoff
@@ -35,3 +35,10 @@ Reply rule:
 
 Small change → native model menu under chat (or CLI `/model`).
 Big mid-work switch → new chat + this handoff (model+reasoning in prompt). User decides. No invent model API.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

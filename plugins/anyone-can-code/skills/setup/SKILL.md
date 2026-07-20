@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "Bootstrap project-owned state for Anyone Can Code. Creates local workflow, learning, settings, and artifact folders, and can optionally install repo-local hooks."
+description: "Use when project lacks ACC folders, first install, or user says setup/bootstrap ACC. Not for daily plan/build."
 ---
 
 # Setup
@@ -71,3 +71,14 @@ No trust = hooks do nothing = auto-memory dead. Then `$setup`.
 After setup, use `action_suggest.suggest_actions`. If suggestions: plain words —
 "Codex Settings → Actions → paste script." Desktop-first UI; CLI can run same
 scripts in terminal. NEVER write app settings yourself.
+
+## Next skill
+
+Next: `$onboard` or `$orchestrator` for first real task.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

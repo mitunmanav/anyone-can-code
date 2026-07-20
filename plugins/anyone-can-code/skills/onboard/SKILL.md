@@ -1,6 +1,6 @@
 ---
 name: onboard
-description: "Detects whether the user is starting from an idea, a spec, an existing repo, or a bug. Builds the initial local workflow context without forcing unnecessary steps."
+description: "Use when start point is unclear (idea, repo, bug, feature) before plan/build. Not when route already clear."
 ---
 
 # Onboard
@@ -42,3 +42,14 @@ entry-mode classifier in this skill.
 Memory onboarding shows selected Markdown storage and optional viewer mode.
 Never inspect or import existing session files unless user selected exact paths,
 scope, and confirmation.
+
+## Next skill
+
+Next: `$clarify` if still vague, else `$plan` or `$execute` / `$fix` by entry mode.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

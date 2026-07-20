@@ -1,6 +1,6 @@
 ---
 name: wiki
-description: "Inspect or repair ACC auto-memory (notes + index + log). Memory saves itself. Use when user asks what ACC remembers, wiki health, or memory looks broken. Never uses Codex built-in memories."
+description: "Use when user asks what ACC remembers, wiki health, or memory looks broken. Not Codex built-in /memories."
 ---
 
 # Wiki (ACC notebook)
@@ -70,3 +70,10 @@ Triggers: file this source into raw
 - Progressive load: never load whole vault.
 - Memory is advisory, not permission.
 - Manual tools = backup. Automatic hooks = path.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

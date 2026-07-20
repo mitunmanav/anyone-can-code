@@ -1,6 +1,6 @@
 ---
 name: usage
-description: "Shows Codex token usage, activity breakdown, and tool patterns — zero tokens spent. Runs codeburn.py for compact inline status or web dashboard. Reads session files from disk, no API calls."
+description: "Use when user asks token/cost/usage of Codex. Zero-token disk read; not for product features."
 ---
 
 # Usage
@@ -68,3 +68,10 @@ python scripts/codeburn.py export -p all       # full history
 ## When NOT to use
 
 For Claude Code, Cursor, or other providers — use `npx codeburn`.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

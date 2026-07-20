@@ -1,6 +1,6 @@
 ---
 name: status
-description: "Summarizes the current workflow state, route, blockers, and next step from local plugin files."
+description: "Use when user wants a checkpoint: where we are, next step, blockers. Not for deep rebuilds."
 ---
 
 # Status
@@ -75,23 +75,14 @@ Example: `Status: build implemented, tests verified, deploy blocked`.
 Never report `works`, `proper`, `perfect`, or user accepted unless matching
 interaction, visual QA, or user-acceptance evidence is recorded.
 
-## Host + live scripts (not test-only)
+## Live helpers
 
-This is the **Desktop** package. CLI users install **Anyone Can Code CLI**.
+Desktop package (CLI = separate plugin). Cheap truth scripts when useful:
+`host_detect.py --guidance`, `loop_registry.py`, `ai_observability.py`, `past_answer.py`.
 
-Always run these cheap CLIs for truth (product path, not tests):
+## Done — back to normal
 
-```
-python3 "<ACC_PLUGIN_ROOT>/scripts/host_detect.py" --guidance
-python3 "<ACC_PLUGIN_ROOT>/scripts/loop_registry.py"
-python3 "<ACC_PLUGIN_ROOT>/scripts/ai_observability.py" --project-root .
-python3 "<ACC_PLUGIN_ROOT>/scripts/walkaway_pack.py" --goal
-```
-
-Show host line + loop menu + “What AI did” receipt + walk-away `/goal` tip in plain words.
-
-## Past questions
-
-"What did we decide about X?" — do not shrug. Run
-`python3 "<ACC_PLUGIN_ROOT>/scripts/past_answer.py" "<keywords>"` and answer with
-the date of each record. Nothing found: say "no record" honestly.
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.
