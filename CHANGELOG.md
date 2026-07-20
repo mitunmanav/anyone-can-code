@@ -2,6 +2,24 @@
 
 All notable public changes to Anyone Can Code will be documented here.
 
+## 2.0.0-beta.4 - 2026-07-20
+
+Desktop plugin only. CLI stays **1.1.0-beta.4**.
+
+### Security / reliability (Desktop hooks)
+
+- Stricter **PermissionRequest** auto-allow: whole command chain must be safe (not only the first prefix).
+- Stronger **PreToolUse** blocks for pipe-to-shell and related patterns (`cat|bash`, `echo|sh`, etc.).
+- Guard / audit **fail closed** on crash for tool gates (deny + exit 2), matching Codex hooks docs.
+- Wire **workflow-takeover** block into PreToolUse (was tested but not called).
+- Production mode + force-push flags honored on safety authority path.
+- Deploy vs plain `git push` split; quieter silent-failure signals; session-scoped rate/token read when `session_id` present.
+
+### Notes
+
+- Hooks remain a **guardrail** (Codex: Bash / apply_patch / MCP). OS sandbox still required.
+- Unit tests + doctor expected green before ship.
+
 ## 1.1.0-beta.4 - 2026-07-16
 
 Beta.4 locked-rule finish. Beta: rough edges expected — please report failures via GitHub Issues.

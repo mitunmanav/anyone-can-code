@@ -62,7 +62,7 @@ Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a cle
 Native Codex — built from [Codex docs](https://openai.com/codex/), not ported from Claude or Cursor.
 
 I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2).  
-Open beta **v1.1.0-beta.4**.
+Open beta — Desktop **v2.0.0-beta.4** · CLI unchanged (**v1.1.0-beta.4**).
 
 **Need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python 3
 
