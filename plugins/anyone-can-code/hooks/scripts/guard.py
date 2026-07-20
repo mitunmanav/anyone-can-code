@@ -286,17 +286,19 @@ def build_turn_context(
         pass
 
     # Safety lines: reserved budget, never sliced off by body growth.
+    # Token-burn scan is opt-in (ACC_TOKEN_BURN=1) — default off for speed.
     safety_lines: list[str] = []
-    try:
-        scripts = Path(__file__).resolve().parents[2] / "scripts"
-        if str(scripts) not in sys.path:
-            sys.path.insert(0, str(scripts))
-        import rate_limit_guard as _rate_limit_guard
-        for line in _rate_limit_guard.build_guard_lines(session_id=session_id):
-            if line:
-                safety_lines.append(line)
-    except Exception:
-        pass
+    if os.environ.get("ACC_TOKEN_BURN", "").strip().lower() in {"1", "true", "yes"}:
+        try:
+            scripts = Path(__file__).resolve().parents[2] / "scripts"
+            if str(scripts) not in sys.path:
+                sys.path.insert(0, str(scripts))
+            import rate_limit_guard as _rate_limit_guard
+            for line in _rate_limit_guard.build_guard_lines(session_id=session_id):
+                if line:
+                    safety_lines.append(line)
+        except Exception:
+            pass
 
     interop_line = build_tool_interop_line(prompt)
     if interop_line:

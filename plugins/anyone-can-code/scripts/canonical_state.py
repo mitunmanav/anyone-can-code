@@ -140,8 +140,16 @@ def legacy_truth_fields(state: dict[str, Any]) -> list[str]:
     return sorted(key for key in LEGACY_TRUTH_FIELDS if key in state)
 
 
+def _safe_text(text: str) -> str:
+    """Avoid Windows lone-surrogate UTF-8 crashes on state write."""
+    if not isinstance(text, str):
+        text = str(text)
+    return text.encode("utf-8", errors="replace").decode("utf-8")
+
+
 def _write_text_atomic(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    safe = _safe_text(text if isinstance(text, str) else str(text))
     handle, temp_name = tempfile.mkstemp(
         prefix=f".{path.name}.",
         suffix=".tmp",
@@ -150,7 +158,7 @@ def _write_text_atomic(path: Path, text: str) -> None:
     )
     try:
         with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as stream:
-            stream.write(text)
+            stream.write(safe)
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temp_name, path)
@@ -168,7 +176,7 @@ def atomic_write_json(path: Path, data: dict[str, Any]) -> None:
     must NOT go through update_canonical_state because that strips
     LEGACY_TRUTH_FIELDS on every write. Callers own their own dict shape.
     """
-    _write_text_atomic(path, json.dumps(data, indent=2) + "\n")
+    _write_text_atomic(path, json.dumps(data, indent=2, default=str) + "\n")
 
 
 def _snapshot(paths: list[Path]) -> dict[Path, bytes | None]:

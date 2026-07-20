@@ -37,8 +37,13 @@ class OnePluginMarketplaceTests(unittest.TestCase):
                     if hook.get("type", "command") != "command":
                         continue
                     with self.subTest(event=event):
-                        self.assertIn("$PLUGIN_ROOT", hook.get("command", ""))
-                        self.assertIn("%PLUGIN_ROOT%", hook.get("commandWindows", ""))
+                        # Codex docs: ${PLUGIN_ROOT} (substituted by host).
+                        # Prefer that over shell-only $VAR / cmd-only %VAR%.
+                        cmd = hook.get("command", "")
+                        win = hook.get("commandWindows", "")
+                        self.assertIn("${PLUGIN_ROOT}", cmd)
+                        self.assertIn("${PLUGIN_ROOT}", win)
+                        self.assertNotIn("%PLUGIN_ROOT%", win)
                         self.assertIn("timeout", hook)
 
 

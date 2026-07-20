@@ -44,7 +44,9 @@ def write_capsule(repo_root: Path, trigger: str) -> Path:
         marker = "x" if step.get("status") == "done" else " "
         lines.append(f"- [{marker}] {step.get('step', '')}")
     path = _capsule_path(repo_root)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    import memory_core
+
+    memory_core.atomic_write_text(path, "\n".join(lines) + "\n")
     return path
 
 

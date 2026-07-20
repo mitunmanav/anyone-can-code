@@ -35,11 +35,22 @@ def scrub(text: str) -> str:
     return out
 
 
+def safe_text(text: str | None) -> str:
+    """Make text safe for UTF-8 disk write (Windows lone surrogates, etc.)."""
+    if text is None:
+        return ""
+    if not isinstance(text, str):
+        text = str(text)
+    # Lone surrogates crash strict utf-8 encode; replace keeps chat moving.
+    return text.encode("utf-8", errors="replace").decode("utf-8")
+
+
 def atomic_write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
+    payload = safe_text(text)
     with tmp.open("w", encoding="utf-8") as handle:
-        handle.write(text)
+        handle.write(payload)
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(tmp, path)

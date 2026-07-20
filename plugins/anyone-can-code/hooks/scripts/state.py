@@ -21,6 +21,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import canonical_state
+import memory_core
 
 
 PROJECT_NAMESPACE = "anyone-can-code"
@@ -202,9 +203,18 @@ def _read_json(path: Path, default: dict) -> dict:
     return dict(default)
 
 
+def _safe_json_dumps(payload: object, **kwargs) -> str:
+    """JSON dump that never dies on lone surrogates / odd Windows text."""
+    try:
+        raw = json.dumps(payload, **kwargs)
+    except (TypeError, ValueError):
+        raw = json.dumps(payload, default=str, **kwargs)
+    return memory_core.safe_text(raw)
+
+
 def _write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    path.write_text(_safe_json_dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def read_hook_health(repo_root: Path) -> dict:
@@ -222,9 +232,29 @@ def read_hook_health(repo_root: Path) -> dict:
     return health
 
 
+def _encode_fail_reason(reason: str) -> bool:
+    lower = (reason or "").lower()
+    return any(
+        token in lower
+        for token in (
+            "surrogate",
+            "utf-8",
+            "utf8",
+            "unicodeencode",
+            "codec can't encode",
+            "codec cant encode",
+        )
+    )
+
+
 def hook_circuit_open(repo_root: Path, hook_name: str) -> bool:
     entry = read_hook_health(repo_root).get("hooks", {}).get(hook_name, {})
-    return bool(entry.get("circuit_open"))
+    if not bool(entry.get("circuit_open")):
+        return False
+    # Encode failures must not lock save forever — heal so fixed code can run.
+    if _encode_fail_reason(str(entry.get("reason") or "")):
+        return False
+    return True
 
 
 def record_hook_result(
@@ -242,12 +272,16 @@ def record_hook_result(
     if status == "pass":
         failures = 0
     elif status == "fail":
-        failures += 1
+        # Encode faults: count as soft fail (do not trip permanent circuit).
+        if _encode_fail_reason(reason):
+            failures = min(failures, HOOK_RETRY_LIMIT - 1)
+        else:
+            failures += 1
     circuit_open = failures >= HOOK_RETRY_LIMIT
     entry = {
         "purpose": HOOK_PURPOSES.get(hook_name, "Optional helper signal."),
         "status": status,
-        "reason": reason[:240],
+        "reason": memory_core.safe_text(reason)[:240],
         "checked_at": utc_now(),
         "duration_ms": duration_ms,
         "consecutive_failures": failures,
@@ -330,13 +364,16 @@ JSONL_ROTATE_KEEP = 200
 def _rotate_jsonl_if_needed(path: Path) -> None:
     if not path.exists():
         return
-    lines = path.read_text(encoding="utf-8").splitlines()
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return
     if len(lines) <= JSONL_ROTATE_THRESHOLD:
         return
     kept = lines[-JSONL_ROTATE_KEEP:]
     tmp = path.with_name(path.name + ".rot.tmp")
     with tmp.open("w", encoding="utf-8") as handle:
-        handle.write("\n".join(kept) + "\n")
+        handle.write(memory_core.safe_text("\n".join(kept) + "\n"))
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(tmp, path)
@@ -345,7 +382,7 @@ def _rotate_jsonl_if_needed(path: Path) -> None:
 def append_jsonl(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(payload) + "\n")
+        handle.write(_safe_json_dumps(payload) + "\n")
         handle.flush()
         os.fsync(handle.fileno())
     _rotate_jsonl_if_needed(path)
