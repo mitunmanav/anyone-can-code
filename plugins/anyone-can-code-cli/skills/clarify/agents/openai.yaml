@@ -1,7 +1,0 @@
-interface:
-  display_name: "ACC clarify"
-  short_description: "Ask only what unblocks the build"
-  default_prompt: "Use $clarify to describe your app idea and get a structured spec."
-
-policy:
-  allow_implicit_invocation: true

@@ -1,9 +1,0 @@
-[features]
-memories = false
-
-[agents]
-max_threads = 2
-max_depth = 1
-
-[windows]
-sandbox = "unelevated"

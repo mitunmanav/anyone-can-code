@@ -1,7 +1,0 @@
-interface:
-  display_name: "ACC plugins"
-  short_description: "Detect and use other installed plugins"
-  default_prompt: "Use $bridge to read installed plugin manifests, route only confident matches, and fall back to ACC when coverage is missing or returns no result."
-
-policy:
-  allow_implicit_invocation: false

@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code",
   "version": "2.0.0-beta.4",
-  "description": "Reliability workflow for Codex Desktop. Plan, build, resume, recover, and verify from plain-English requests.",
+  "description": "Reliability workflow for OpenAI Codex (Desktop app and CLI). Plan, build, resume, recover, and verify from plain-English requests.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -17,15 +17,18 @@
     "workflow",
     "verification",
     "reliability",
-    "plugin"
+    "plugin",
+    "codex-cli",
+    "desktop",
+    "terminal"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Anyone Can Code",
-    "shortDescription": "Reliability workflow for Codex Desktop: plan \u2192 build \u2192 verify.",
-    "longDescription": "Anyone Can Code is a free open-source reliability workflow plugin for OpenAI Codex Desktop. Say what you want in plain English; ACC helps Codex plan, build, resume, recover, and verify before claiming done. Open beta.",
+    "shortDescription": "Reliability workflow for Codex Desktop and CLI: plan \u2192 build \u2192 verify.",
+    "longDescription": "Anyone Can Code is a free open-source reliability workflow plugin for OpenAI Codex (Desktop app and CLI). Say what you want in plain English; ACC helps Codex plan, build, resume, recover, and verify before claiming done. One plugin for both hosts. Open beta.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [

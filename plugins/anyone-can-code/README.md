@@ -5,9 +5,9 @@
 <h1 align="center">Anyone Can Code</h1>
 
 <p align="center">
-  <strong>Reliability workflow plugin for OpenAI Codex Desktop.</strong><br/>
+  <strong>Reliability workflow plugin for OpenAI Codex (Desktop + CLI).</strong><br/>
   Say what you want. ACC helps Codex plan it, build it, and prove it works.<br/>
-  <em>This package is for the Desktop app only.</em> Terminal users: install <strong>Anyone Can Code CLI</strong>.
+  <em>One plugin for both hosts.</em>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
   <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
-**New here?** [First day guide](../../docs/FIRST_DAY.md) · Full install: [root README — Desktop](../../README.md#desktop)  
+**New here?** [First day guide](../../docs/FIRST_DAY.md) · Full install: [root README](../../README.md)  
 
 **Install GIF (in this repo):** [docs/media/install-setup.gif](../../docs/media/install-setup.gif)  
 **Full video:** [docs/media/install-setup.mp4](../../docs/media/install-setup.mp4) · [website player](https://anyone-can-code.vercel.app/#install)  
@@ -29,16 +29,13 @@
 
 ### Install (short)
 
-**This is the Desktop package.** For Codex CLI, install **Anyone Can Code CLI** from the same marketplace.
+**One plugin** for Desktop app and CLI.
 
-1. Copy `https://github.com/mitunmanav/anyone-can-code`  
-2. Codex → **Plugins** → **+** → **Add a Marketplace** → paste URL  
-3. **Anyone Can Code** (Desktop) → **Install**  
-4. Trust every ACC hook (required)  
-5. Restart · open a project · `$setup` · say what you want  
+**Desktop:** marketplace URL → install **Anyone Can Code** → trust hooks → restart → `$setup`  
 
-**Current version:** **v2.0.0-beta.4** ([plugin.json](.codex-plugin/plugin.json)) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)  
-CLI package is separate and may lag (see root README).
+**CLI:** `codex plugin marketplace add mitunmanav/anyone-can-code --ref main` → `/plugins` install **Anyone Can Code** → `/hooks` trust → `$setup`
+
+**Current version:** **v2.0.0-beta.4** ([plugin.json](.codex-plugin/plugin.json)) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
 
 ### If install fails
 
@@ -51,7 +48,7 @@ CLI package is separate and may lag (see root README).
 
 More: [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Install issue form](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) · [root troubleshooting](../../README.md#if-something-fails)
 
-### Safety (Desktop hooks, beta.4 v2)
+### Safety (hooks, beta.4 v2)
 
 Built from [Codex hooks docs](https://developers.openai.com/codex/hooks):
 

@@ -2024,40 +2024,21 @@ class ProjectStateTests(unittest.TestCase):
             self.assertEqual(agents_path.read_text(encoding="utf-8"), "project rules stay\n")
             self.assertTrue(snapshot_path.exists())
 
-    def _windows_hook_command(self, hook: dict) -> str:
-        """Desktop package uses PowerShell in command."""
-        return str(hook.get("command") or "")
-
-    @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
-    def test_hook_commands_survive_powershell_outer_shell(self) -> None:
+    def test_hooks_use_plugin_root_command_and_windows_override(self) -> None:
+        """One package: Codex PLUGIN_ROOT command + commandWindows (docs shape)."""
         hooks = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
-        marketplace_repo = PLUGIN_ROOT.parents[1]
-        workspace_root = marketplace_repo.parent
-        env = os.environ.copy()
-        env["PLUGIN_ROOT"] = str(marketplace_repo)
-        env.pop("CLAUDE_PLUGIN_ROOT", None)
-
-        command = self._windows_hook_command(
-            hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]
-        )
-        payload = {
-            "hook_event_name": "UserPromptSubmit",
-            "prompt": "test",
-            "cwd": str(workspace_root),
-        }
-
-        result = subprocess.run(
-            ["powershell.exe", "-NoProfile", "-Command", command],
-            input=json.dumps(payload),
-            text=True,
-            capture_output=True,
-            cwd=workspace_root,
-            env=env,
-            timeout=20,
-        )
-
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip(), "{}")
+        for event, groups in hooks["hooks"].items():
+            for group in groups:
+                for hook in group.get("hooks") or []:
+                    if hook.get("type", "command") != "command":
+                        continue
+                    cmd = str(hook.get("command") or "")
+                    win = str(hook.get("commandWindows") or "")
+                    with self.subTest(event=event):
+                        self.assertIn("PLUGIN_ROOT", cmd)
+                        self.assertIn("python3", cmd)
+                        self.assertIn("PLUGIN_ROOT", win)
+                        self.assertTrue(win.startswith("py -3") or "py -3" in win)
 
     @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
     def test_hook_commands_run_from_parent_workspace_without_plugin_env_under_cmd(self) -> None:
