@@ -20,6 +20,8 @@ All notable public changes to Anyone Can Code will be documented here.
 - Production mode + force-push flags honored on safety authority path.
 - Deploy vs plain `git push` split; quieter silent-failure signals; session-scoped rate/token read when `session_id` present.
 - `run_hook_attempt` fail-closed for PreToolUse / PermissionRequest on worker crash or open circuit.
+- Hard PreToolUse denys write durable **safety receipts** under `.codex/anyone-can-code/artifacts/receipts/`.
+- Memory root honesty: project notes require `project_root`; SessionStart states project vs user-taste drawers.
 
 ### Notes
 

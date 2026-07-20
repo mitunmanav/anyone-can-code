@@ -132,6 +132,39 @@ def log_blocked(repo_root: Path, payload: dict, reason: str) -> None:
         "reason": reason,
     }
     state.append_jsonl(state.journal_path(repo_root, "blocked-events.jsonl"), entry)
+    # ACC policy (not Codex API): durable safety receipt on every hard deny.
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import safety_receipts as _safety_receipts  # type: ignore
+
+        tool_input = payload.get("tool_input") or {}
+        cmd = ""
+        if isinstance(tool_input, dict):
+            cmd = str(tool_input.get("command") or "")
+        elif isinstance(tool_input, str):
+            cmd = tool_input
+        prefs = state.read_preferences(repo_root)
+        production_mode = bool(prefs.get("production_repo_caution"))
+        _safety_receipts.write_action_receipt(
+            repo_root,
+            {
+                "name": f"hook-block-{payload.get('tool_name') or 'tool'}",
+                "type": "remote" if "push" in cmd.lower() or "deploy" in cmd.lower() else "delete",
+                "command": cmd[:500],
+                "production_mode": production_mode,
+                "user_approval": "",
+                "sandbox": "codex-native",
+            },
+            status="blocked",
+            evidence=[
+                f"hook:{payload.get('hook_event_name') or 'PreToolUse'}",
+                f"reason:{reason[:240]}",
+            ],
+        )
+    except Exception:
+        pass  # journal line is enough if receipt write fails
 
 
 def log_signal(repo_root: Path, signal_type: str, detail: str, payload: dict) -> None:

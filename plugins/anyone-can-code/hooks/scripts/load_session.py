@@ -192,7 +192,10 @@ def build_context(
         f"State: {workflow.get('phase', 'idle')} / {workflow.get('route', 'unknown')}.",
         f"Next: {workflow.get('next_step', 'N/A')}.",
         f"ENFORCE comm rule: {comm_mode}. Short replies only. No walls of text.",
-        f"Memory: {workflow.get('memory_mode', 'portable-markdown')}. ACC wiki (raw+notes+index+log); native Codex memories OFF.",
+        f"Memory: {workflow.get('memory_mode', 'portable-markdown')}. "
+        "Project drawer: .codex/anyone-can-code/memory/. "
+        "User taste: ~/.codex/anyone-can-code/user-memory/. "
+        "Native Codex /memories OFF for ACC project notes.",
         f"From: {source}.",
         f"Model: {rec['model']} reasoning={reasoning} ({rec['reason']}). Not always high effort.",
         (

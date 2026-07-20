@@ -195,7 +195,9 @@ class WikiHookTests(unittest.TestCase):
             )
             wiki_memory.rebuild_human_index(mem)
             ctx = load_session.build_context(repo, "startup")
-            self.assertIn("native Codex memories OFF", ctx)
+            self.assertIn("Native Codex /memories OFF", ctx)
+            self.assertIn("Project drawer:", ctx)
+            self.assertIn("User taste:", ctx)
             self.assertIn("Wiki brief", ctx)
             self.assertIn("verify before done", ctx.lower())
 

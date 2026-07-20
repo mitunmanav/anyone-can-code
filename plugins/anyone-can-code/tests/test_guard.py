@@ -307,3 +307,21 @@ def test_plain_git_push_gets_context_not_security_gate(tmp_path, monkeypatch):
     assert out.get("hookSpecificOutput", {}).get("permissionDecision") != "deny"
     assert "git push" in out.get("hookSpecificOutput", {}).get("additionalContext", "").lower()
     assert calls == []
+
+
+def test_pretool_deny_writes_safety_receipt(tmp_path):
+    """Audit leftover: hard denys must write ACC safety receipts under artifacts/receipts."""
+    state.ensure_project_layout(tmp_path)
+    out = guard.handle_payload(
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "Bash",
+            "tool_input": {"command": "rm -rf /"},
+        },
+        tmp_path,
+    )
+    assert out.get("hookSpecificOutput", {}).get("permissionDecision") == "deny"
+    receipts = list((tmp_path / ".codex" / "anyone-can-code" / "artifacts" / "receipts").glob("*.json"))
+    assert receipts, "expected at least one safety receipt json"
+    body = receipts[0].read_text(encoding="utf-8")
+    assert '"status": "blocked"' in body or '"status":"blocked"' in body
