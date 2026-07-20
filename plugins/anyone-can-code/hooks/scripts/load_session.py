@@ -322,7 +322,12 @@ def build_context(
     if memory_lines:
         context_lines.append("Memory recall (apply these lessons):")
         context_lines.extend(f"  {line}" for line in memory_lines)
-    if _rate_limit_guard is not None:
+    # Token-burn / session scan is optional (can be huge on Windows). Opt-in only.
+    if _rate_limit_guard is not None and os.environ.get("ACC_TOKEN_BURN", "").strip() in {
+        "1",
+        "true",
+        "yes",
+    }:
         try:
             for line in _rate_limit_guard.build_guard_lines(session_id=session_id):
                 context_lines.append(line)
