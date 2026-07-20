@@ -1,6 +1,6 @@
 ---
 name: verify
-description: "Evidence-first verification for code, plans, and repairs. Distinguishes built from verified and records what remains uncertain."
+description: "Use when about to claim done/works/fixed, or user asks test/check/prove. Run evidence; not for pure planning chat."
 ---
 
 # Verify
@@ -14,12 +14,7 @@ Reply rule:
 
 Use `$verify` before saying the work is complete.
 
-## External tool interop (Superpowers-style)
-
-If front door `tool_interop` has available verify/review/finish bindings, use
-those installed skills as evidence helpers. Write the durable record only to
-ACC `VERIFICATION.md` (or the binding redirect). Never hand workflow ownership
-to the foreign skill.
+**Iron law:** no "done", "works", "fixed", or "perfect" without named evidence from this skill (command, file, output, or real use). Built ≠ verified. Tests are part of verify — run them when they exist.
 
 ## Output
 
@@ -70,26 +65,21 @@ Built is not verified. Do not collapse those states.
 Only use these workflow states: `in scope`, `designed`, `approved`,
 `implemented`, `verified`, `blocked`, `deferred`.
 
-Use `verified` only when evidence exists. If a check did not run, say
-`implemented` or `blocked`, then name the missing proof.
-No "done" without proof: run `python3 "<ACC_PLUGIN_ROOT>/scripts/cross_agent_pack.py"`
-logic via `claim_done` — product needs real-use path, not unit tests alone.
-Do not say interactive work `works` without interaction evidence.
-Build, audit, source scan, HTTP 200 are not interaction evidence.
-Do not say visual quality, polish, perfect, final, or accepted unless
-matching visual QA or user acceptance evidence exists.
-Safe wording: `Build passed and HTTP smoke passed. Interactions, visual
-quality, and user acceptance unverified.`
-Hook repairs: source + unit tests ≠ fixed. Prove hook under cmd.exe and
-PowerShell; restart/new-thread proof for Desktop.
-Follow `command_guard`. Windows: `npm.cmd`, no Bash-only `||`, Git from repo root.
-Verify `usage_checkpoint` before long work: 85% checkpoint, 90% split, 94% stop.
+Use `verified` only with evidence. Missing check → `implemented`/`blocked` + name gap.
+Product "works" needs real-use path, not unit tests alone. HTTP 200 ≠ interaction proof.
+Visual/polish/accepted only with visual QA or user acceptance evidence.
+Windows: `npm.cmd`, no Bash-only `||`, Git from repo root. Risky ship needs safety receipts.
+Verify `command_guard` on shell/Git. Verify `usage_checkpoint` before long work: 85% checkpoint, 90% split, 94% stop.
 Verify `patch_retry` after a failed patch: reread exact target before retry.
 Verify `mechanics_docs_gate`: docs brief before platform mechanics code changes.
-Safety receipts for risky/remote work. Release needs installed runtime evidence.
 
-## Headless + GitHub review (native wrap)
+## Next skill
 
-- Headless scripts/CI: wrap `codex exec` (default read-only). User decides wider sandbox.
-- PR auto-review: Codex cloud + settings Code review; `@codex review` or Automatic reviews.
+Next: if fail → `$fix` then re-verify. If pass → optional `$learn`. Never claim done without evidence here.
 
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

@@ -1,6 +1,6 @@
 ---
 name: settings
-description: "Manages communication mode, learning preference, and automation preference for Anyone Can Code."
+description: "Use when changing ACC prefs (talk style, learning, automations, memory path). Not for code tasks."
 ---
 
 # Settings
@@ -42,3 +42,10 @@ python3 "<ACC_PLUGIN_ROOT>/scripts/comm_contract.py" caveman-strict "Feature imp
 ```
 
 That script is product path (not tests).
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

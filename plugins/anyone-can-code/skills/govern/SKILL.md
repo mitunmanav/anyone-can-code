@@ -1,6 +1,6 @@
 ---
 name: govern
-description: "Controls meaningful scope changes by comparing the draft change against the current local plan, verification state, and active workflow route."
+description: "Use when a change would alter accepted scope/plan and needs user confirm. Not for tiny in-scope edits."
 ---
 
 # Govern
@@ -41,3 +41,10 @@ Use `$govern` when a proposed change could materially alter the accepted scope.
 
 Approved scope change that rewrites large parts: suggest Worktree mode — a
 safe copy, real project untouched until the change proves itself.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

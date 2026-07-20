@@ -1,6 +1,6 @@
 ---
 name: fix
-description: "Recovery workflow for repeated failures. Uses local turn history, verification output, and overlap checks before retrying or abandoning."
+description: "Use when verify failed, same error twice, or something is broken. Diagnose before retry; not for first green build."
 ---
 
 # Fix
@@ -24,3 +24,14 @@ Use `$fix` when verification keeps failing or the current route needs controlled
 - Prefer repair guidance before revert-like behavior.
 - If user work may overlap with plugin-made changes, pause and surface the conflict.
 - Record the recovery outcome in the local artifacts area.
+
+## Next skill
+
+Next: `$execute` for the repair, then `$verify` again.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

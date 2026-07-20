@@ -1,6 +1,6 @@
 ---
 name: help
-description: "Reads the local workflow files and explains where the project stands in plain language."
+description: "Use when user asks what ACC is doing, what is next, or what is blocked in plain words."
 ---
 
 # Help
@@ -40,3 +40,10 @@ terms as product workflow.
 Also say: This is the Desktop package. CLI users install **Anyone Can Code CLI** (separate). Ports to Claude/Cursor = later.
 
 Host wording: run `python3 "<ACC_PLUGIN_ROOT>/scripts/host_detect.py" --guidance` and use those install/review lines so CLI vs Desktop advice stays honest.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.

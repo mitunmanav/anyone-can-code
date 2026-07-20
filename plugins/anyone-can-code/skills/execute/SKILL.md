@@ -1,6 +1,6 @@
 ---
 name: execute
-description: "Builds from the current task queue, follows the chosen route, and updates local workflow state without pretending unverified work is finished."
+description: "Use when a plan or concrete tasks exist and user said build/go/implement. Not to invent scope or claim done without verify."
 ---
 
 # Execute
@@ -11,6 +11,8 @@ Reply rule:
 - keep answer short
 
 Use `$execute` when the work is planned or concrete enough to implement.
+
+Do **not** claim finished work here. After meaningful progress → `$verify`.
 
 ## Inputs
 
@@ -32,12 +34,8 @@ Use `$execute` when the work is planned or concrete enough to implement.
   Do not start a task already claimed by another active owner.
 - Complete tasks through the same coordinator with concise evidence.
 - Loop-driven work (tdd loop, polish loop) has a loop_budget. After loop_budget iterations: STOP. Show real-use proof or ask user. Real-use proof = ran the actual product path, not unit tests alone. Do not keep looping past budget without user say-so.
-- Before risky local work, remote work, external sharing, deletion, migration,
-  install, publish, or release, use `scripts/safety_receipts.py` to write a
-  receipt and verify approval, rollback, sandbox context, and remote authority.
-- If `patch_retry` is present and a failed patch or stale edit target occurs,
-  reread the exact target before retrying the failed patch. Stop and replan
-  after the retry limit instead of repeating misses.
+- Risky ship/delete/remote: `scripts/safety_receipts.py` first.
+- If `patch_retry` present and a failed patch occurs: reread exact target before retry; stop/replan after retry limit.
 - If `mechanics_docs_gate` marks platform mechanics work, do not edit code
   until the docs brief exists. If official docs/source are missing, controlled
   proof must record uncertainty before platform mechanics code changes.
@@ -75,3 +73,14 @@ Use `$execute` when the work is planned or concrete enough to implement.
 ## Worktree for risky work
 
 Big refactor: tell user Worktree mode (safe copy; Handoff merges). Git only; no Git → local with care.
+
+## Next skill
+
+Next: `$verify` before any done claim. On fail → `$fix`.
+
+## Done — back to normal
+
+When this skill's job is finished:
+1. Stop following this skill.
+2. Reply short and normal (caveman).
+3. Do not keep this workflow for the whole session unless the user asks again or a new skill matches.
