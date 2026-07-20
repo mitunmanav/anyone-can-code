@@ -1,7 +1,0 @@
-interface:
-  display_name: "ACC note"
-  short_description: "Record a decision or blocker"
-  default_prompt: "Use $capture to record an important decision or blocker."
-
-policy:
-  allow_implicit_invocation: true

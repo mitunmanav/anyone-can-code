@@ -1,7 +1,0 @@
-interface:
-  display_name: "ACC home"
-  short_description: "Front door — pick the next step"
-  default_prompt: "Use $orchestrator as the one front door. Detect my starting point, show the route, check installed plugin coverage, then continue."
-
-policy:
-  allow_implicit_invocation: false

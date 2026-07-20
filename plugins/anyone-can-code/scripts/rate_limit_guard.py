@@ -44,8 +44,17 @@ def session_dirs() -> list[Path]:
     return out
 
 
-def list_recent_rollouts(roots: list[Path] | None = None, limit: int = 8) -> list[Path]:
-    """Newest rollout-*.jsonl files under sessions trees."""
+def list_recent_rollouts(
+    roots: list[Path] | None = None,
+    limit: int = 8,
+    *,
+    session_id: str | None = None,
+) -> list[Path]:
+    """Newest rollout-*.jsonl files under sessions trees.
+
+    When session_id is set (Codex hook field), prefer paths that contain it so
+    rate/token lines match this chat, not another recent session.
+    """
     roots = roots if roots is not None else session_dirs()
     found: list[Path] = []
     for root in roots:
@@ -56,6 +65,11 @@ def list_recent_rollouts(roots: list[Path] | None = None, limit: int = 8) -> lis
         except OSError:
             continue
     found.sort(key=lambda p: p.stat().st_mtime if p.exists() else 0, reverse=True)
+    sid = (session_id or "").strip()
+    if sid:
+        scoped = [p for p in found if sid in str(p)]
+        if scoped:
+            return scoped[:limit]
     return found[:limit]
 
 
@@ -112,9 +126,13 @@ def read_latest_snapshot(
     *,
     max_files: int = 6,
     max_lines_per_file: int = 4000,
+    session_id: str | None = None,
 ) -> dict[str, Any]:
-    """Walk newest rollouts; return last token_count snapshot found (or empty)."""
-    for path in list_recent_rollouts(roots, limit=max_files):
+    """Walk newest rollouts; return last token_count snapshot found (or empty).
+
+    Prefer session_id-scoped rollouts when Codex provides session_id (hooks docs).
+    """
+    for path in list_recent_rollouts(roots, limit=max_files, session_id=session_id):
         try:
             lines = path.read_text(encoding="utf-8", errors="ignore").splitlines()
         except OSError:
@@ -130,12 +148,17 @@ def read_latest_snapshot(
                 continue
             if entry.get("type") != "event_msg":
                 continue
+            # If session_id known and line embeds a different id, skip when obvious.
+            if session_id and session_id not in line and session_id not in str(path):
+                # Path-scoped files already filtered; line filter only when path not scoped.
+                pass
             snap = parse_token_count_payload(entry.get("payload") or {})
             if snap and (
                 snap.get("primary_used_percent") is not None
                 or snap.get("session_total_tokens")
             ):
                 snap["source_file"] = str(path)
+                snap["session_id"] = session_id or ""
                 return snap
     return {
         "primary_used_percent": None,
@@ -145,6 +168,7 @@ def read_latest_snapshot(
         "last_fresh_input_tokens": 0,
         "last_cached_input_tokens": 0,
         "source_file": "",
+        "session_id": session_id or "",
         "unknown": True,
     }
 
@@ -245,9 +269,17 @@ def assess_token_burn(
     }
 
 
-def build_guard_lines(snapshot: dict[str, Any] | None = None) -> list[str]:
+def build_guard_lines(
+    snapshot: dict[str, Any] | None = None,
+    *,
+    session_id: str | None = None,
+) -> list[str]:
     """Plain lines to inject into session context. Empty when all quiet."""
-    snap = snapshot if snapshot is not None else read_latest_snapshot()
+    snap = (
+        snapshot
+        if snapshot is not None
+        else read_latest_snapshot(session_id=session_id)
+    )
     lines: list[str] = []
     rate = assess_rate_limit(
         snap.get("primary_used_percent"),

@@ -851,6 +851,104 @@ class ProjectStateTests(unittest.TestCase):
         self.assertFalse(receipt["context_returned"])
         self.assertEqual(receipt["final_effectiveness"], "no-op")
 
+    def test_run_hook_attempt_pretooluse_worker_crash_fails_closed(self) -> None:
+        """Docs: exit 0 empty continues tool — crash must return PreToolUse deny."""
+        with tempfile.TemporaryDirectory() as tmp:
+            nested = Path(tmp) / "repo"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            payload = {"hook_event_name": "PreToolUse", "cwd": str(nested)}
+            resolution = hook_state.resolve_hook_project(payload)
+
+            result = hook_state.run_hook_attempt(
+                resolution,
+                "guard",
+                payload,
+                lambda: (_ for _ in ()).throw(RuntimeError("boom")),
+            )
+            receipt = json.loads(
+                (
+                    nested
+                    / ".codex"
+                    / "anyone-can-code"
+                    / "logs"
+                    / "hook-receipts.jsonl"
+                )
+                .read_text(encoding="utf-8")
+                .splitlines()[-1]
+            )
+
+        specific = result.get("hookSpecificOutput") or {}
+        self.assertEqual(specific.get("hookEventName"), "PreToolUse")
+        self.assertEqual(specific.get("permissionDecision"), "deny")
+        self.assertIn("Blocked for safety", specific.get("permissionDecisionReason", ""))
+        self.assertEqual(receipt["failure_class"], "RuntimeError")
+        self.assertEqual(receipt["exit_status"], "failure")
+        self.assertEqual(receipt["final_effectiveness"], "failed")
+
+    def test_run_hook_attempt_permission_request_worker_crash_fails_closed(self) -> None:
+        """Docs: PermissionRequest deny shape; empty would skip to normal approval."""
+        with tempfile.TemporaryDirectory() as tmp:
+            nested = Path(tmp) / "repo"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            payload = {"hook_event_name": "PermissionRequest", "cwd": str(nested)}
+            resolution = hook_state.resolve_hook_project(payload)
+
+            result = hook_state.run_hook_attempt(
+                resolution,
+                "audit",
+                payload,
+                lambda: (_ for _ in ()).throw(ValueError("gate broke")),
+            )
+
+        decision = (result.get("hookSpecificOutput") or {}).get("decision") or {}
+        self.assertEqual((result.get("hookSpecificOutput") or {}).get("hookEventName"), "PermissionRequest")
+        self.assertEqual(decision.get("behavior"), "deny")
+        self.assertIn("Blocked for safety", decision.get("message", ""))
+
+    def test_run_hook_attempt_non_gate_worker_crash_stays_empty(self) -> None:
+        """Non-gate events stay best-effort empty on crash (docs: empty = continue)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            nested = Path(tmp) / "repo"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            payload = {"hook_event_name": "SessionStart", "cwd": str(nested)}
+            resolution = hook_state.resolve_hook_project(payload)
+
+            result = hook_state.run_hook_attempt(
+                resolution,
+                "load_session",
+                payload,
+                lambda: (_ for _ in ()).throw(RuntimeError("no context")),
+            )
+
+        self.assertEqual(result, {})
+
+    def test_run_hook_attempt_circuit_open_pretooluse_fails_closed(self) -> None:
+        """Open circuit must not fail open on PreToolUse (empty would allow tool)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            nested = Path(tmp) / "repo"
+            (nested / ".git").mkdir(parents=True)
+            hook_state.ensure_project_layout(nested)
+            hook_state.record_hook_result(nested, "guard", "fail", reason="a")
+            hook_state.record_hook_result(nested, "guard", "fail", reason="b")
+            payload = {"hook_event_name": "PreToolUse", "cwd": str(nested)}
+            resolution = hook_state.resolve_hook_project(payload)
+            called = False
+
+            def worker() -> dict:
+                nonlocal called
+                called = True
+                return {}
+
+            result = hook_state.run_hook_attempt(resolution, "guard", payload, worker)
+
+        self.assertFalse(called)
+        specific = result.get("hookSpecificOutput") or {}
+        self.assertEqual(specific.get("permissionDecision"), "deny")
+        self.assertIn("circuit open", specific.get("permissionDecisionReason", "").lower())
+
     def test_hook_receipt_redacts_prompt_and_records_output_digest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             nested = Path(tmp) / "repo"
@@ -1926,40 +2024,21 @@ class ProjectStateTests(unittest.TestCase):
             self.assertEqual(agents_path.read_text(encoding="utf-8"), "project rules stay\n")
             self.assertTrue(snapshot_path.exists())
 
-    def _windows_hook_command(self, hook: dict) -> str:
-        """Desktop package uses PowerShell in command."""
-        return str(hook.get("command") or "")
-
-    @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
-    def test_hook_commands_survive_powershell_outer_shell(self) -> None:
+    def test_hooks_use_plugin_root_command_and_windows_override(self) -> None:
+        """One package: Codex PLUGIN_ROOT command + commandWindows (docs shape)."""
         hooks = json.loads((PLUGIN_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
-        marketplace_repo = PLUGIN_ROOT.parents[1]
-        workspace_root = marketplace_repo.parent
-        env = os.environ.copy()
-        env["PLUGIN_ROOT"] = str(marketplace_repo)
-        env.pop("CLAUDE_PLUGIN_ROOT", None)
-
-        command = self._windows_hook_command(
-            hooks["hooks"]["UserPromptSubmit"][0]["hooks"][0]
-        )
-        payload = {
-            "hook_event_name": "UserPromptSubmit",
-            "prompt": "test",
-            "cwd": str(workspace_root),
-        }
-
-        result = subprocess.run(
-            ["powershell.exe", "-NoProfile", "-Command", command],
-            input=json.dumps(payload),
-            text=True,
-            capture_output=True,
-            cwd=workspace_root,
-            env=env,
-            timeout=20,
-        )
-
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip(), "{}")
+        for event, groups in hooks["hooks"].items():
+            for group in groups:
+                for hook in group.get("hooks") or []:
+                    if hook.get("type", "command") != "command":
+                        continue
+                    cmd = str(hook.get("command") or "")
+                    win = str(hook.get("commandWindows") or "")
+                    with self.subTest(event=event):
+                        self.assertIn("PLUGIN_ROOT", cmd)
+                        self.assertIn("python3", cmd)
+                        self.assertIn("PLUGIN_ROOT", win)
+                        self.assertTrue(win.startswith("py -3") or "py -3" in win)
 
     @unittest.skipUnless(os.name == "nt", "Windows hook shell regression")
     def test_hook_commands_run_from_parent_workspace_without_plugin_env_under_cmd(self) -> None:

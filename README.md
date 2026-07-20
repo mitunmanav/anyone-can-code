@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Plain English → plan → build → check.</strong><br/>
-  Free Codex plugins (Desktop + CLI) for people who are not engineers.<br/>
+  Free Codex plugin for Desktop <strong>and</strong> CLI — for people who are not engineers.<br/>
   Say what you want. ACC helps you plan, build, and check that it actually works.
 </p>
 
@@ -57,28 +57,27 @@ Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a cle
 | **Plan** | A clear path before big changes |
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass — not just “looks fine” |
-| **Remember** | **Desktop:** full auto memory. **CLI:** not yet (use `$learn` / `$wiki` for now) |
+| **Remember** | **Desktop:** auto memory (trust hooks). **CLI:** not yet — use `$learn` / `$wiki` |
 
 Native Codex — built from [Codex docs](https://openai.com/codex/), not ported from Claude or Cursor.
 
 I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2).  
-Open beta **v1.1.0-beta.4**.
+Open beta — **one plugin** · Desktop **v2.0.0-beta.4** (auto memory) · CLI memory still **1.1.0-beta.4** level (manual save).
 
 **Need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python 3
 
 ---
 
-## Pick one package
+## One plugin
 
-Same GitHub repo. Same marketplace. **Two plugins.**  
-Install the one that matches how you use Codex. Do **not** install both unless you use both.
+Same idea as Superpowers: **one package**, two install surfaces.
 
 | You use | Install this |
 |---------|----------------|
 | Codex **Desktop** app | **Anyone Can Code** |
-| Codex **CLI** terminal | **Anyone Can Code CLI** |
+| Codex **CLI** terminal | **Anyone Can Code** (same name) |
 
-More detail: [Desktop](plugins/anyone-can-code/README.md) · [CLI](plugins/anyone-can-code-cli/README.md)
+Plugin folder: [plugins/anyone-can-code](plugins/anyone-can-code/README.md)
 
 ---
 
@@ -90,8 +89,8 @@ More detail: [Desktop](plugins/anyone-can-code/README.md) · [CLI](plugins/anyon
 
 1. Copy: `https://github.com/mitunmanav/anyone-can-code`
 2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste  
-3. Install **Anyone Can Code** (not the CLI name)  
-4. **Hooks** → enable + **trust every ACC hook** (required — this is how **Desktop auto memory** works)  
+3. Install **Anyone Can Code**  
+4. **Hooks** → enable + **trust every ACC hook** (required for guards + auto memory)  
 5. Restart → open a project folder → `$setup` → say what you want  
 
 Video: [website](https://anyone-can-code.vercel.app/#install) · [mp4](docs/media/install-setup.mp4)
@@ -105,20 +104,18 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
 1. In a project folder: `codex`  
-2. `/plugins` → install **Anyone Can Code CLI**  
-3. `/hooks` → **trust** every ACC hook (required for guards + session load/save)  
+2. `/plugins` → install **Anyone Can Code** (not a separate CLI package)  
+3. `/hooks` → **trust** every ACC hook  
 4. New thread → `$setup` → say what you want  
-
-**Note:** CLI does **not** have full auto memory yet. Desktop first. CLI can still use `$learn` / `$wiki` / `$capture` by hand.
 
 ---
 
-## Memory (automatic on Desktop)
+## Memory
 
-| Host | Auto memory in beta.4? |
-|------|-------------------------|
-| **Codex Desktop** + **Anyone Can Code** | **Yes** — full offline auto memory |
-| **Codex CLI** + **Anyone Can Code CLI** | **Not yet** — focus is Desktop first; save by hand with `$learn` / `$wiki` / `$capture` |
+| Host | Auto memory? |
+|------|----------------|
+| **Codex Desktop** + **Anyone Can Code** | **Yes** — offline project memory when hooks trusted |
+| **Codex CLI** + **Anyone Can Code** | **Not yet** — still 1.1.0-beta.4 level; save with `$learn` / `$wiki` / `$capture` |
 
 ### Desktop — what sticks (no save command)
 
@@ -131,7 +128,7 @@ You do **not** type a “save this” command in normal Desktop use. After hooks
 | **Corrections** | “No — contact page, not about.” |
 | **Open work** | Goal, next step, unfinished ask after a crash |
 
-### How Desktop auto memory works (plain English)
+### How auto memory works (plain English)
 
 1. **You talk** — ACC’s hooks quietly record what matters.  
 2. **You leave, crash, or hit a limit** — the last open request is marked so the next session can show a **crash-resume** line.  
@@ -140,12 +137,12 @@ You do **not** type a “save this” command in normal Desktop use. After hooks
 
 Trust hooks once, and again after every plugin update (hook hash changes).
 
-### Desktop — what you do *not* need
+### What you do *not* need
 
-- No `$learn` / `$capture` as the normal path on Desktop. Those are **backup / force** only if something looks wrong.  
+- No `$learn` / `$capture` as the normal path. Those are **backup / force** only if something looks wrong.  
 - No Codex built-in `/memories` for ACC’s project memory. ACC keeps its own local notes.
 
-### If Desktop memory seems dead
+### If memory seems dead
 
 | Check | Fix |
 |-------|-----|
@@ -179,9 +176,9 @@ Full first session: **[docs/FIRST_DAY.md](docs/FIRST_DAY.md)**
 |---------|-----|
 | Marketplace won’t add | Use the **full** GitHub URL above |
 | Nothing works after install | **Trust all ACC hooks**, then restart / new chat |
-| Forgets what you decided (Desktop) | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory-automatic-on-desktop) |
-| Expects auto memory on CLI | Not shipped yet — use `$learn` / `$wiki`, or use Desktop |
-| Wrong package | Uninstall; install Desktop **or** CLI for your host |
+| Forgets what you decided (Desktop) | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory) |
+| Expects auto memory on CLI | Not yet — use `$learn` / `$wiki`, or use Desktop |
+| Old “CLI only” package name | Uninstall **Anyone Can Code CLI**; install **Anyone Can Code** once |
 | `$setup` silent | Open a **project folder** first |
 
 Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Discord](https://discord.gg/qgS29y7TqP) · [Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)
@@ -192,8 +189,8 @@ Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) 
 
 | When | Focus |
 |------|--------|
-| **Now · beta.4** | **Desktop** auto memory (trust hooks) · plain progress · honest push-back · safety |
-| **Next · beta.5** | Plays-nice plugins · smarter model choice · less lost work at limits · CLI memory later |
+| **Now · beta.4** | **One plugin** Desktop+CLI · Desktop auto memory · CLI manual memory · safety |
+| **Next · beta.5** | Plays-nice plugins · smarter model choice · less lost work at limits |
 
 Full detail: **[ROADMAP.md](ROADMAP.md)** · [website](https://anyone-can-code.vercel.app/#roadmap)
 

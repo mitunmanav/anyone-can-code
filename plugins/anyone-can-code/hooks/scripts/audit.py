@@ -1,5 +1,9 @@
 """
 Audit hook for PostToolUse and PermissionRequest.
+
+Codex hooks docs (PermissionRequest): allow only when we decide; deny wins;
+no decision → normal approval prompt. Exit 0 + empty = continue (so tool-gate
+crashes must fail closed — see main()).
 """
 
 from __future__ import annotations
@@ -55,9 +59,46 @@ SAFE_BASH_PREFIXES = (
     "whoami",
 )
 
+# Whole-command red flags: never auto-allow if any appear (Codex tool_input.command).
+UNSAFE_AUTO_ALLOW_RE = re.compile(
+    r"(?:"
+    r"\|\s*(?:sudo\s+)?(?:bash|sh|zsh|dash|pwsh|powershell)\b"
+    r"|(?:bash|sh|zsh|dash|pwsh|powershell)\s+<\("
+    r"|(?:bash|sh|zsh)\s+-c\b"
+    r"|\brm\s+(-[a-zA-Z]*f|--force)"
+    r"|\bgit\s+push\b"
+    r"|\bgit\s+reset\b"
+    r"|\bcurl\b|\bwget\b|\biwr\b|\binvoke-webrequest\b"
+    r"|\bformat\s+[cd]:"
+    r"|\bdel\s+/s"
+    r")",
+    re.IGNORECASE,
+)
+
+# Split shell chains. Not full shell grammar; good enough for policy (docs: command string).
+_SEGMENT_SPLIT_RE = re.compile(r"(?:&&|\|\||[;|\n])")
+
+
+def split_command_segments(command: str) -> list[str]:
+    text = str(command or "").strip()
+    if not text:
+        return []
+    return [part.strip() for part in _SEGMENT_SPLIT_RE.split(text) if part.strip()]
+
+
+def _segment_is_safe_prefix(segment: str) -> bool:
+    first = segment.strip().lower()
+    if not first:
+        return False
+    return any(first == p.strip() or first.startswith(p.strip()) for p in SAFE_BASH_PREFIXES)
+
 
 def is_safe_auto_allow(tool_name: str, tool_input) -> bool:
-    """True when PermissionRequest should auto-allow (kill approval spam)."""
+    """True when PermissionRequest should auto-allow (kill approval spam).
+
+    Codex docs: only return allow when every part is safe. Whole command chain
+    must pass — not only the first segment before &&.
+    """
     name = str(tool_name or "")
     if any(safe in name for safe in SAFE_READ_TOOLS):
         return True
@@ -68,12 +109,15 @@ def is_safe_auto_allow(tool_name: str, tool_input) -> bool:
             command = str(tool_input.get("command") or "")
         elif isinstance(tool_input, str):
             command = tool_input
-        cmd = command.strip().lower()
+        cmd = command.strip()
         if not cmd:
             return False
-        # multi-command with && still ok if first is safe prefix
-        first = cmd.split("&&")[0].strip()
-        return any(first == p.strip() or first.startswith(p.strip()) for p in SAFE_BASH_PREFIXES)
+        if UNSAFE_AUTO_ALLOW_RE.search(cmd):
+            return False
+        segments = split_command_segments(cmd)
+        if not segments:
+            return False
+        return all(_segment_is_safe_prefix(seg) for seg in segments)
     return False
 
 
@@ -200,13 +244,33 @@ def check_repeated_failure(repo_root: Path, payload: dict) -> str:
     )
 
 
+def extract_exit_code(tool_response, lower_response: str) -> int | None:
+    """Best-effort exit code from PostToolUse tool_response (Codex: JSON value)."""
+    if isinstance(tool_response, dict):
+        for key in ("exit_code", "returncode", "exitCode", "status_code", "status"):
+            if key not in tool_response:
+                continue
+            try:
+                return int(tool_response[key])
+            except (TypeError, ValueError):
+                continue
+    match = re.search(r"exit (?:code|status) (\d+)", lower_response or "", re.I)
+    if match:
+        return int(match.group(1))
+    return None
+
+
 def record_bash_result(repo_root: Path, payload: dict, lower_response: str) -> None:
     """Feed real Bash exit status into state.record_command_result (B11 repeat-failure guard)."""
     tool_input = payload.get("tool_input") or {}
     command = tool_input.get("command", "") if isinstance(tool_input, dict) else ""
     if not isinstance(command, str) or not command.strip():
         return
-    exit_code = 1 if is_strong_failure_signal(lower_response) else 0
+    extracted = extract_exit_code(payload.get("tool_response"), lower_response)
+    if extracted is not None:
+        exit_code = extracted
+    else:
+        exit_code = 1 if is_strong_failure_signal(lower_response) else 0
     state.record_command_result(repo_root, command, exit_code)
 
 
@@ -215,7 +279,8 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
     if hook_event == "PostToolUse":
         log_tool_call(repo_root, payload)
         tool_name = payload.get("tool_name", "")
-        response_preview = summarize_response(payload.get("tool_response", ""))
+        tool_response = payload.get("tool_response", "")
+        response_preview = summarize_response(tool_response)
         log_signal(repo_root, "tool_used", f"{tool_name}: {response_preview}", payload)
         lower = response_preview.lower()
         if tool_name == "Bash":
@@ -239,12 +304,21 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                 }}
         if any(token in lower for token in ["success", "passed", "ready", "\"stored\": true"]):
             log_signal(repo_root, "verified_success", f"{tool_name} looked good.", payload)
-        scan = silent_failure_detector.scan_tool_response({"output": response_preview, "exit_code": 0})
-        if scan["silent_failures"]:
-            detail = "; ".join(scan["silent_failures"])
-            log_signal(repo_root, "silent_failure", f"{tool_name}: {detail}", payload)
-            return {"hookSpecificOutput": {"hookEventName": "PostToolUse",
-                                          "additionalContext": f"Silent failure detected: {detail}"}}
+        # Only silent-fail scan when exit looks successful (or unknown). Real nonzero = not silent.
+        exit_code = extract_exit_code(tool_response, lower)
+        if exit_code is None or exit_code == 0:
+            scan = silent_failure_detector.scan_tool_response(
+                {"output": response_preview, "exit_code": 0 if exit_code is None else exit_code}
+            )
+            if scan["silent_failures"]:
+                detail = "; ".join(scan["silent_failures"])
+                log_signal(repo_root, "silent_failure", f"{tool_name}: {detail}", payload)
+                return {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PostToolUse",
+                        "additionalContext": f"Silent failure detected: {detail}",
+                    }
+                }
         return {}
     if hook_event == "PermissionRequest":
         log_tool_call(repo_root, payload)
@@ -259,6 +333,29 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                 }
             }
         return {"systemMessage": plain_approval_hint(tool_name, tool_input)}
+    return {}
+
+
+def _fail_closed_tool_gate(hook_event: str, reason: str) -> dict:
+    """Codex: exit 0 empty continues. On gate crash, deny instead (docs deny shapes)."""
+    if hook_event == "PermissionRequest":
+        return {
+            "hookSpecificOutput": {
+                "hookEventName": "PermissionRequest",
+                "decision": {
+                    "behavior": "deny",
+                    "message": reason,
+                },
+            }
+        }
+    if hook_event == "PreToolUse":
+        return {
+            "hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": reason,
+            }
+        }
     return {}
 
 
@@ -281,6 +378,19 @@ if __name__ == "__main__":
     try:
         main()
     except json.JSONDecodeError:
-        print(json.dumps({}))
-    except Exception as exc:  # pragma: no cover - hook best effort
-        print(json.dumps({}))
+        # Cannot parse event — fail closed for tool gates only if we know the name.
+        print(json.dumps(_fail_closed_tool_gate("PermissionRequest", "ACC audit: bad hook JSON.")))
+        sys.exit(2)
+    except Exception as exc:  # pragma: no cover
+        # Best effort: if stdin already consumed we may not have event name.
+        print(
+            json.dumps(
+                _fail_closed_tool_gate(
+                    "PermissionRequest",
+                    f"ACC audit error ({type(exc).__name__}). Blocked for safety.",
+                )
+            ),
+            file=sys.stdout,
+        )
+        print(f"ACC audit failed: {exc}", file=sys.stderr)
+        sys.exit(2)

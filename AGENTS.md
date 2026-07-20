@@ -5,26 +5,34 @@ Product-facing notes only. Process / learning notes do **not** belong in this re
 ## Product
 
 - **Name:** Anyone Can Code (ACC)
-- **Version:** see `plugins/anyone-can-code/.codex-plugin/plugin.json` (v1.1.0-beta.4)
-- **Platform:** Codex Desktop · Windows
+- **Version:** see `plugins/anyone-can-code/.codex-plugin/plugin.json` (v2.0.0-beta.4, one plugin)
+- **Platform:** Codex Desktop + Codex CLI (one install)
+- **Memory:** Desktop auto (trust hooks). CLI not yet — `$learn` / `$wiki` (1.1.0-beta.4 level).
 - **Site:** https://anyone-can-code.vercel.app/
 - **Repo:** https://github.com/mitunmanav/anyone-can-code
 
 ## Install (truth)
 
+**One plugin** for Desktop and CLI (Superpowers-style).
+
+### Desktop
 1. Codex → Plugins → **+** → Add a Marketplace → paste `https://github.com/mitunmanav/anyone-can-code`
 2. Install **Anyone Can Code**
 3. Enable + **trust every ACC hook** (required)
 4. Restart Codex
 5. Open a project → `$setup` → say what you want
 
-Optional terminal marketplace only — still need hooks + restart + `$setup`.
+### CLI
+1. `codex plugin marketplace add mitunmanav/anyone-can-code --ref main`
+2. `/plugins` → install **Anyone Can Code**
+3. `/hooks` → trust every ACC hook
+4. New thread → `$setup`
 
 ## Architecture
 
 ```
-plugins/anyone-can-code/   # plugin code, skills, hooks, MCP, tests
-.agents/plugins/           # marketplace.json
+plugins/anyone-can-code/   # one plugin (Desktop + CLI)
+.agents/plugins/           # marketplace.json (one entry)
 .github/                   # community + CI
 docs/                      # privacy, terms, credits, media, docs map
 ```

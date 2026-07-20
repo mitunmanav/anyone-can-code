@@ -394,3 +394,21 @@ class MemoryBackendTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_project_scope_requires_project_root():
+    """Honesty: project notes must not land in the silent global fallback."""
+    import importlib
+    import sys
+    from pathlib import Path
+
+    mcp = Path(__file__).resolve().parents[1] / "mcp"
+    sys.path.insert(0, str(mcp))
+    server = importlib.import_module("server")
+    try:
+        server.normalize_record(
+            {"scope": "project", "kind": "decision", "summary": "Use SQLite"}
+        )
+        raise AssertionError("expected ValueError without project_root")
+    except ValueError as exc:
+        assert "project_root required" in str(exc)

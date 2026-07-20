@@ -4,7 +4,7 @@ _Last updated: 2026-07-11_
 
 ## Short version
 
-Anyone Can Code is a local Codex plugin (Desktop package and CLI package). It does not collect, transmit, or sell your data. There is no account and no waitlist signup through the plugin.
+Anyone Can Code is a local Codex plugin (one package for Desktop and CLI). It does not collect, transmit, or sell your data. There is no account and no waitlist signup through the plugin.
 
 ## Product website
 
@@ -21,7 +21,7 @@ All plugin data lives on your machine, under your project folder:
 Typical contents:
 
 - Workflow state (what you are building, what is next)
-- Portable Markdown memory notes (Desktop auto memory when hooks are trusted; on CLI, lessons/decisions you save with skills such as `$learn` / `$wiki`)
+- Portable Markdown memory notes (Desktop auto memory when hooks trusted; on CLI, lessons you save with `$learn` / `$wiki`)
 - Local logs used for verification and debugging
 
 Nothing from that folder is sent to Anyone Can Code servers. This project does not operate a plugin telemetry or analytics backend.

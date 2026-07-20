@@ -1,4 +1,0 @@
-interface:
-  display_name: "ACC status"
-  short_description: "Where you are and what's next"
-  default_prompt: "Use $status to see where the workflow currently stands."

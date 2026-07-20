@@ -12,7 +12,7 @@ Pick **one** host:
 | You use | Install this package |
 |---------|----------------------|
 | Codex **Desktop** app | **Anyone Can Code** |
-| Codex **CLI** terminal | **Anyone Can Code CLI** |
+| Codex **CLI** terminal | **Anyone Can Code** (same plugin) |
 
 Same marketplace: `https://github.com/mitunmanav/anyone-can-code`
 

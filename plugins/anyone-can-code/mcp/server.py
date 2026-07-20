@@ -334,6 +334,13 @@ def normalize_record(arguments: dict) -> dict:
     confidence = max(0.0, min(1.0, confidence))
     record_id = str(arguments.get("id") or str(uuid.uuid4()))
     project_root_value = str(arguments.get("project_root", "")).strip()
+    # Honesty: project notes live under the project tree, never silent global pile.
+    if scope == "project" and not project_root_value:
+        raise ValueError(
+            "project_root required for scope=project. "
+            "Project memory path: <project>/.codex/anyone-can-code/memory/. "
+            "User taste path: ~/.codex/anyone-can-code/user-memory/."
+        )
     source = str(arguments.get("source", "unknown")).strip() or "unknown"
     source_type = source if source in SOURCE_TYPES else ("hook" if source.startswith("hook:") else "manual")
     content_hash = hashlib.sha256(f"{scope}|{kind}|{summary.lower()}|{project_root_value}".encode("utf-8")).hexdigest()

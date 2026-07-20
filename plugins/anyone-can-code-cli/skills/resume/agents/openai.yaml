@@ -1,7 +1,0 @@
-interface:
-  display_name: "ACC resume"
-  short_description: "Continue after a break"
-  default_prompt: "Use $resume when the workflow needs to continue or recover."
-
-policy:
-  allow_implicit_invocation: true

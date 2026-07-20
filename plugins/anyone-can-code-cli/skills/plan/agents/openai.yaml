@@ -1,7 +1,0 @@
-interface:
-  display_name: "ACC plan"
-  short_description: "Turn the request into ordered tasks"
-  default_prompt: "Use $plan to break down the clarified spec into build tasks."
-
-policy:
-  allow_implicit_invocation: true

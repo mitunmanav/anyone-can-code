@@ -145,7 +145,7 @@ class Doctor:
     def run_hooks_bundle(self) -> None:
         hooks_json = PLUGIN_ROOT / "hooks" / "hooks.json"
         if hooks_json.exists():
-            self.check("capability", "bundled_hooks", "PASS", "info", "hooks/hooks.json present (Desktop package)")
+            self.check("capability", "bundled_hooks", "PASS", "info", "hooks/hooks.json present (Desktop + CLI)")
         else:
             self.check("capability", "bundled_hooks", "FAIL", "blocking", "hooks/hooks.json missing")
 

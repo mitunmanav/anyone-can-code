@@ -1,4 +1,0 @@
-interface:
-  display_name: "ACC wiki"
-  short_description: "Save, ask, or clean project notebook"
-  default_prompt: "Use $wiki to save, recall, or clean ACC project wiki memory."
