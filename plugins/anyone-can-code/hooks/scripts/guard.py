@@ -56,31 +56,49 @@ DESTRUCTIVE_COMMANDS = [
     "format c:",
     "format d:",
     "git push --force",
+    "git push -f",
     "git reset --hard",
 ]
 
-# Download-and-run: fetch a remote script and pipe it straight into a shell.
-# Classic remote-code-execution pattern; block it for non-technical users.
+# Pipe / download-to-shell patterns (Codex PreToolUse sees tool_input.command).
+# Broader than curl-only: cat|bash, echo|sh, bash -c "$(curl…)", process substitution.
 PIPE_TO_SHELL_RE = re.compile(
-    r"(curl|wget|iwr|invoke-webrequest|fetch)\b[^\n]*\|\s*(sudo\s+)?"
-    r"(bash|sh|zsh|dash|pwsh|powershell)\b"
-    r"|(bash|sh|zsh|dash|pwsh|powershell)\s+<\(\s*(curl|wget|iwr|fetch)\b",
+    r"(?:"
+    r"(?:curl|wget|iwr|invoke-webrequest|fetch|cat|type|echo|printf)\b[^\n]*\|\s*(?:sudo\s+)?"
+    r"(?:bash|sh|zsh|dash|pwsh|powershell)\b"
+    r"|\|\s*(?:sudo\s+)?(?:bash|sh|zsh|dash|pwsh|powershell)\b"
+    r"|(?:bash|sh|zsh|dash|pwsh|powershell)\s+<\(\s*(?:curl|wget|iwr|fetch)\b"
+    r"|(?:bash|sh|zsh|dash)\s+-c\b[^\n]*(?:curl|wget|iwr|fetch)\b"
+    r")",
     re.IGNORECASE,
 )
 
-DEPLOY_PATTERNS = [
+# Full production deploy / publish — run security gate. Plain git push is NOT this.
+HARD_DEPLOY_PATTERNS = [
     "vercel deploy",
     "netlify deploy",
     "heroku push",
     "railway up",
     "fly deploy",
-    "git push",
+    "npm publish",
+    "pnpm publish",
+    "yarn publish",
+    "twine upload",
+    "gh release create",
+    "git push --force",
+    "git push -f",
 ]
 
 
 def is_deploy_command(command: str) -> bool:
-    cmd = command.lower()
-    return any(p in cmd for p in DEPLOY_PATTERNS)
+    """True for hard deploy/publish (security gate). Not every git push."""
+    cmd = (command or "").lower()
+    return any(p in cmd for p in HARD_DEPLOY_PATTERNS)
+
+
+def is_git_push_command(command: str) -> bool:
+    cmd = (command or "").lower()
+    return "git push" in cmd
 
 
 def check_injection(text: str) -> str | None:
@@ -182,7 +200,12 @@ def _trim(text: str, limit: int = TURN_FIELD_MAX_CHARS) -> str:
     return text[:cut].rstrip() + "..."
 
 
-def build_turn_context(prompt: str, repo_root: Path) -> str:
+def build_turn_context(
+    prompt: str,
+    repo_root: Path,
+    *,
+    session_id: str | None = None,
+) -> str:
     """Per-turn anchor: comm rule + goal + next action + lessons.
 
     Codex drops skills from its menu when the skill list is full, but hooks
@@ -236,7 +259,7 @@ def build_turn_context(prompt: str, repo_root: Path) -> str:
         if str(scripts) not in sys.path:
             sys.path.insert(0, str(scripts))
         import rate_limit_guard as _rate_limit_guard
-        for line in _rate_limit_guard.build_guard_lines():
+        for line in _rate_limit_guard.build_guard_lines(session_id=session_id):
             if line:
                 safety_lines.append(line)
     except Exception:
@@ -367,10 +390,11 @@ def build_tool_interop_line(prompt: str) -> str:
 
 
 def security_gate_for_deploy(repo_root: Path, command: str) -> str | None:
-    """If deploy command, run production security scan. Plain reason or None.
+    """If hard deploy/publish, run production security scan. Plain reason or None.
 
     Fail closed: if the gate cannot run (import/scan error), return a block
     reason so deploy does not slip through silently.
+    Plain git push does not run the full tree scan (slow / noisy).
     """
     if not is_deploy_command(command):
         return None
@@ -403,6 +427,17 @@ def mark_turn_open(repo_root: Path, prompt: str) -> None:
         pass  # memory must never block the prompt
 
 
+def _pretool_deny(reason: str) -> dict:
+    """Codex PreToolUse deny shape (permissionDecision deny + reason)."""
+    return {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": reason,
+        }
+    }
+
+
 def handle_payload(payload: dict, repo_root: Path) -> dict:
     hook_event = payload.get("hook_event_name", "")
     if hook_event == "UserPromptSubmit":
@@ -423,7 +458,11 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                 memory_promote.write_promote_note(repo_root, hit["kind"], hit["excerpt"])
         except Exception:
             pass  # capture is best effort; the prompt log already has the raw line
-        context = build_turn_context(prompt, repo_root)
+        context = build_turn_context(
+            prompt,
+            repo_root,
+            session_id=str(payload.get("session_id") or "") or None,
+        )
         return {
             "hookSpecificOutput": {
                 "hookEventName": "UserPromptSubmit",
@@ -431,47 +470,41 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
             }
         }
     if hook_event == "PreToolUse":
-        cmd = (payload.get("tool_input") or {}).get("command", "")
+        tool_input = payload.get("tool_input") or {}
+        cmd = ""
+        if isinstance(tool_input, dict):
+            cmd = tool_input.get("command", "") or ""
+        elif isinstance(tool_input, str):
+            cmd = tool_input
         deploy = is_deploy_command(cmd)
 
         # --- Hard DENY checks first. Warn must never preempt deny. ---
+        takeover = check_workflow_takeover(payload)
+        if takeover.get("blocked"):
+            log_blocked(repo_root, payload, takeover.get("reason") or "workflow takeover")
+            return _pretool_deny(
+                f"Guard stop. {takeover.get('reason') or 'Foreign plugin tried ACC control keys.'}"
+            )
+
         if deploy:
             mock_db = os.environ.get("USE_MOCK_DB", "").strip().lower()
             if mock_db == "true":
                 log_blocked(repo_root, payload, "deploy with USE_MOCK_DB=true")
-                return {
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "deny",
-                        "permissionDecisionReason": (
-                            "Guard blocked deploy: USE_MOCK_DB=true. "
-                            "Set USE_MOCK_DB=false or remove it before deploying."
-                        ),
-                    }
-                }
+                return _pretool_deny(
+                    "Guard blocked deploy: USE_MOCK_DB=true. "
+                    "Set USE_MOCK_DB=false or remove it before deploying."
+                )
             gate_reason = security_gate_for_deploy(repo_root, cmd)
             if gate_reason:
                 log_blocked(repo_root, payload, f"security gate: {gate_reason[:200]}")
-                return {
-                    "hookSpecificOutput": {
-                        "hookEventName": "PreToolUse",
-                        "permissionDecision": "deny",
-                        "permissionDecisionReason": (
-                            "Security gate stop. Fix open signup / default password / "
-                            f"secrets first. {gate_reason[:400]}"
-                        ),
-                    }
-                }
-        blocked = check_destructive_command(payload.get("tool_input", {}))
+                return _pretool_deny(
+                    "Security gate stop. Fix open signup / default password / "
+                    f"secrets first. {gate_reason[:400]}"
+                )
+        blocked = check_destructive_command(tool_input)
         if blocked:
             log_blocked(repo_root, payload, f"destructive command: {blocked}")
-            return {
-                "hookSpecificOutput": {
-                    "hookEventName": "PreToolUse",
-                    "permissionDecision": "deny",
-                    "permissionDecisionReason": f"Guard stop bad command: {blocked}",
-                }
-            }
+            return _pretool_deny(f"Guard stop bad command: {blocked}")
 
         # --- Advisory warn only if nothing denied above. ---
         if cmd and state.repeat_failure(repo_root, cmd):
@@ -485,7 +518,7 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                 },
             }
 
-        # Safe to deploy — inject checklist
+        # Safe hard-deploy — inject checklist
         if deploy:
             return {
                 "hookSpecificOutput": {
@@ -496,6 +529,17 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                         "- Confirm all required connectors built\n"
                         "- Confirm env vars set in target environment\n"
                         "- Run tests before deploy if not done\n"
+                    ),
+                }
+            }
+        # Plain git push: short reminder only (not full security tree scan).
+        if is_git_push_command(cmd) and "force" not in cmd.lower():
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "additionalContext": (
+                        "Git push: only if the user clearly asked. "
+                        "No force-push. No half updates."
                     ),
                 }
             }
@@ -521,6 +565,32 @@ if __name__ == "__main__":
     try:
         main()
     except json.JSONDecodeError:
-        print(json.dumps({}))
-    except Exception as exc:  # pragma: no cover - hook best effort
-        print(json.dumps({}))
+        # Codex: exit 0 empty continues the tool — fail closed for PreToolUse.
+        print(
+            json.dumps(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": "ACC guard: bad hook JSON. Blocked for safety.",
+                    }
+                }
+            )
+        )
+        sys.exit(2)
+    except Exception as exc:  # pragma: no cover
+        print(
+            json.dumps(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": (
+                            f"ACC guard error ({type(exc).__name__}). Blocked for safety."
+                        ),
+                    }
+                }
+            )
+        )
+        print(f"ACC guard failed: {exc}", file=sys.stderr)
+        sys.exit(2)
