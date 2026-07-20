@@ -5,6 +5,7 @@
 /plugins/anyone-can-code/.opencode/
 /.claude/
 /.claude-flow/
+/.grok/
 /.tokensave/
 /.codegraph/
 /data/
@@ -52,8 +53,10 @@ AGENTS.local.md
 /.now/
 /NOW.md
 
-# === OS junk ===
+# === OS junk / local dumps ===
 .DS_Store
 Thumbs.db
 desktop.ini
 __pycache__/
+/Screenshot*.png
+/*.png

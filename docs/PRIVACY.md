@@ -21,7 +21,7 @@ All plugin data lives on your machine, under your project folder:
 Typical contents:
 
 - Workflow state (what you are building, what is next)
-- Portable Markdown memory notes (lessons and decisions you chose to save)
+- Portable Markdown memory notes (Desktop auto memory when hooks are trusted; on CLI, lessons/decisions you save with skills such as `$learn` / `$wiki`)
 - Local logs used for verification and debugging
 
 Nothing from that folder is sent to Anyone Can Code servers. This project does not operate a plugin telemetry or analytics backend.
