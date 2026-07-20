@@ -7,7 +7,7 @@ What is coming next in Anyone Can Code. Plain words, no dates. Plans can change 
 ## Now — beta.4 (open beta)
 
 - **One plugin for Desktop + CLI.** Same marketplace entry (**Anyone Can Code**). Install path differs; package does not.
-- **Offline auto memory.** Trust hooks once. Same hooks on Desktop and CLI.
+- **Offline auto memory = Desktop first.** Trust hooks on Desktop. CLI still 1.1.0-beta.4 level (manual `$learn` / `$wiki`) until a later wave.
 - **Two-drawer memory.** Your taste lives in one global drawer. Project facts stay inside each project. Drawers never mix.
 - **Lessons reload.** Project lessons can load in later sessions so known mistakes are less likely to repeat (not a hard guarantee).
 - **Plain-words progress.** While building, ACC tells you what it is doing in simple words ("making the login page now… done").
@@ -19,6 +19,7 @@ What is coming next in Anyone Can Code. Plain words, no dates. Plans can change 
 
 - **Plays-nice list.** Other plugins already work alongside ACC. Planned: an official list of tools we have tested that fit ACC's workflow without confusing it.
 - **Smarter model choice.** Planned: learn which model and thinking level work for side tasks, then suggest instead of asking every time.
+- **CLI auto memory (later).** Bring Desktop-style offline auto memory to CLI after Desktop path is solid.
 - **Stronger handoff at usage limits.** Planned: when a session hits a usage limit mid-work, progress and handoff are already saved so you can continue later. (Not guaranteed yet — that is the goal for this wave.)
 
 ## Have an idea?

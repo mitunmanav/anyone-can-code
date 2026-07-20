@@ -7,9 +7,10 @@ All notable public changes to Anyone Can Code will be documented here.
 ### One plugin (Desktop + CLI)
 
 - **Same package** for Codex Desktop app and Codex CLI (Superpowers model).
-- Marketplace lists **Anyone Can Code** only — no separate `anyone-can-code-cli` install.
+- Marketplace lists **Anyone Can Code** only — no separate CLI install name.
 - Hooks use Codex-native `PLUGIN_ROOT` + `command` / `commandWindows` (not Desktop-only PowerShell blobs).
-- Old CLI package path is a deprecation stub: install **Anyone Can Code**.
+- **Desktop auto memory** (trust hooks) is the v2.0.0-beta.4 path.
+- **CLI auto memory not yet** — still 1.1.0-beta.4 level; use `$learn` / `$wiki` / `$capture` by hand until a later wave.
 
 ### Security / reliability (hooks)
 

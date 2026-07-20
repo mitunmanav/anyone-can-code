@@ -57,12 +57,12 @@ Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a cle
 | **Plan** | A clear path before big changes |
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass — not just “looks fine” |
-| **Remember** | Auto memory when hooks are trusted (Desktop + CLI) |
+| **Remember** | **Desktop:** auto memory (trust hooks). **CLI:** not yet — use `$learn` / `$wiki` |
 
 Native Codex — built from [Codex docs](https://openai.com/codex/), not ported from Claude or Cursor.
 
 I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2).  
-Open beta — **v2.0.0-beta.4** · **one plugin** for Desktop and CLI.
+Open beta — **one plugin** · Desktop **v2.0.0-beta.4** (auto memory) · CLI memory still **1.1.0-beta.4** level (manual save).
 
 **Need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python 3
 
@@ -110,16 +110,16 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 
 ---
 
-## Memory (automatic when hooks trusted)
+## Memory
 
 | Host | Auto memory? |
 |------|----------------|
-| **Codex Desktop** + **Anyone Can Code** | **Yes** — offline project memory |
-| **Codex CLI** + **Anyone Can Code** | **Yes** — same plugin, same hooks |
+| **Codex Desktop** + **Anyone Can Code** | **Yes** — offline project memory when hooks trusted |
+| **Codex CLI** + **Anyone Can Code** | **Not yet** — still 1.1.0-beta.4 level; save with `$learn` / `$wiki` / `$capture` |
 
-### What sticks (no save command)
+### Desktop — what sticks (no save command)
 
-You do **not** type a “save this” command in normal use. After hooks are trusted, ACC writes and reloads memory for you.
+You do **not** type a “save this” command in normal Desktop use. After hooks are trusted, ACC writes and reloads memory for you.
 
 | Kind | Example |
 |------|---------|
@@ -176,7 +176,8 @@ Full first session: **[docs/FIRST_DAY.md](docs/FIRST_DAY.md)**
 |---------|-----|
 | Marketplace won’t add | Use the **full** GitHub URL above |
 | Nothing works after install | **Trust all ACC hooks**, then restart / new chat |
-| Forgets what you decided | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory-automatic-when-hooks-trusted) |
+| Forgets what you decided (Desktop) | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory) |
+| Expects auto memory on CLI | Not yet — use `$learn` / `$wiki`, or use Desktop |
 | Old “CLI only” package name | Uninstall **Anyone Can Code CLI**; install **Anyone Can Code** once |
 | `$setup` silent | Open a **project folder** first |
 
@@ -188,7 +189,7 @@ Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) 
 
 | When | Focus |
 |------|--------|
-| **Now · beta.4** | **One plugin** Desktop+CLI · auto memory (trust hooks) · plain progress · safety |
+| **Now · beta.4** | **One plugin** Desktop+CLI · Desktop auto memory · CLI manual memory · safety |
 | **Next · beta.5** | Plays-nice plugins · smarter model choice · less lost work at limits |
 
 Full detail: **[ROADMAP.md](ROADMAP.md)** · [website](https://anyone-can-code.vercel.app/#roadmap)
