@@ -616,6 +616,36 @@ def write_hook_receipt(root: Path, receipt: dict) -> None:
     append_jsonl(hook_receipt_path(root), receipt)
 
 
+def tool_gate_fail_closed(event: str, reason: str) -> dict:
+    """Codex deny shapes for tool gates when ACC cannot safely decide.
+
+    Docs (Hooks → PreToolUse / PermissionRequest / Common output):
+    - exit 0 + empty stdout continues the tool / approval flow
+    - PreToolUse deny: hookSpecificOutput.permissionDecision = deny
+    - PermissionRequest deny: decision.behavior = deny
+    So worker crash / open circuit must NOT return {} for these events.
+    """
+    if event == "PreToolUse":
+        return {
+            "hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": reason,
+            }
+        }
+    if event == "PermissionRequest":
+        return {
+            "hookSpecificOutput": {
+                "hookEventName": "PermissionRequest",
+                "decision": {
+                    "behavior": "deny",
+                    "message": reason,
+                },
+            }
+        }
+    return {}
+
+
 def run_hook_attempt(
     resolution: dict,
     hook_name: str,
@@ -636,6 +666,7 @@ def run_hook_attempt(
     skip_reason = ""
     status = str(resolution.get("status") or "unresolved")
     project_root_value = resolution.get("project_root")
+    event = str(payload.get("hook_event_name") or "")
 
     if status != "resolved":
         # Per D-039/D-044: ambiguous or unresolved project cannot be chosen
@@ -644,12 +675,22 @@ def run_hook_attempt(
     elif hook_circuit_open(Path(str(project_root_value)), hook_name):
         skip_reason = "circuit-open"
         record_hook_result(Path(str(project_root_value)), hook_name, "skipped", reason=skip_reason)
+        # Safety hooks that cannot run must not fail open on tool gates.
+        result = tool_gate_fail_closed(
+            event,
+            f"ACC {hook_name}: circuit open. Blocked for safety.",
+        )
     else:
         try:
             result = worker()
-        except Exception as exc:  # pragma: no cover - hook best effort
+        except Exception as exc:
             failure_class = exc.__class__.__name__
-            result = {}
+            # Optional / non-gate events stay empty (best effort).
+            # PreToolUse / PermissionRequest empty = continue (docs) → fail closed.
+            result = tool_gate_fail_closed(
+                event,
+                f"ACC {hook_name} error ({failure_class}). Blocked for safety.",
+            )
             record_hook_result(
                 Path(str(project_root_value)),
                 hook_name,
@@ -662,11 +703,14 @@ def run_hook_attempt(
     duration_ms = int((time.monotonic() - started) * 1000)
     output_kind = hook_output_kind(result)
     context_returned = output_kind == "context"
-    state_write_paths = declared_state_writes(hook_name, str(payload.get("hook_event_name") or ""), result)
+    state_write_paths = declared_state_writes(hook_name, event, result)
     if failure_class:
         final_effectiveness = "failed"
-    elif skip_reason:
+    elif skip_reason and not result:
         final_effectiveness = "skipped"
+    elif skip_reason and result:
+        # Circuit-open (or similar) but we returned a fail-closed deny.
+        final_effectiveness = "useful"
     elif output_kind == "empty" and state_write_paths:
         final_effectiveness = "useful"
     elif output_kind == "empty":
@@ -674,7 +718,6 @@ def run_hook_attempt(
     else:
         final_effectiveness = "useful"
 
-    event = str(payload.get("hook_event_name") or "")
     receipt = {
         "schema_version": 1,
         "correlation_id": str(
