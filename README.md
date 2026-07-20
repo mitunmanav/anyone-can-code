@@ -6,19 +6,16 @@
 
 <p align="center">
   <strong>Plain English → plan → build → check.</strong><br/>
-  Free Codex plugin for Desktop <strong>and</strong> CLI — for people who are not engineers.<br/>
-  Say what you want. ACC helps you plan, build, and check that it actually works.
+  Free Codex plugin for people who are not engineers.<br/>
+  Say what you want. ACC helps you plan, build, and check that it works.
 </p>
 
 <p align="center">
   <a href="https://anyone-can-code.vercel.app/"><img src="https://img.shields.io/badge/website-live-10A37F?style=flat-square" alt="Website"/></a>
-  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/roadmap-public-0A66C2?style=flat-square" alt="Roadmap"/></a>
   <a href="https://discord.gg/qgS29y7TqP"><img src="https://img.shields.io/badge/Discord-join-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/mitunmanav/anyone-can-code/validate.yml?branch=main&style=flat-square&label=CI" alt="CI"/></a>
   <a href="https://github.com/mitunmanav/anyone-can-code/releases"><img src="https://img.shields.io/github/v/release/mitunmanav/anyone-can-code?include_prereleases&style=flat-square&label=release" alt="Release"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square" alt="License"/></a>
-  <img src="https://img.shields.io/badge/Desktop-0078D4?style=flat-square" alt="Desktop"/>
-  <img src="https://img.shields.io/badge/CLI-111827?style=flat-square" alt="CLI"/>
   <img src="https://img.shields.io/badge/beta-orange?style=flat-square" alt="Beta"/>
 </p>
 
@@ -49,35 +46,23 @@
 
 ## What it is
 
-Free open-source **plugins** for [OpenAI Codex](https://openai.com/codex/).  
-Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a clear path:
+**Anyone Can Code (ACC)** is a free open-source plugin for [OpenAI Codex](https://openai.com/codex/).  
+Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a clear path.
 
 | Step | What you get |
 |------|----------------|
 | **Plan** | A clear path before big changes |
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass — not just “looks fine” |
-| **Remember** | **Desktop:** auto memory (trust hooks). **CLI:** not yet — use `$learn` / `$wiki` |
+| **Remember** | **Desktop:** auto memory when hooks are trusted. **CLI:** not yet — use `$learn` / `$wiki` |
 
-Native Codex — built from [Codex docs](https://openai.com/codex/), not ported from Claude or Cursor.
+**One plugin** for Desktop and CLI — same name: **Anyone Can Code**.
 
-I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2).  
-Open beta — **one plugin** · Desktop **v2.0.0-beta.4** (auto memory) · CLI memory still **1.1.0-beta.4** level (manual save).
+Open beta · Desktop **v2.0.0-beta.4** (auto memory) · CLI memory still manual for now.
 
 **Need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python 3
 
----
-
-## One plugin
-
-Same idea as Superpowers: **one package**, two install surfaces.
-
-| You use | Install this |
-|---------|----------------|
-| Codex **Desktop** app | **Anyone Can Code** |
-| Codex **CLI** terminal | **Anyone Can Code** (same name) |
-
-Plugin folder: [plugins/anyone-can-code](plugins/anyone-can-code/README.md)
+I’m **Mitun**. One product I shipped with ACC: [Everything AI v0.4.2](https://github.com/mitunmanav/everything-ai/releases/tag/v0.4.2).
 
 ---
 
@@ -88,10 +73,10 @@ Plugin folder: [plugins/anyone-can-code](plugins/anyone-can-code/README.md)
 </p>
 
 1. Copy: `https://github.com/mitunmanav/anyone-can-code`
-2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste  
-3. Install **Anyone Can Code**  
-4. **Hooks** → enable + **trust every ACC hook** (required for guards + auto memory)  
-5. Restart → open a project folder → `$setup` → say what you want  
+2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste
+3. Install **Anyone Can Code**
+4. **Hooks** → enable + **trust every ACC hook** (required)
+5. Restart → open a project folder → `$setup` → say what you want
 
 Video: [website](https://anyone-can-code.vercel.app/#install) · [mp4](docs/media/install-setup.mp4)
 
@@ -103,52 +88,23 @@ Video: [website](https://anyone-can-code.vercel.app/#install) · [mp4](docs/medi
 codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 ```
 
-1. In a project folder: `codex`  
-2. `/plugins` → install **Anyone Can Code** (not a separate CLI package)  
-3. `/hooks` → **trust** every ACC hook  
-4. New thread → `$setup` → say what you want  
+1. In a project folder: `codex`
+2. `/plugins` → install **Anyone Can Code** (same plugin as Desktop)
+3. `/hooks` → **trust** every ACC hook
+4. New thread → `$setup` → say what you want
 
 ---
 
 ## Memory
 
-| Host | Auto memory? |
-|------|----------------|
-| **Codex Desktop** + **Anyone Can Code** | **Yes** — offline project memory when hooks trusted |
-| **Codex CLI** + **Anyone Can Code** | **Not yet** — still 1.1.0-beta.4 level; save with `$learn` / `$wiki` / `$capture` |
+| You use | Auto memory? |
+|---------|----------------|
+| **Codex Desktop** | **Yes** — after you trust ACC hooks |
+| **Codex CLI** | **Not yet** — save with `$learn` / `$wiki` / `$capture` |
 
-### Desktop — what sticks (no save command)
+On Desktop, ACC can remember goals, decisions, and open work on your machine (under `.codex/anyone-can-code/`). Nothing is sent to ACC servers.
 
-You do **not** type a “save this” command in normal Desktop use. After hooks are trusted, ACC writes and reloads memory for you.
-
-| Kind | Example |
-|------|---------|
-| **Wants / prefs** | “Always use the blue theme.” |
-| **Decisions** | “We’ll use SQLite for storage.” |
-| **Corrections** | “No — contact page, not about.” |
-| **Open work** | Goal, next step, unfinished ask after a crash |
-
-### How auto memory works (plain English)
-
-1. **You talk** — ACC’s hooks quietly record what matters.  
-2. **You leave, crash, or hit a limit** — the last open request is marked so the next session can show a **crash-resume** line.  
-3. **You open a new chat** — SessionStart loads **NOW** (goal + next) plus top lessons.  
-4. **Stays on your machine** under `.codex/anyone-can-code/memory/` (notes + live `NOW.md`). Nothing is sent to ACC servers.
-
-Trust hooks once, and again after every plugin update (hook hash changes).
-
-### What you do *not* need
-
-- No `$learn` / `$capture` as the normal path. Those are **backup / force** only if something looks wrong.  
-- No Codex built-in `/memories` for ACC’s project memory. ACC keeps its own local notes.
-
-### If memory seems dead
-
-| Check | Fix |
-|-------|-----|
-| Forgot between sessions | **Trust all ACC hooks**, restart Codex, new chat |
-| After a plugin update | Trust hooks **again**, then restart |
-| Want a health check | Run `python3 plugins/anyone-can-code/scripts/memory_doctor.py` in the plugin folder — should say memory is running, or tell you to trust hooks |
+**Tip:** After every plugin update, trust hooks again, then restart.
 
 ---
 
@@ -175,24 +131,13 @@ Full first session: **[docs/FIRST_DAY.md](docs/FIRST_DAY.md)**
 | Problem | Fix |
 |---------|-----|
 | Marketplace won’t add | Use the **full** GitHub URL above |
-| Nothing works after install | **Trust all ACC hooks**, then restart / new chat |
-| Forgets what you decided (Desktop) | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory) |
+| Nothing works after install | **Trust all ACC hooks**, restart, new chat |
+| Forgets on Desktop | Hooks not trusted (or not re-trusted after update) |
 | Expects auto memory on CLI | Not yet — use `$learn` / `$wiki`, or use Desktop |
-| Old “CLI only” package name | Uninstall **Anyone Can Code CLI**; install **Anyone Can Code** once |
+| Old “CLI only” package | Uninstall **Anyone Can Code CLI**; install **Anyone Can Code** once |
 | `$setup` silent | Open a **project folder** first |
 
 Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Discord](https://discord.gg/qgS29y7TqP) · [Issues](https://github.com/mitunmanav/anyone-can-code/issues/new/choose)
-
----
-
-## Roadmap
-
-| When | Focus |
-|------|--------|
-| **Now · beta.4** | **One plugin** Desktop+CLI · Desktop auto memory · CLI manual memory · safety |
-| **Next · beta.5** | Plays-nice plugins · smarter model choice · less lost work at limits |
-
-Full detail: **[ROADMAP.md](ROADMAP.md)** · [website](https://anyone-can-code.vercel.app/#roadmap)
 
 ---
 
