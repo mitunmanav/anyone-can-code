@@ -37,7 +37,8 @@
 4. Trust every ACC hook (required)  
 5. Restart · open a project · `$setup` · say what you want  
 
-**Current version:** [plugin.json](.codex-plugin/plugin.json) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
+**Current version:** **v2.0.0-beta.4** ([plugin.json](.codex-plugin/plugin.json)) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)  
+CLI package is separate and may lag (see root README).
 
 ### If install fails
 
@@ -49,6 +50,19 @@
 | `$setup` no reply | Open a **project folder**, start a **new chat**, run `$setup` again |
 
 More: [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Install issue form](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) · [root troubleshooting](../../README.md#if-something-fails)
+
+### Safety (Desktop hooks, beta.4 v2)
+
+Built from [Codex hooks docs](https://developers.openai.com/codex/hooks):
+
+- **Trust hooks** or ACC cannot guard or save memory.
+- Blocks dangerous shell patterns (force-push, wipe-disk style, download-to-shell).
+- Hard deploy/publish runs a local security checklist (open signup, default passwords, placeholder secrets).
+- Safe read/test commands can auto-allow; multi-step or risky chains still ask you.
+- If a safety hook crashes, it **blocks** instead of quietly allowing (fail closed).
+- Hooks cover **Bash / apply_patch / MCP** only — not every shell path. Keep Codex sandbox on.
+
+Memory stays **on your machine** under `.codex/anyone-can-code/memory/`.
 
 ---
 
