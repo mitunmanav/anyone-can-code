@@ -57,7 +57,7 @@ Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a cle
 | **Plan** | A clear path before big changes |
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass — not just “looks fine” |
-| **Remember** | Auto memory — wants, decisions, and open work stick (see below) |
+| **Remember** | **Desktop:** full auto memory. **CLI:** not yet (use `$learn` / `$wiki` for now) |
 
 Native Codex — built from [Codex docs](https://openai.com/codex/), not ported from Claude or Cursor.
 
@@ -91,7 +91,7 @@ More detail: [Desktop](plugins/anyone-can-code/README.md) · [CLI](plugins/anyon
 1. Copy: `https://github.com/mitunmanav/anyone-can-code`
 2. Codex Desktop → **Plugins** → **+** → **Add a Marketplace** → paste  
 3. Install **Anyone Can Code** (not the CLI name)  
-4. **Hooks** → enable + **trust every ACC hook** (required — this is how memory works)  
+4. **Hooks** → enable + **trust every ACC hook** (required — this is how **Desktop auto memory** works)  
 5. Restart → open a project folder → `$setup` → say what you want  
 
 Video: [website](https://anyone-can-code.vercel.app/#install) · [mp4](docs/media/install-setup.mp4)
@@ -106,16 +106,23 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 
 1. In a project folder: `codex`  
 2. `/plugins` → install **Anyone Can Code CLI**  
-3. `/hooks` → **trust** every ACC hook (required for memory)  
+3. `/hooks` → **trust** every ACC hook (required for guards + session load/save)  
 4. New thread → `$setup` → say what you want  
+
+**Note:** CLI does **not** have full auto memory yet. Desktop first. CLI can still use `$learn` / `$wiki` / `$capture` by hand.
 
 ---
 
-## Memory (automatic)
+## Memory (automatic on Desktop)
 
-You do **not** type a “save this” command in normal use. After hooks are trusted, ACC writes and reloads memory for you.
+| Host | Auto memory in beta.4? |
+|------|-------------------------|
+| **Codex Desktop** + **Anyone Can Code** | **Yes** — full offline auto memory |
+| **Codex CLI** + **Anyone Can Code CLI** | **Not yet** — focus is Desktop first; save by hand with `$learn` / `$wiki` / `$capture` |
 
-### What sticks
+### Desktop — what sticks (no save command)
+
+You do **not** type a “save this” command in normal Desktop use. After hooks are trusted, ACC writes and reloads memory for you.
 
 | Kind | Example |
 |------|---------|
@@ -124,21 +131,21 @@ You do **not** type a “save this” command in normal use. After hooks are tru
 | **Corrections** | “No — contact page, not about.” |
 | **Open work** | Goal, next step, unfinished ask after a crash |
 
-### How it works (plain English)
+### How Desktop auto memory works (plain English)
 
-1. **You talk** — ACC’s hooks (small scripts Codex runs for you) quietly record what matters.  
+1. **You talk** — ACC’s hooks quietly record what matters.  
 2. **You leave, crash, or hit a limit** — the last open request is marked so the next session can show a **crash-resume** line.  
-3. **You open a new chat** — SessionStart loads **NOW** (goal + next) plus top lessons. You should not re-explain everything.  
-4. **All of this stays on your machine** under `.codex/anyone-can-code/memory/` in the project (notes + a live `NOW.md`). Nothing is sent to ACC servers.
+3. **You open a new chat** — SessionStart loads **NOW** (goal + next) plus top lessons.  
+4. **Stays on your machine** under `.codex/anyone-can-code/memory/` (notes + live `NOW.md`). Nothing is sent to ACC servers.
 
-**Desktop** has full offline auto-memory in **v1.1.0-beta.4**. Trust hooks once, and again after every plugin update (hook hash changes).
+Trust hooks once, and again after every plugin update (hook hash changes).
 
-### What you do *not* need
+### Desktop — what you do *not* need
 
-- No `$learn` / `$capture` / “remember this” skill as the normal path. Those are **backup / force** only if something looks wrong.  
+- No `$learn` / `$capture` as the normal path on Desktop. Those are **backup / force** only if something looks wrong.  
 - No Codex built-in `/memories` for ACC’s project memory. ACC keeps its own local notes.
 
-### If memory seems dead
+### If Desktop memory seems dead
 
 | Check | Fix |
 |-------|-----|
@@ -172,7 +179,8 @@ Full first session: **[docs/FIRST_DAY.md](docs/FIRST_DAY.md)**
 |---------|-----|
 | Marketplace won’t add | Use the **full** GitHub URL above |
 | Nothing works after install | **Trust all ACC hooks**, then restart / new chat |
-| Forgets what you decided | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory-automatic) |
+| Forgets what you decided (Desktop) | Hooks not trusted (or not re-trusted after update) — see [Memory](#memory-automatic-on-desktop) |
+| Expects auto memory on CLI | Not shipped yet — use `$learn` / `$wiki`, or use Desktop |
 | Wrong package | Uninstall; install Desktop **or** CLI for your host |
 | `$setup` silent | Open a **project folder** first |
 
@@ -184,8 +192,8 @@ Still stuck? [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) 
 
 | When | Focus |
 |------|--------|
-| **Now · beta.4** | Auto memory (trust hooks) · plain progress · honest push-back · safety |
-| **Next · beta.5** | Plays-nice plugins · smarter model choice · less lost work at limits |
+| **Now · beta.4** | **Desktop** auto memory (trust hooks) · plain progress · honest push-back · safety |
+| **Next · beta.5** | Plays-nice plugins · smarter model choice · less lost work at limits · CLI memory later |
 
 Full detail: **[ROADMAP.md](ROADMAP.md)** · [website](https://anyone-can-code.vercel.app/#roadmap)
 

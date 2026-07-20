@@ -90,12 +90,15 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 
 ## Memory (short)
 
-- Durable memory = linked Markdown files  
-- Recalled before questions, plans, and actions  
-- Advises — never decides alone  
-- Viewer optional (e.g. Obsidian); ACC works without one  
+**Full offline auto memory is Desktop-only in beta.4** (package **Anyone Can Code**).  
+This CLI package does **not** auto-write wants / decisions / open work yet. Focus is Desktop first.
 
-Details: [`MEMORY-CONTRACT.md`](MEMORY-CONTRACT.md)
+On CLI for now:
+- Save by hand: `$learn`, `$wiki`, `$capture`  
+- Durable notes = linked Markdown under the project  
+- Trust hooks still needed for guards + session load/save  
+
+Details: [`MEMORY-CONTRACT.md`](MEMORY-CONTRACT.md) · root [README memory](../../README.md#memory-automatic-on-desktop)
 
 ---
 
