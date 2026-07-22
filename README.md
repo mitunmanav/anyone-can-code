@@ -95,16 +95,27 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 
 ---
 
-## Memory
+## Desktop & CLI
 
-| You use | Auto memory? |
-|---------|----------------|
-| **Codex Desktop** | **Yes** — after you trust ACC hooks |
-| **Codex CLI** | **Yes** — after you trust ACC hooks (same as Desktop) |
+**One plugin.** Same ACC work on both. Only host chrome differs.
 
-On Desktop or CLI, ACC can remember goals, decisions, and open work on your machine (under `.codex/anyone-can-code/`). Nothing sent to ACC servers.
+| | Desktop | CLI |
+|--|---------|-----|
+| **Auto memory** (hooks trusted) | Yes | Yes |
+| **Skills** (`$setup`, `$verify`, …) | Yes | Yes |
+| **Plan → build → check** | Yes | Yes |
+| **Fail-closed safety** | Yes | Yes |
+| **Trust hooks** | Hooks UI | `/hooks` |
+| **Install** | Plugins UI | marketplace cmd + `/plugins` |
+| **Review** | Review pane or `/review` | `/review` |
+| **Scheduled ACC jobs** | Desktop/web only | — |
+| **Sites / app browser** | Desktop only | — |
 
-**Tip:** After every plugin update, trust hooks again, then restart.
+Memory lives on your machine under `.codex/anyone-can-code/`. Not sent to ACC servers.
+
+**Tip:** After plugin update, re-trust hooks, then restart.
+
+More detail: [website](https://anyone-can-code.vercel.app/).
 
 ---
 

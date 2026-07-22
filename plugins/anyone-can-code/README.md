@@ -101,6 +101,12 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 
 ---
 
+## Desktop & CLI
+
+One plugin. **Same** on both (hooks trusted): auto memory, skills, plan → build → check, safety.
+
+**Differs:** trust/install path; Scheduled + Sites = Desktop only.
+
 ## Memory (short)
 
 - Durable memory = linked Markdown files  
