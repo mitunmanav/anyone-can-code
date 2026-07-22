@@ -97,3 +97,18 @@ def test_session_context_includes_loops_and_plugin_root(tmp_path):
     assert "work=on" in out
     assert "scheduled=opt-in" in out
     assert "self_improve=opt-in" in out
+
+def test_load_lean_skips_tier_c_loops(tmp_path, monkeypatch):
+    """ACC_LOAD_LEAN=1 keeps Tier A (ENFORCE) but skips loop parade."""
+    monkeypatch.setenv("ACC_LOAD_LEAN", "1")
+    prefs = tmp_path / ".codex" / "anyone-can-code" / "settings"
+    prefs.mkdir(parents=True)
+    (prefs / "preferences.json").write_text(
+        __import__("json").dumps({"communication_mode": "caveman-strict"}),
+        encoding="utf-8",
+    )
+    ctx = load_session.build_context(tmp_path, "startup")
+    assert "ENFORCE comm rule" in ctx
+    assert "ACC_PLUGIN_ROOT=" in ctx
+    assert "Loops:" not in ctx
+

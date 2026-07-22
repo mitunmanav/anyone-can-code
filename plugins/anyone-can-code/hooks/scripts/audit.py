@@ -17,7 +17,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-import silent_failure_detector
 
 
 # Item 14: auto-allow only low-risk tools. Never blanket-allow Bash.
@@ -307,7 +306,9 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
         # Only silent-fail scan when exit looks successful (or unknown). Real nonzero = not silent.
         exit_code = extract_exit_code(tool_response, lower)
         if exit_code is None or exit_code == 0:
-            scan = silent_failure_detector.scan_tool_response(
+            import silent_failure_detector as _sfd  # lazy: only on success-looking exits
+
+            scan = _sfd.scan_tool_response(
                 {"output": response_preview, "exit_code": 0 if exit_code is None else exit_code}
             )
             if scan["silent_failures"]:

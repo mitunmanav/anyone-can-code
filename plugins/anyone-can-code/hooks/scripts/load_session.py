@@ -13,26 +13,40 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import memory_core
 import state
-import first_run as _first_run
-import model_ledger as _model_ledger
-import version_check as _version_check
-import rule_promote as _rule_promote
-import user_model as _user_model
-import capabilities as _capabilities
 
-# Cheap rate-limit + token-burn guard (reads ~/.codex/sessions rollout files).
 _SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
-if str(_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS))
-try:
-    import rate_limit_guard as _rate_limit_guard
-except Exception:  # pragma: no cover - optional if scripts path missing
-    _rate_limit_guard = None
-try:
-    import cross_agent_pack as _cross_agent_pack
-except Exception:  # pragma: no cover
-    _cross_agent_pack = None
 
+# Soft inject budget: Tier A always; B then C if room. Lean skips C.
+SESSION_CONTEXT_SOFT_CAP = 5500
+
+
+def _ensure_scripts_path() -> None:
+    if str(_SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(_SCRIPTS))
+
+
+def _lazy_import(name: str):
+    """Import hook-local or scripts module only when needed."""
+    hook_local = {
+        "first_run",
+        "model_ledger",
+        "version_check",
+        "rule_promote",
+        "user_model",
+        "capabilities",
+    }
+    if name not in hook_local:
+        _ensure_scripts_path()
+    return __import__(name)
+
+
+def _load_full_tier_c() -> bool:
+    """Tier C on by default; ACC_LOAD_LEAN=1 skips host/loops/obs parade."""
+    return os.environ.get("ACC_LOAD_LEAN", "").strip().lower() not in {
+        "1",
+        "true",
+        "yes",
+    }
 
 def read_agents_md(repo_root: Path) -> str:
     path = repo_root / "AGENTS.md"
@@ -147,22 +161,22 @@ def recall_memory_notes(repo_root: Path) -> tuple[list[str], str]:
     return lessons, proof
 
 
+
 def build_context(
     repo_root: Path,
     source: str,
     *,
     session_id: str | None = None,
 ) -> str:
+    """Session inject: Tier A always; B then C if under soft cap; lean skips C."""
     workflow = state.read_state(repo_root)
     prefs = state.read_preferences(repo_root)
     agents = read_agents_md(repo_root)
     task_type = workflow.get("route") or "general"
-    ledger_path = state.ensure_project_layout(repo_root)["state"] / "model-ledger.jsonl"
-    rec = _model_ledger.recommend_model(task_type, ledger_path=ledger_path)
     comm_mode = prefs.get("communication_mode", "caveman-strict")
 
-    # Surface recent mistakes
-    mistake_lines = []
+    # --- Tier A: always (smart core) ---
+    mistake_lines: list[str] = []
     try:
         mistakes = state.read_recent_jsonl(state.mistake_log_path(repo_root), limit=5)
         for m in mistakes[-3:]:
@@ -171,24 +185,16 @@ def build_context(
     except Exception:
         pass
 
-    memory_lines, read_proof = recall_memory_notes(repo_root)
-    wiki_brief = recall_wiki_brief(repo_root)
-    if read_proof:
-        try:
-            state.write_state(repo_root, {"memory_read_proof": read_proof})
-        except Exception:
-            pass
-
-    context_lines = [
+    tier_a: list[str] = [
         "Style: strict caveman. Short. Direct. No filler. Re-read this every turn."
     ]
     if source == "compact":
-        context_lines.append(
-            "Context was compacted. Re-anchor on the state below; do not re-ask answered questions."
+        tier_a.append(
+            "Context was compacted. Re-anchor on the state below; "
+            "do not re-ask answered questions."
         )
-    context_lines.append(build_memory_block(repo_root, source))
-    reasoning = rec.get("reasoning") or "medium"
-    context_lines += [
+    tier_a.append(build_memory_block(repo_root, source))
+    tier_a += [
         f"State: {workflow.get('phase', 'idle')} / {workflow.get('route', 'unknown')}.",
         f"Next: {workflow.get('next_step', 'N/A')}.",
         f"ENFORCE comm rule: {comm_mode}. Short replies only. No walls of text.",
@@ -197,146 +203,171 @@ def build_context(
         "User taste: ~/.codex/anyone-can-code/user-memory/. "
         "Native Codex /memories OFF for ACC project notes.",
         f"From: {source}.",
-        f"Model: {rec['model']} reasoning={reasoning} ({rec['reason']}). Not always high effort.",
         (
             "Session end rule: before stopping, give a 3-line recap — "
             "1) what got done, 2) what is next, 3) what the user must decide. "
             "Never stop on an unanswered question from the user."
         ),
-        "Observability: after tool work, tell the user what you did in plain words (What AI did).",
-        "Cost: label suggestions [CHEAP] or [HUNGRY]. Prefer cheap first.",
-        # Item 19: do NOT bulk-load skill bodies here — Codex progressive disclosure does that.
         "Skills: use progressive load; do not re-read every skill file each turn.",
         "Proof: never claim done/works/perfect without named evidence. Built ≠ verified.",
+        "Cost: label suggestions [CHEAP] or [HUNGRY]. Prefer cheap first.",
     ]
-    # Live product paths for scripts that used to be test-only helpers.
-    try:
-        scripts = Path(__file__).resolve().parents[2] / "scripts"
-        if str(scripts) not in sys.path:
-            sys.path.insert(0, str(scripts))
-        import host_detect as _host_detect
-
-        guide = _host_detect.host_guidance()
-        context_lines.append(
-            f"Host: {guide.get('host', 'unknown')}. {guide.get('review', '')}"
-        )
-    except Exception:
-        pass
-    # PLUGIN_ROOT is hook-only (Codex hooks docs). Inject real path so skills
-    # can run scripts without assuming the agent shell has PLUGIN_ROOT.
     acc_plugin_root = (
         os.environ.get("PLUGIN_ROOT")
         or os.environ.get("CLAUDE_PLUGIN_ROOT")
         or str(Path(__file__).resolve().parents[2])
     )
-    context_lines.append(
+    tier_a.append(
         f"ACC_PLUGIN_ROOT={acc_plugin_root}. "
-        "Run scripts: python3 \"{0}/scripts/<name>.py\". "
+        'Run scripts: python3 "{0}/scripts/<name>.py". '
         "PLUGIN_ROOT is hooks-only; agent shell uses this path.".format(acc_plugin_root)
     )
-    try:
-        scripts = Path(__file__).resolve().parents[2] / "scripts"
-        if str(scripts) not in sys.path:
-            sys.path.insert(0, str(scripts))
-        import loop_registry as _loop_registry
-
-        # Real product call: inject live loop status from list_loops(), not a
-        # discarded import-proof. Full menu stays available via CLI / $status.
-        loops = _loop_registry.list_loops()
-        bits = []
-        for loop in loops:
-            lid = str(loop.get("id") or "")
-            if not lid:
-                continue
-            if loop.get("opt_in"):
-                bits.append(f"{lid}=opt-in")
-            else:
-                bits.append(f"{lid}=on")
-        if bits:
-            context_lines.append(
-                "Loops: " + ", ".join(bits) + ". "
-                + _loop_registry.plain_menu().splitlines()[0]
-            )
-    except Exception:
-        pass
-    try:
-        scripts = Path(__file__).resolve().parents[2] / "scripts"
-        if str(scripts) not in sys.path:
-            sys.path.insert(0, str(scripts))
-        import ai_observability as _ai_obs
-
-        receipt = _ai_obs.build_plain_receipt(repo_root, limit=3)
-        if receipt.get("count"):
-            context_lines.append(str(receipt.get("user_block") or "")[:240])
-        else:
-            context_lines.append("What AI did: nothing recorded yet this project.")
-    except Exception:
-        pass
-    if _cross_agent_pack is not None:
-        try:
-            context_lines.append(_cross_agent_pack.env_agent_line())
-        except Exception:
-            pass
-    try:
-        nudge = _version_check.update_nudge()
-        if nudge:
-            context_lines.append(nudge)
-    except Exception:
-        pass
-    try:
-        cap = _capabilities.capability_line(repo_root)
-        if cap:
-            context_lines.append(cap)
-    except Exception:
-        pass
-    try:
-        about = _user_model.about_you_line(repo_root)
-        if about:
-            context_lines.append(about)
-    except Exception:
-        pass
-    try:
-        rules = _rule_promote.approved_rules(repo_root)
-    except Exception:
-        rules = []
-    if rules:
-        context_lines.append("Permanent rules (user approved):")
-        context_lines.extend(f"  {rule}" for rule in rules)
     if mistake_lines:
-        context_lines.append("Recent mistakes (do not repeat):")
-        context_lines.extend(mistake_lines)
-    # Portable handoff inject (docs: SessionStart additionalContext; any tool can open the file).
-    try:
-        scripts = Path(__file__).resolve().parents[2] / "scripts"
-        if str(scripts) not in sys.path:
-            sys.path.insert(0, str(scripts))
-        import portable_handoff as _portable_handoff  # type: ignore
+        tier_a.append("Recent mistakes (do not repeat):")
+        tier_a.extend(mistake_lines)
 
-        portable_block = _portable_handoff.inject_summary(repo_root)
-        if portable_block:
-            context_lines.append(portable_block)
-    except Exception:
-        pass
-    if wiki_brief:
-        context_lines.append(wiki_brief)
-    if memory_lines:
-        context_lines.append("Memory recall (apply these lessons):")
-        context_lines.extend(f"  {line}" for line in memory_lines)
-    # Token-burn / session scan is optional (can be huge on Windows). Opt-in only.
-    if _rate_limit_guard is not None and os.environ.get("ACC_TOKEN_BURN", "").strip() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    context_lines = list(tier_a)
+    used = len("\n".join(context_lines))
+
+    def _room(extra: int = 80) -> bool:
+        return used + extra < SESSION_CONTEXT_SOFT_CAP
+
+    def _add(line: str) -> None:
+        nonlocal used
+        if not line:
+            return
+        if used + len(line) + 1 > SESSION_CONTEXT_SOFT_CAP:
+            return
+        context_lines.append(line)
+        used += len(line) + 1
+
+    # --- Tier B: memory + model + rules (lazy imports) ---
+    if _room(200):
+        memory_lines, read_proof = recall_memory_notes(repo_root)
+        wiki_brief = recall_wiki_brief(repo_root)
+        if read_proof:
+            try:
+                state.write_state(repo_root, {"memory_read_proof": read_proof})
+            except Exception:
+                pass
         try:
-            for line in _rate_limit_guard.build_guard_lines(session_id=session_id):
-                context_lines.append(line)
+            _model_ledger = _lazy_import("model_ledger")
+            ledger_path = (
+                state.ensure_project_layout(repo_root)["state"] / "model-ledger.jsonl"
+            )
+            rec = _model_ledger.recommend_model(task_type, ledger_path=ledger_path)
+            reasoning = rec.get("reasoning") or "medium"
+            _add(
+                f"Model: {rec['model']} reasoning={reasoning} ({rec['reason']}). "
+                "Not always high effort."
+            )
         except Exception:
             pass
-    if agents:
-        context_lines.append("")
-        context_lines.append("Project rules:")
-        context_lines.append(agents)
+        try:
+            rules = _lazy_import("rule_promote").approved_rules(repo_root)
+        except Exception:
+            rules = []
+        if rules and _room():
+            _add("Permanent rules (user approved):")
+            for rule in rules:
+                _add(f"  {rule}")
+        try:
+            about = _lazy_import("user_model").about_you_line(repo_root)
+            if about:
+                _add(about)
+        except Exception:
+            pass
+        if wiki_brief:
+            _add(wiki_brief)
+        if memory_lines:
+            _add("Memory recall (apply lessons):")
+            for line in memory_lines:
+                _add(f"  {line}")
+        try:
+            _ensure_scripts_path()
+            import portable_handoff as _portable_handoff  # type: ignore
+
+            portable_block = _portable_handoff.inject_summary(repo_root)
+            if portable_block:
+                _add(portable_block)
+        except Exception:
+            pass
+        if agents and _room(len(agents) + 40):
+            _add("")
+            _add("Project rules:")
+            _add(agents)
+
+    # --- Tier C: host / loops / obs (lazy; ACC_LOAD_LEAN=1 skips) ---
+    if _load_full_tier_c() and _room(100):
+        try:
+            _ensure_scripts_path()
+            import host_detect as _host_detect
+
+            guide = _host_detect.host_guidance()
+            _add(f"Host: {guide.get('host', 'unknown')}. {guide.get('review', '')}")
+        except Exception:
+            pass
+        try:
+            _ensure_scripts_path()
+            import loop_registry as _loop_registry
+
+            loops = _loop_registry.list_loops()
+            bits: list[str] = []
+            for loop in loops:
+                lid = str(loop.get("id") or "")
+                if not lid:
+                    continue
+                if loop.get("opt_in"):
+                    bits.append(f"{lid}=opt-in")
+                else:
+                    bits.append(f"{lid}=on")
+            if bits:
+                menu0 = _loop_registry.plain_menu().splitlines()[0]
+                _add("Loops: " + ", ".join(bits) + ". " + menu0)
+        except Exception:
+            pass
+        try:
+            _ensure_scripts_path()
+            import ai_observability as _ai_obs
+
+            receipt = _ai_obs.build_plain_receipt(repo_root, limit=3)
+            if receipt.get("count"):
+                _add(str(receipt.get("user_block") or "")[:240])
+            else:
+                _add("What AI did: nothing recorded yet for this project.")
+        except Exception:
+            pass
+        try:
+            pack = _lazy_import("cross_agent_pack")
+            _add(pack.env_agent_line())
+        except Exception:
+            pass
+        try:
+            nudge = _lazy_import("version_check").update_nudge()
+            if nudge:
+                _add(nudge)
+        except Exception:
+            pass
+        try:
+            cap_line = _lazy_import("capabilities").capability_line(repo_root)
+            if cap_line:
+                _add(cap_line)
+        except Exception:
+            pass
+        _add(
+            "Observability: after tool work, tell the user what you did "
+            "in plain words (What AI did)."
+        )
+
+    # Token-burn opt-in only (expensive on Windows)
+    if os.environ.get("ACC_TOKEN_BURN", "").strip().lower() in {"1", "true", "yes"}:
+        try:
+            rlg = _lazy_import("rate_limit_guard")
+            for line in rlg.build_guard_lines(session_id=session_id):
+                _add(line)
+        except Exception:
+            pass
+
     return "\n".join(context_lines)
 
 
@@ -348,7 +379,11 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
     source = payload.get("source", "startup")
     session_id = str(payload.get("session_id") or "") or None
     ctx = build_context(repo_root, source, session_id=session_id)
-    if not _first_run.is_configured(repo_root):
+    try:
+        _configured = _lazy_import("first_run").is_configured(repo_root)
+    except Exception:
+        _configured = True
+    if not _configured:
         ctx += (
             "\n\nFIRST RUN: Ask user one question only: non-tech, middle, or developer "
             "(or builder/mixed/developer)? Then call $setup. Also ask: set up automations? "

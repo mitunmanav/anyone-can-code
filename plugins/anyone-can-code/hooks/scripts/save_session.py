@@ -13,7 +13,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import memory_core
 import memory_promote
 import state
-import model_ledger as _model_ledger
 
 
 def record_session_model_outcome(repo_root: Path, payload: dict, signals: list[dict]) -> None:
@@ -25,6 +24,8 @@ def record_session_model_outcome(repo_root: Path, payload: dict, signals: list[d
         outcome = "success"
     else:
         return
+    import model_ledger as _model_ledger
+
     ledger = state.ensure_project_layout(repo_root)["state"] / "model-ledger.jsonl"
     _model_ledger.record_model_result(
         _model_ledger.extract_model_from_payload(payload),

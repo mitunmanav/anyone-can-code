@@ -834,22 +834,20 @@ class ProjectStateTests(unittest.TestCase):
                 payload,
                 lambda: {},
             )
-            receipt = json.loads(
-                (
-                    nested
-                    / ".codex"
-                    / "anyone-can-code"
-                    / "logs"
-                    / "hook-receipts.jsonl"
-                )
-                .read_text(encoding="utf-8")
-                .splitlines()[-1]
+            receipt_path = (
+                nested
+                / ".codex"
+                / "anyone-can-code"
+                / "logs"
+                / "hook-receipts.jsonl"
             )
 
         self.assertEqual(result, {})
-        self.assertEqual(receipt["output_kind"], "empty")
-        self.assertFalse(receipt["context_returned"])
-        self.assertEqual(receipt["final_effectiveness"], "no-op")
+        # Phase 2: pure empty no-op skips receipt disk write (less thrash).
+        self.assertFalse(
+            receipt_path.exists(),
+            "empty no-op must not write hook-receipts.jsonl",
+        )
 
     def test_run_hook_attempt_pretooluse_worker_crash_fails_closed(self) -> None:
         """Docs: exit 0 empty continues tool — crash must return PreToolUse deny."""
