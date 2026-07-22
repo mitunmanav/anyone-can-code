@@ -58,7 +58,7 @@
 
 **एक प्लगिन** Desktop और CLI दोनों के लिए — एक ही नाम: **Anyone Can Code**।
 
-ओपन बीटा · Desktop **v2.0.0-beta.4** (ऑटो मेमोरी) · CLI मेमोरी अभी मैन्युअल।
+ओपन बीटा · Desktop **v2.0.0-beta.5** (ऑटो मेमोरी) · CLI मेमोरी अभी मैन्युअल।
 
 **ज़रूरी:** [Codex](https://openai.com/codex/) (Desktop और/या CLI) · Python 3
 

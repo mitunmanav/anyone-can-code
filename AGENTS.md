@@ -5,9 +5,9 @@ Product-facing notes only. Process / learning notes do **not** belong in this re
 ## Product
 
 - **Name:** Anyone Can Code (ACC)
-- **Version:** see `plugins/anyone-can-code/.codex-plugin/plugin.json` (v2.0.0-beta.4, one plugin)
+- **Version:** see `plugins/anyone-can-code/.codex-plugin/plugin.json` (v2.0.0-beta.5, one plugin)
 - **Platform:** Codex Desktop + Codex CLI (one install)
-- **Memory:** Desktop auto (trust hooks). CLI not yet — `$learn` / `$wiki` (1.1.0-beta.4 level).
+- **Memory:** Desktop + CLI auto memory when hooks trusted. Optional `$learn` / `$wiki`.
 - **Site:** https://anyone-can-code.vercel.app/
 - **Repo:** https://github.com/mitunmanav/anyone-can-code
 

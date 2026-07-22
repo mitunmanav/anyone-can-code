@@ -2,6 +2,22 @@
 
 All notable public changes to Anyone Can Code will be documented here.
 
+## 2.0.0-beta.5 - 2026-07-22
+
+### Desktop + CLI same page
+- **One version** for Desktop and CLI: **2.0.0-beta.5**.
+- **CLI auto memory** works when ACC hooks are trusted (same hooks path as Desktop). Proved with live `codex` SessionStart / Stop + project `$setup` smoke.
+- Docs and package copy no longer claim “CLI still 1.1.0 / no auto memory.”
+- Still host-honest: Scheduled / Sites / app chrome stay Desktop-first (Codex docs).
+
+### Included from main since beta.4 tag story
+- Hooks Phase 1+2 optimize (lazy load, tier inject, receipt skip, timeouts) — PR #37.
+- Users: marketplace upgrade → **re-trust all ACC hooks** → restart (hook hashes changed).
+
+### Notes
+- Optional `$learn` / `$wiki` / `$capture` still useful for explicit notes; not required for live NOW/state save.
+- GitHub release for this tag should follow ship checklist (version = tag = release).
+
 ## 2.0.0-beta.4 - 2026-07-20
 
 ### One plugin (Desktop + CLI)

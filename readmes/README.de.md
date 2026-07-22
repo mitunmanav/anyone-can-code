@@ -58,7 +58,7 @@ Kein neuer Agent. Keine IDE. **Codex schreibt den Code.** ACC gibt dem Arbeitspf
 
 **Ein Plugin** für Desktop und CLI — gleicher Name: **Anyone Can Code**.
 
-Offene Beta · Desktop **v2.0.0-beta.4** (Auto-Gedächtnis) · CLI-Gedächtnis noch manuell.
+Offene Beta · Desktop **v2.0.0-beta.5** · Desktop + CLI · Auto-Gedächtnis nach Hook-Trust.
 
 **Du brauchst:** [Codex](https://openai.com/codex/) (Desktop und/oder CLI) · Python 3
 

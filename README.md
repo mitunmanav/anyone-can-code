@@ -54,11 +54,11 @@ Not a new agent. Not an IDE. **Codex writes the code.** ACC gives the work a cle
 | **Plan** | A clear path before big changes |
 | **Build** | Work done step by step in your project |
 | **Check** | A real “is it done?” pass — not just “looks fine” |
-| **Remember** | **Desktop:** auto memory when hooks are trusted. **CLI:** not yet — use `$learn` / `$wiki` |
+| **Remember** | **Desktop + CLI:** auto memory when hooks trusted (`$learn` / `$wiki` optional) |
 
 **One plugin** for Desktop and CLI — same name: **Anyone Can Code**.
 
-Open beta · Desktop **v2.0.0-beta.4** (auto memory) · CLI memory still manual for now.
+Open beta · **v2.0.0-beta.5** · one plugin Desktop + CLI · auto memory when hooks trusted.
 
 **Need:** [Codex](https://openai.com/codex/) (Desktop and/or CLI) · Python 3
 
@@ -100,9 +100,9 @@ codex plugin marketplace add mitunmanav/anyone-can-code --ref main
 | You use | Auto memory? |
 |---------|----------------|
 | **Codex Desktop** | **Yes** — after you trust ACC hooks |
-| **Codex CLI** | **Not yet** — save with `$learn` / `$wiki` / `$capture` |
+| **Codex CLI** | **Yes** — after you trust ACC hooks (same as Desktop) |
 
-On Desktop, ACC can remember goals, decisions, and open work on your machine (under `.codex/anyone-can-code/`). Nothing is sent to ACC servers.
+On Desktop or CLI, ACC can remember goals, decisions, and open work on your machine (under `.codex/anyone-can-code/`). Nothing sent to ACC servers.
 
 **Tip:** After every plugin update, trust hooks again, then restart.
 
@@ -133,7 +133,7 @@ Full first session: **[docs/FIRST_DAY.md](docs/FIRST_DAY.md)**
 | Marketplace won’t add | Use the **full** GitHub URL above |
 | Nothing works after install | **Trust all ACC hooks**, restart, new chat |
 | Forgets on Desktop | Hooks not trusted (or not re-trusted after update) |
-| Expects auto memory on CLI | Not yet — use `$learn` / `$wiki`, or use Desktop |
+| Forgets on CLI | Hooks not trusted (or not re-trusted after update) — same fix as Desktop |
 | Old “CLI only” package | Uninstall **Anyone Can Code CLI**; install **Anyone Can Code** once |
 | `$setup` silent | Open a **project folder** first |
 

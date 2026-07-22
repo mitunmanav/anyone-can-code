@@ -1,7 +1,7 @@
 {
   "name": "anyone-can-code",
-  "version": "2.0.0-beta.4",
-  "description": "Reliability workflow for OpenAI Codex (Desktop + CLI, one plugin). Desktop auto memory when hooks trusted; CLI memory still manual (1.1.0-beta.4 level).",
+  "version": "2.0.0-beta.5",
+  "description": "Reliability workflow for OpenAI Codex (Desktop + CLI, one plugin). Auto memory on Desktop and CLI when hooks are trusted.",
   "author": {
     "name": "Mitun",
     "email": "238927830+mitunmanav@users.noreply.github.com",
@@ -27,8 +27,8 @@
   "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Anyone Can Code",
-    "shortDescription": "Codex Desktop + CLI (one plugin): plan \u2192 build \u2192 verify. Desktop auto memory first.",
-    "longDescription": "Anyone Can Code is a free open-source reliability workflow plugin for OpenAI Codex. One install for Desktop and CLI. Desktop: full offline auto memory when hooks are trusted (v2.0.0-beta.4). CLI auto memory not yet \u2014 still 1.1.0-beta.4 level; use $learn / $wiki. Plan, build, resume, recover, and verify from plain English. Open beta.",
+    "shortDescription": "Codex Desktop + CLI (one plugin): plan \u2192 build \u2192 verify. Auto memory when hooks trusted.",
+    "longDescription": "Anyone Can Code is a free open-source reliability workflow plugin for OpenAI Codex. One install for Desktop and CLI. Trust ACC hooks on either host for offline auto memory (v2.0.0-beta.5). Plan, build, resume, recover, and verify in plain English. Desktop-only host UI (Scheduled, Sites) stays on Desktop. Open beta.",
     "developerName": "Mitun",
     "category": "Productivity",
     "capabilities": [

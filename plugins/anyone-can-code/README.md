@@ -34,9 +34,9 @@
 **Desktop:** marketplace URL → install **Anyone Can Code** → trust hooks → restart → `$setup`  
 
 **CLI:** `codex plugin marketplace add mitunmanav/anyone-can-code --ref main` → `/plugins` install **Anyone Can Code** → `/hooks` trust → `$setup`  
-**CLI auto memory:** not yet (still 1.1.0-beta.4 level — use `$learn` / `$wiki`).
+**CLI auto memory:** yes when hooks trusted (same as Desktop). `$learn` / `$wiki` optional.
 
-**Current version:** **v2.0.0-beta.4** ([plugin.json](.codex-plugin/plugin.json)) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
+**Current version:** **v2.0.0-beta.5** ([plugin.json](.codex-plugin/plugin.json)) · [Releases](https://github.com/mitunmanav/anyone-can-code/releases)
 
 ### If install fails
 
