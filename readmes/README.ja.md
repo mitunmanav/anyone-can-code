@@ -58,7 +58,7 @@
 
 **プラグインは1つ** — Desktop と CLI で同じ名前：**Anyone Can Code**。
 
-公開ベータ · Desktop **v2.0.0-beta.4**（自動記憶）· CLI の記憶は当面マニュアル。
+公開ベータ · Desktop **v2.0.0-beta.5** · Desktop + CLI · フック信頼後に自動記憶。
 
 **必要なもの：** [Codex](https://openai.com/codex/)（Desktop および/または CLI）· Python 3
 

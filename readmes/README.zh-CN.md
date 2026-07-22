@@ -58,7 +58,7 @@
 
 **一个插件** 同时支持 Desktop 与 CLI — 名称相同：**Anyone Can Code**。
 
-公开测试 · Desktop **v2.0.0-beta.4**（自动记忆）· CLI 目前仍为手动记忆。
+公开测试 · Desktop **v2.0.0-beta.5**（Desktop + CLI 钩子信任后自动记忆）· CLI 目前仍为手动记忆。
 
 **需要：** [Codex](https://openai.com/codex/)（Desktop 和/或 CLI）· Python 3
 

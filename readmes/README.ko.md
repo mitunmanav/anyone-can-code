@@ -58,7 +58,7 @@
 
 **플러그인 하나** — Desktop과 CLI 같은 이름: **Anyone Can Code**.
 
-공개 베타 · Desktop **v2.0.0-beta.4** (자동 기억) · CLI 기억은 아직 수동.
+공개 베타 · Desktop **v2.0.0-beta.5** · Desktop + CLI · 훅 신뢰 후 자동 기억.
 
 **필요:** [Codex](https://openai.com/codex/) (Desktop 및/또는 CLI) · Python 3
 
