@@ -367,6 +367,8 @@ def build_browser_policy_line(prompt: str) -> str:
 
 def build_host_detect_line() -> str:
     """Host wording so CLI/Desktop claims stay honest."""
+    if os.environ.get("ACC_LOAD_LEAN", "").strip().lower() in {"1", "true", "yes"}:
+        return ""
     try:
         scripts = Path(__file__).resolve().parents[2] / "scripts"
         if str(scripts) not in sys.path:

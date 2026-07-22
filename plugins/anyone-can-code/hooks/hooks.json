@@ -9,7 +9,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/load_session.py\"",
             "statusMessage": "ACC loading context...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/load_session.py\"",
-            "timeout": 30
+            "timeout": 25
           }
         ]
       }
@@ -22,7 +22,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/guard.py\"",
             "statusMessage": "ACC checking request...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/guard.py\"",
-            "timeout": 30
+            "timeout": 15
           }
         ]
       }
@@ -50,7 +50,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/audit.py\"",
             "statusMessage": "ACC checking permission...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/audit.py\"",
-            "timeout": 30
+            "timeout": 25
           }
         ]
       }
@@ -64,7 +64,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/audit.py\"",
             "statusMessage": "ACC recording signals...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/audit.py\"",
-            "timeout": 30
+            "timeout": 15
           }
         ]
       }
@@ -75,7 +75,7 @@
           {
             "type": "command",
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/save_session.py\"",
-            "timeout": 30,
+            "timeout": 25,
             "statusMessage": "ACC saving state...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/save_session.py\""
           }
@@ -90,7 +90,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/compact.py\"",
             "statusMessage": "ACC saving capsule before compaction...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/compact.py\"",
-            "timeout": 30
+            "timeout": 20
           }
         ]
       }
@@ -103,7 +103,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/subagent.py\"",
             "statusMessage": "ACC briefing subagent...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/subagent.py\"",
-            "timeout": 30
+            "timeout": 12
           }
         ]
       }
@@ -116,7 +116,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/subagent.py\"",
             "statusMessage": "ACC logging subagent result...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/subagent.py\"",
-            "timeout": 30
+            "timeout": 12
           }
         ]
       }
@@ -129,7 +129,7 @@
             "command": "python3 \"${PLUGIN_ROOT}/hooks/scripts/compact.py\"",
             "statusMessage": "ACC re-injecting after compaction...",
             "commandWindows": "py -3 \"${PLUGIN_ROOT}/hooks/scripts/compact.py\"",
-            "timeout": 30
+            "timeout": 20
           }
         ]
       }

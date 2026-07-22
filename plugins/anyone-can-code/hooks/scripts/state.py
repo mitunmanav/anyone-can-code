@@ -787,7 +787,15 @@ def run_hook_attempt(
         "circuit_state": "open" if skip_reason == "circuit-open" else "closed",
         "final_effectiveness": final_effectiveness,
     }
-    write_hook_receipt(receipt_root, receipt)
+    # Phase 2: skip receipt disk write on pure empty no-op.
+    # Always keep fails, skips with deny, context, and permission outputs.
+    if not (
+        final_effectiveness == "no-op"
+        and output_kind == "empty"
+        and not failure_class
+        and not skip_reason
+    ):
+        write_hook_receipt(receipt_root, receipt)
     return result
 
 
