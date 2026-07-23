@@ -61,3 +61,6 @@ __pycache__/
 /Screenshot*.png
 /*.png
 .grok
+
+# ACC CLI blind proof run output
+docs/proof/cli-blind/artifacts/
