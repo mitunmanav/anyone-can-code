@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC rule suggest"
+  short_description: "Propose durable rules from repeats"
+  default_prompt: "Use $rule-suggest to propose wiki/learn notes or AGENTS.md bullets from repeated fixes. Wait for my yes before writing."
+
+policy:
+  allow_implicit_invocation: false
