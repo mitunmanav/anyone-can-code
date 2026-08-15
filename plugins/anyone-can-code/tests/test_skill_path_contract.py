@@ -16,6 +16,7 @@ RUNTIME_FILES = {
     ".codex/anyone-can-code/state/task-queue.md",
     ".codex/anyone-can-code/state/state-current.md",
     ".codex/anyone-can-code/state/receipts/",
+    ".codex/anyone-can-code/state/tool-budget.json",
     ".codex/anyone-can-code/user-memory/you-brain/",
     ".codex/anyone-can-code/artifacts/SKEPTIC.md",
     ".codex/anyone-can-code/state/checkpoints/",

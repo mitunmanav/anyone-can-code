@@ -174,11 +174,34 @@ def summarize_response(tool_response) -> str:
         return str(tool_response)[:240]
 
 
+def _permission_auto_allow(repo_root: Path, tool_name: str, tool_input) -> bool:
+    """ACC approval grade gates soft auto-allow (not Codex host APIs)."""
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import approval_grades as _ag  # type: ignore
+
+        prefs = state.read_preferences(repo_root)
+        grade = _ag.grade_from_prefs(prefs)
+        allow = _ag.allowlist_from_prefs(prefs)
+        return _ag.should_auto_allow(
+            grade,
+            tool_name,
+            tool_input,
+            is_safe_fn=is_safe_auto_allow,
+            allowlist=allow,
+        )
+    except Exception:
+        # Fail open to prior default: safe-set only
+        return is_safe_auto_allow(tool_name, tool_input)
+
+
 def handle_permission_request(payload: dict, repo_root: Path) -> None:
     log_tool_call(repo_root, payload)
     tool_name = payload.get("tool_name", "")
     tool_input = payload.get("tool_input", {})
-    if is_safe_auto_allow(tool_name, tool_input):
+    if _permission_auto_allow(repo_root, tool_name, tool_input):
         log_signal(repo_root, "permission_auto_allow", f"Allowed {tool_name}.", payload)
         print(
             json.dumps(
@@ -350,12 +373,26 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                     "additionalContext": auto_hint,
                 }
             }
+        # Optional tool-budget soft track. Never deny. PostToolUse additionalContext only.
+        try:
+            import tool_budget as _tool_budget
+
+            budget_warn = _tool_budget.maybe_track_post_tool_use(repo_root, payload)
+        except Exception:
+            budget_warn = ""
+        if budget_warn:
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PostToolUse",
+                    "additionalContext": budget_warn,
+                }
+            }
         return {}
     if hook_event == "PermissionRequest":
         log_tool_call(repo_root, payload)
         tool_name = payload.get("tool_name", "")
         tool_input = payload.get("tool_input", {})
-        if is_safe_auto_allow(tool_name, tool_input):
+        if _permission_auto_allow(repo_root, tool_name, tool_input):
             log_signal(repo_root, "permission_auto_allow", f"Allowed {tool_name}.", payload)
             return {
                 "hookSpecificOutput": {

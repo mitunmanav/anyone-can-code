@@ -30,6 +30,7 @@ EXPECTED = {
     "readable": "ACC clear",
     "govern": "ACC scope",
     "bridge": "ACC plugins",
+    "tool-budget": "ACC tool budget",
     "auto-lint": "ACC auto lint",
     "you-brain": "ACC you-brain",
     "council": "ACC council",

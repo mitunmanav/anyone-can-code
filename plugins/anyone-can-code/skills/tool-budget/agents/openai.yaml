@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC tool budget"
+  short_description: "Soft tool-call limit + continue segment"
+  default_prompt: "Use $tool-budget to show or reset the session tool-call counter (Cascade-style soft limit)."
+
+policy:
+  allow_implicit_invocation: false
