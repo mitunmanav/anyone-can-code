@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC bite plan"
+  short_description: "2–5 min checkbox micro-steps for build"
+  default_prompt: "Use $bite-plan to break the goal into 2–5 minute checkbox steps and write artifacts/BITE_PLAN.md."
+
+policy:
+  allow_implicit_invocation: false
