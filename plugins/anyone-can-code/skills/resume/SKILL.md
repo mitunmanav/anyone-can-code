@@ -20,6 +20,24 @@ Reply rule:
 If still on Codex: try native first — `codex resume` / `--last`, or `codex exec resume`,
 or app-server `thread/resume`. ACC portable file is for work truth across tools/models.
 
+SessionStart sources (hooks): `startup` | `resume` | `clear` | `compact`.
+After compact, re-anchor on disk card — do not re-ask answered questions.
+
+## Step 0 — short card (always)
+
+Run first (no invent; script only reads):
+
+```bash
+python3 "<ACC_PLUGIN_ROOT>/scripts/session_resume.py" --project .
+```
+
+Card loads if present:
+
+- **LAST handoff:** `.codex/anyone-can-code/artifacts/PORTABLE_HANDOFF.md`
+- **Progress ledger:** `.codex/anyone-can-code/state/progress-ledger.md` (WHERE/NEXT/DONE/OPEN)
+
+Show the card to the user. Then recover. Do not paste whole handoff/ledger walls.
+
 ## Recovery modes
 
 - `resume`: continue from intact state
@@ -29,15 +47,17 @@ or app-server `thread/resume`. ACC portable file is for work truth across tools/
 
 ## Read from (order)
 
-0. **Portable handoff first (any tool):**
+0. **Short card** via `session_resume.py` (handoff + ledger if present).
+
+1. **Portable handoff (any tool):**
    `.codex/anyone-can-code/artifacts/PORTABLE_HANDOFF.md`
    Goal, plan, next step, memory pointers, optional session_id.
 
-1. Run `python3 "<ACC_PLUGIN_ROOT>/scripts/runtime_info.py" --resolve-project "."`
+2. Run `python3 "<ACC_PLUGIN_ROOT>/scripts/runtime_info.py" --resolve-project "."`
    Use returned `project_root`. If result is `ambiguous`, block recovery
    and show candidates; never merge or replace competing state automatically.
 
-2. Canonical
+3. Canonical
    `.codex/anyone-can-code/state/workflow.json`. Confirm derived files carry same
    transaction ID. Use history, ledgers, artifacts, and `AGENTS.md` only as
    supporting evidence.
