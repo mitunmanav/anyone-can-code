@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC memory hygiene"
+  short_description: "Age notes, flag secrets, block full chat"
+  default_prompt: "Use $memory-hygiene to scan ACC wiki notes for age, secrets, and full-chat dumps. Report only until I say yes."
+
+policy:
+  allow_implicit_invocation: false
