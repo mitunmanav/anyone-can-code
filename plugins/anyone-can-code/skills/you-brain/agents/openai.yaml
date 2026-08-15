@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC you-brain"
+  short_description: "Mine past sessions into a YOU preview"
+  default_prompt: "Use $you-brain to mine local Codex session logs into a YOU preview. Apply YOU.md only if I say yes."
+
+policy:
+  allow_implicit_invocation: false

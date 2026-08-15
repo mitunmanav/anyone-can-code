@@ -98,6 +98,7 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 | ACC settings | `$settings` | Preferences |
 | ACC update | `$update` | After a plugin upgrade |
 | ACC handoff | `$handoff` | Pass work to a later session |
+| ACC you-brain | `$you-brain` | Mine past sessions into a YOU preview (apply only on yes) |
 | ACC council | `$council` | Multi-view check (not a ship gate — still `$verify`) |
 | ACC skeptic | `$skeptic` | Read-only adversarial review of a diff (not $verify) |
 | ACC parallel fix | `$parallel-fix` | One file per subagent when many tests fail |
