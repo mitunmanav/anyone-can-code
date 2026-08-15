@@ -38,7 +38,7 @@ Do **not** keep re-routing every sentence after the path is clear.
 - Vague product ask: classify, blocking questions only, checklist, one plan line.
 - Bridge before rebuild. Missing route → ACC fallback. Obey `response_contract`. Keep `workflow_owner: acc` unless handoff.
 - Route: onboard, clarify, plan, execute, verify, resume, learn, settings, usage, update. Legacy memory → `$update`. Imports → `$setup` confirm.
-- Optional multi-view (correctness/safety/honesty): `$council` — **not** a ship gate; still `$verify`. `$bridge` stays for other plugins.
+- Optional `$council` (not ship gate). `$bridge` = other plugins.
 - State via `scripts/canonical_state.py` only.
 
 ## Rules
@@ -73,7 +73,7 @@ If `patch_retry` present: reread exact target before retry.
 ## Next skill
 
 Next: invoke **one** matched skill only (plan / execute / verify / fix / resume / …), then stop routing.
-Optional explicit `$skeptic` = read-only second pass on a diff; not `$verify`.
+Optional `$skeptic` = read-only; not `$verify`.
 
 ## Done — back to normal
 
