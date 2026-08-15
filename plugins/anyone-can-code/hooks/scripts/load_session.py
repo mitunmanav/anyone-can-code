@@ -296,6 +296,19 @@ def build_context(
             _add("")
             _add("Project rules:")
             _add(agents)
+        # Repo map (optional): thin inject only if artifact exists + cap.
+        # Prefs repo_map_inject=false disables. Default = on when present.
+        try:
+            inject_ok = prefs.get("repo_map_inject", True)
+            if inject_ok is not False and _room(120):
+                _ensure_scripts_path()
+                import repo_map as _repo_map  # type: ignore
+
+                map_snip = _repo_map.inject_snippet(repo_root)
+                if map_snip:
+                    _add(map_snip)
+        except Exception:
+            pass
 
     # --- Tier C: host / loops / obs (lazy; ACC_LOAD_LEAN=1 skips) ---
     if _load_full_tier_c() and _room(100):

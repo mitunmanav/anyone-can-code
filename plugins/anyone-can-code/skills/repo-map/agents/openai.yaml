@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC repo map"
+  short_description: "Ranked paths + key symbols sample (no AI)"
+  default_prompt: "Use $repo-map to build a ranked repo map sample of paths and key symbols."
+
+policy:
+  allow_implicit_invocation: false
