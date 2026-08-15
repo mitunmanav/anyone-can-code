@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC checkpoint"
+  short_description: "Save / list / restore file snapshots"
+  default_prompt: "Use $checkpoint to save, list, or restore ACC file checkpoints (list+hash under state/checkpoints)."
+
+policy:
+  allow_implicit_invocation: false
