@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC parallel fix"
+  short_description: "Shard failing tests; one subagent per file"
+  default_prompt: "Use $parallel-fix when many pytest files fail: shard by file, one read-write subagent each, re-run full suite, report card."
+
+policy:
+  allow_implicit_invocation: false
