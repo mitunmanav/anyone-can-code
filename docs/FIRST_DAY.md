@@ -16,7 +16,7 @@ Pick **one** host:
 
 Same marketplace: `https://github.com/mitunmanav/anyone-can-code`
 
-**Must do:** trust every ACC **hook**. Without that, the plugin looks installed but does nothing.
+**Must do:** trust every ACC **hook**. Without that, the plugin looks installed but does nothing. Auto memory on Desktop and CLI only works after hooks are trusted.
 
 Full steps + video: [website install](https://anyone-can-code.vercel.app/#install) · [root README](../README.md)
 

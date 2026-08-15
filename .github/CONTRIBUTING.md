@@ -87,7 +87,7 @@ Re-run: comment `/ai-review`.
 
 1. Bump `plugins/anyone-can-code/.codex-plugin/plugin.json` version.  
 2. Update [CHANGELOG.md](../CHANGELOG.md).  
-3. Tag matching version (e.g. `v1.1.0-beta.3`).  
+3. Tag matching version (e.g. `v2.0.0-beta.5`).  
 
 Release CI checks tag ↔ manifest version. Install line for users:
 

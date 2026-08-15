@@ -10,8 +10,8 @@
 | [PRIVACY.md](PRIVACY.md) | What the plugin stores; no telemetry |
 | [TERMS.md](TERMS.md) | License, warranty, responsibilities |
 | [CREDITS.md](CREDITS.md) | Attribution |
-| [plugin README (Desktop)](../plugins/anyone-can-code/README.md) | Skills, memory, tests |
-| [plugin README](../plugins/anyone-can-code/README.md) | One plugin install (Desktop + CLI) |
+| [ROADMAP.md](../ROADMAP.md) | Now (beta.5) vs later ideas |
+| [plugin README](../plugins/anyone-can-code/README.md) | One plugin: install, skills, memory, tests |
 | [CHANGELOG](../CHANGELOG.md) | Release history |
 | [media/install-setup.gif](media/install-setup.gif) | Install walkthrough (GitHub README) |
 | [media/install-setup.mp4](media/install-setup.mp4) | Full install video |

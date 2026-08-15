@@ -49,7 +49,7 @@
 
 More: [FAQ](https://github.com/mitunmanav/anyone-can-code/discussions/9) · [Install issue form](https://github.com/mitunmanav/anyone-can-code/issues/new?template=install_problem.yml) · [root troubleshooting](../../README.md#if-something-fails)
 
-### Safety (hooks, beta.4 v2)
+### Safety (hooks)
 
 Built from [Codex hooks docs](https://developers.openai.com/codex/hooks):
 

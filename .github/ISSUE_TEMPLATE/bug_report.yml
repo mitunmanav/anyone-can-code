@@ -79,7 +79,7 @@ body:
     attributes:
       label: Plugin version (if you know it)
       description: From [Releases](https://github.com/mitunmanav/anyone-can-code/releases) or `plugins/anyone-can-code/.codex-plugin/plugin.json`
-      placeholder: "1.1.0-beta.3"
+      placeholder: "2.0.0-beta.5"
   - type: input
     id: env
     attributes:

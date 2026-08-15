@@ -1,6 +1,6 @@
 # Privacy Policy — Anyone Can Code
 
-_Last updated: 2026-07-11_
+_Last updated: 2026-08-15_
 
 ## Short version
 
@@ -21,7 +21,7 @@ All plugin data lives on your machine, under your project folder:
 Typical contents:
 
 - Workflow state (what you are building, what is next)
-- Portable Markdown memory notes (Desktop auto memory when hooks trusted; on CLI, lessons you save with `$learn` / `$wiki`)
+- Portable Markdown memory notes (Desktop + CLI auto memory when hooks trusted; optional `$learn` / `$wiki`)
 - Local logs used for verification and debugging
 
 Nothing from that folder is sent to Anyone Can Code servers. This project does not operate a plugin telemetry or analytics backend.
