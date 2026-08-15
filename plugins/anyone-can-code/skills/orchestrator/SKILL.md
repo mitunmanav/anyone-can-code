@@ -72,6 +72,7 @@ If `patch_retry` present: reread exact target before retry.
 ## Next skill
 
 Next: invoke **one** matched skill only (plan / execute / verify / fix / resume / …), then stop routing.
+Optional explicit `$skeptic` = read-only second pass on a diff; not `$verify`.
 
 ## Done — back to normal
 
