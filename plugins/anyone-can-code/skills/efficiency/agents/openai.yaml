@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC efficiency"
+  short_description: "Lean inject, soft cheap model tips"
+  default_prompt: "Use $efficiency to turn on or explain ACC lean/cheap mode."
+
+policy:
+  allow_implicit_invocation: false

@@ -113,6 +113,9 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 | ACC cost guard | `$cost-guard` | Soft Luna/Terra/Sol tips (you pick the model) |
 | ACC bite plan | `$bite-plan` | 2–5 min checkbox steps |
 | ACC memory hygiene | `$memory-hygiene` | Age notes, flag secrets, block full-chat dumps |
+| ACC efficiency | `$efficiency` | Lean inject + soft cheaper-model tip (never force picker) |
+| ACC plan gate | `$plan-gate` | PLAN.md steps + GO before product writes |
+| ACC ledger | `$ledger` | Progress board (WHERE / NEXT / DONE / OPEN) |
 
 ---
 

@@ -45,6 +45,9 @@ EXPECTED = {
     "cost-guard": "ACC cost guard",
     "bite-plan": "ACC bite plan",
     "memory-hygiene": "ACC memory hygiene",
+    "efficiency": "ACC efficiency",
+    "plan-gate": "ACC plan gate",
+    "ledger": "ACC ledger",
 }
 
 

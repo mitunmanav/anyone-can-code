@@ -27,6 +27,8 @@ Reply rule:
 - import scope: `ask`, `project`, `user`, or `shared`
 - production-repo caution: enabled or disabled
 - approval grade: `off`, `ask`, `allowlist`, `strict` (use `$approval-mode`; ACC soft layer only — Codex `/permissions` stays host)
+- lean / efficiency: `lean: true` (or `efficiency: true`) — same as `ACC_EFFICIENCY=1`. Soft model tips only. See `$efficiency`.
+- plan gate: `plan_gate_required: true` adds a PreToolUse hint (never hard deny). See `$plan-gate`.
 
 ## Storage
 

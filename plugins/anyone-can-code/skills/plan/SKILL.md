@@ -45,6 +45,9 @@ through `scripts/task_coordination.py` so each task has name, dependencies,
 owner, status, claim fields, and evidence. Derived plan guidance and task queue
 must share the same transaction ID.
 
+Also write `.codex/anyone-can-code/artifacts/PLAN.md` with **list steps**
+(bullets or numbers). `$plan-gate` and product writes expect this file.
+
 Show one concise builder-facing line, for example:
 
 - `Plan: website + auth + deploy. Payments later.`

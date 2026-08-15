@@ -53,6 +53,20 @@ def write_capsule(repo_root: Path, trigger: str) -> Path:
 def handle_pre_compact(payload: dict, repo_root: Path) -> dict:
     trigger = str(payload.get("trigger") or "unknown")
     write_capsule(repo_root, trigger)
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import context_rot as _context_rot  # type: ignore
+
+        if _context_rot.exists(repo_root):
+            _context_rot.append_capsule_pointer(
+                repo_root,
+                pointer="state/compact-capsule.md",
+                note=f"pre-compact:{trigger}",
+            )
+    except Exception:
+        pass
     state.append_jsonl(
         state.signal_log_path(repo_root),
         {

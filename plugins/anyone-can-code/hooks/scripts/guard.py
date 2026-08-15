@@ -365,10 +365,41 @@ def build_browser_policy_line(prompt: str) -> str:
         return ""
 
 
+def plan_gate_soft_hint(repo_root: Path, payload: dict) -> str | None:
+    """Optional soft plan hint. Skill-first; prefs.plan_gate_required only."""
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import plan_gate as _plan_gate  # type: ignore
+
+        prefs = state.read_preferences(repo_root)
+        return _plan_gate.pretool_soft_hint(repo_root, payload, prefs=prefs)
+    except Exception:
+        return None
+
+
 def build_host_detect_line() -> str:
     """Host wording so CLI/Desktop claims stay honest."""
-    if os.environ.get("ACC_LOAD_LEAN", "").strip().lower() in {"1", "true", "yes"}:
-        return ""
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import efficiency_mode as _efficiency_mode
+
+        if _efficiency_mode.skip_tier_c({}):
+            return ""
+    except Exception:
+        if os.environ.get("ACC_LOAD_LEAN", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        } or os.environ.get("ACC_EFFICIENCY", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        }:
+            return ""
     try:
         scripts = Path(__file__).resolve().parents[2] / "scripts"
         if str(scripts) not in sys.path:
@@ -491,6 +522,12 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
             log_signal(repo_root, signal_type, detail, payload)
         mark_turn_open(repo_root, prompt or "")
         try:
+            import raw_capture
+
+            raw_capture.capture_user_prompt(repo_root, payload)
+        except Exception:
+            pass
+        try:
             for hit in memory_promote.detect_promotes(payload.get("prompt") or "", "prompt"):
                 memory_promote.write_promote_note(repo_root, hit["kind"], hit["excerpt"])
         except Exception:
@@ -578,6 +615,16 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                         "Git push: only if the user clearly asked. "
                         "No force-push. No half updates."
                     ),
+                }
+            }
+
+        # Plan gate soft hint (prefs.plan_gate_required only). Never hard deny.
+        plan_hint = plan_gate_soft_hint(repo_root, payload)
+        if plan_hint:
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "additionalContext": plan_hint,
                 }
             }
     return {}

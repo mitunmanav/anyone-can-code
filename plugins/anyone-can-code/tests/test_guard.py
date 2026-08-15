@@ -309,6 +309,36 @@ def test_plain_git_push_gets_context_not_security_gate(tmp_path, monkeypatch):
     assert calls == []
 
 
+def test_plan_gate_soft_hint_when_pref_required(tmp_path):
+    """Opt-in prefs: product apply_patch without PLAN.md gets soft hint, not deny."""
+    state.write_preferences(tmp_path, {"plan_gate_required": True})
+    out = guard.handle_payload(
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "apply_patch",
+            "tool_input": {"command": "*** Update File: src/app.py\n@@\n+x\n"},
+        },
+        tmp_path,
+    )
+    hook = out.get("hookSpecificOutput") or {}
+    assert hook.get("permissionDecision") != "deny"
+    assert "plan" in (hook.get("additionalContext") or "").lower()
+
+
+def test_plan_gate_no_hint_when_pref_off(tmp_path):
+    state.write_preferences(tmp_path, {"plan_gate_required": False})
+    out = guard.handle_payload(
+        {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "apply_patch",
+            "tool_input": {"command": "*** Update File: src/app.py\n@@\n+x\n"},
+        },
+        tmp_path,
+    )
+    ctx = (out.get("hookSpecificOutput") or {}).get("additionalContext") or ""
+    assert "plan gate" not in ctx.lower()
+
+
 def test_pretool_deny_writes_safety_receipt(tmp_path):
     """Audit leftover: hard denys must write ACC safety receipts under artifacts/receipts."""
     state.ensure_project_layout(tmp_path)

@@ -16,7 +16,8 @@ import state
 
 _SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 
-# Soft inject budget: Tier A always; B then C if room. Lean skips C.
+# Soft inject budget: Tier A always; B then C if room. Lean/efficiency skips C.
+# Live cap comes from efficiency_mode.flags (DEFAULT 5500 / EFFICIENCY 3200).
 SESSION_CONTEXT_SOFT_CAP = 5500
 
 
@@ -40,13 +41,36 @@ def _lazy_import(name: str):
     return __import__(name)
 
 
-def _load_full_tier_c() -> bool:
-    """Tier C on by default; ACC_LOAD_LEAN=1 skips host/loops/obs parade."""
-    return os.environ.get("ACC_LOAD_LEAN", "").strip().lower() not in {
-        "1",
-        "true",
-        "yes",
-    }
+def _efficiency_flags(prefs: dict | None = None) -> dict:
+    """Unified lean/efficiency flags (ACC_EFFICIENCY, ACC_LOAD_LEAN, prefs.lean)."""
+    try:
+        _ensure_scripts_path()
+        import efficiency_mode as _efficiency_mode
+
+        return _efficiency_mode.flags(prefs or {})
+    except Exception:
+        lean = os.environ.get("ACC_LOAD_LEAN", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        } or os.environ.get("ACC_EFFICIENCY", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        }
+        return {
+            "efficiency": lean,
+            "load_lean": lean,
+            "max_inject_chars": 3200 if lean else SESSION_CONTEXT_SOFT_CAP,
+            "skip_tier_c": lean,
+            "skip_verbose_receipts": lean,
+            "prefer_short_skills": lean,
+        }
+
+
+def _load_full_tier_c(prefs: dict | None = None) -> bool:
+    """Tier C on by default; efficiency/lean skips host/loops/obs parade."""
+    return not bool(_efficiency_flags(prefs).get("skip_tier_c"))
 
 def read_agents_md(repo_root: Path) -> str:
     path = repo_root / "AGENTS.md"
@@ -168,12 +192,20 @@ def build_context(
     *,
     session_id: str | None = None,
 ) -> str:
-    """Session inject: Tier A always; B then C if under soft cap; lean skips C."""
+    """Session inject: Tier A always; B then C if under soft cap; lean/efficiency skips C."""
     workflow = state.read_state(repo_root)
     prefs = state.read_preferences(repo_root)
     agents = read_agents_md(repo_root)
-    task_type = workflow.get("route") or "general"
+    task_type = "general"
+    try:
+        _ml_for_type = _lazy_import("model_ledger")
+        task_type = _ml_for_type.task_type_from_session(workflow=workflow)
+    except Exception:
+        task_type = workflow.get("route") or "general"
     comm_mode = prefs.get("communication_mode", "caveman-strict")
+    eff = _efficiency_flags(prefs)
+    soft_cap = int(eff.get("max_inject_chars") or SESSION_CONTEXT_SOFT_CAP)
+    efficiency_on = bool(eff.get("efficiency"))
 
     # --- Tier A: always (smart core) ---
     mistake_lines: list[str] = []
@@ -208,10 +240,27 @@ def build_context(
             "1) what got done, 2) what is next, 3) what the user must decide. "
             "Never stop on an unanswered question from the user."
         ),
-        "Skills: use progressive load; do not re-read every skill file each turn.",
+        (
+            "Skills: use progressive load; short prompts when efficiency on; "
+            "do not re-read every skill file each turn."
+            if efficiency_on
+            else "Skills: use progressive load; do not re-read every skill file each turn."
+        ),
         "Proof: never claim done/works/perfect without named evidence. Built ≠ verified.",
         "Cost: label suggestions [CHEAP] or [HUNGRY]. Prefer cheap first.",
     ]
+    if efficiency_on:
+        try:
+            _ensure_scripts_path()
+            import efficiency_mode as _efficiency_mode
+
+            banner = _efficiency_mode.inject_banner(eff)
+            if banner:
+                tier_a.append(banner)
+        except Exception:
+            tier_a.append(
+                "Efficiency: ON (lean inject). Soft model tips only — never force host picker."
+            )
     acc_plugin_root = (
         os.environ.get("PLUGIN_ROOT")
         or os.environ.get("CLAUDE_PLUGIN_ROOT")
@@ -230,13 +279,13 @@ def build_context(
     used = len("\n".join(context_lines))
 
     def _room(extra: int = 80) -> bool:
-        return used + extra < SESSION_CONTEXT_SOFT_CAP
+        return used + extra < soft_cap
 
     def _add(line: str) -> None:
         nonlocal used
         if not line:
             return
-        if used + len(line) + 1 > SESSION_CONTEXT_SOFT_CAP:
+        if used + len(line) + 1 > soft_cap:
             return
         context_lines.append(line)
         used += len(line) + 1
@@ -255,12 +304,18 @@ def build_context(
             ledger_path = (
                 state.ensure_project_layout(repo_root)["state"] / "model-ledger.jsonl"
             )
-            rec = _model_ledger.recommend_model(task_type, ledger_path=ledger_path)
+            rec = _model_ledger.recommend_model(
+                task_type, ledger_path=ledger_path, efficiency=efficiency_on
+            )
             reasoning = rec.get("reasoning") or "medium"
-            _add(
+            model_line = (
                 f"Model: {rec['model']} reasoning={reasoning} ({rec['reason']}). "
                 "Not always high effort."
             )
+            tip = rec.get("tip") if efficiency_on else None
+            if tip:
+                model_line = f"{model_line} {tip}"
+            _add(model_line)
         except Exception:
             pass
         try:
@@ -281,7 +336,7 @@ def build_context(
             _add(wiki_brief)
         if memory_lines:
             _add("Memory recall (apply lessons):")
-            for line in memory_lines:
+            for line in memory_lines[:3] if efficiency_on else memory_lines:
                 _add(f"  {line}")
         try:
             _ensure_scripts_path()
@@ -309,9 +364,21 @@ def build_context(
                     _add(map_snip)
         except Exception:
             pass
+        # Progress ledger one-liner only if file exists. Default on when present.
+        try:
+            inject_ok = prefs.get("progress_ledger_inject", True)
+            if inject_ok is not False and _room(80):
+                _ensure_scripts_path()
+                import context_rot as _context_rot  # type: ignore
 
-    # --- Tier C: host / loops / obs (lazy; ACC_LOAD_LEAN=1 skips) ---
-    if _load_full_tier_c() and _room(100):
+                ledger_line = _context_rot.inject_line(repo_root)
+                if ledger_line:
+                    _add(ledger_line)
+        except Exception:
+            pass
+
+    # --- Tier C: host / loops / obs (lazy; efficiency / ACC_LOAD_LEAN skips) ---
+    if _load_full_tier_c(prefs) and _room(100):
         try:
             _ensure_scripts_path()
             import host_detect as _host_detect

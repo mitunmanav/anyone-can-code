@@ -27,10 +27,17 @@ def record_session_model_outcome(repo_root: Path, payload: dict, signals: list[d
     import model_ledger as _model_ledger
 
     ledger = state.ensure_project_layout(repo_root)["state"] / "model-ledger.jsonl"
+    workflow = state.read_state(repo_root)
+    task_type = _model_ledger.task_type_from_session(
+        payload=payload,
+        workflow=workflow,
+        signals=signals,
+    )
     _model_ledger.record_model_result(
         _model_ledger.extract_model_from_payload(payload),
-        "general",
+        task_type,
         outcome,
+        reasoning=_model_ledger.extract_reasoning_from_payload(payload),
         ledger_path=ledger,
     )
 
@@ -246,6 +253,12 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
         return {}
 
     summary = memory_core.safe_text(session_summary(payload))
+    try:
+        import raw_capture
+
+        raw_capture.capture_assistant_turn(repo_root, payload)
+    except Exception:
+        pass
     signal_line, signals = recent_signal_summary(repo_root)
     write_mistake_ledger(repo_root, signals)
     record_session_model_outcome(repo_root, payload, signals)
@@ -301,6 +314,32 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
         pass  # mirror is a convenience; canonical state already committed
     write_session_snapshot(repo_root, summary, workflow)
     write_resume_artifacts(repo_root, payload, summary, workflow)
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import context_rot as _context_rot  # type: ignore
+
+        if _context_rot.exists(repo_root):
+            _context_rot.sync_from_workflow(repo_root, workflow)
+            _context_rot.append_capsule_pointer(
+                repo_root,
+                pointer="state/session-snapshot.md",
+                note="stop",
+            )
+            if summary:
+                _context_rot.append_done(repo_root, f"session: {summary[:120]}")
+    except Exception:
+        pass
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import raw_mine as _raw_mine  # type: ignore
+
+        _raw_mine.mine_raw(repo_root, dry_run=False, max_notes=3)
+    except Exception:
+        pass
     try:
         scripts = Path(__file__).resolve().parents[2] / "scripts"
         if str(scripts) not in sys.path:

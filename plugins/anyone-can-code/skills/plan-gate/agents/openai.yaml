@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC plan gate"
+  short_description: "Plan artifact + GO before product writes"
+  default_prompt: "Use $plan-gate to check PLAN.md steps before writing product files."
+
+policy:
+  allow_implicit_invocation: false

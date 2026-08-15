@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC ledger"
+  short_description: "Progress board — WHERE / NEXT / DONE / OPEN"
+  default_prompt: "Use $ledger to init or update the progress ledger (fight context rot)."
+
+policy:
+  allow_implicit_invocation: false

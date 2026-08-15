@@ -92,6 +92,7 @@ DEFAULT_PREFERENCES = {
     # ACC soft approval grade (off|ask|allowlist|strict). Not Codex host APIs.
     "approval_mode": "ask",
     "approval_allowlist": [],
+    "plan_gate_required": False,
 }
 
 
