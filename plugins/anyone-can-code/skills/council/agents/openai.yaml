@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC council"
+  short_description: "Multi-view check (not ship gate)"
+  default_prompt: "Use $council for a read-only multi-view review (correctness / safety / honesty). Not a ship gate — still run $verify."
+
+policy:
+  allow_implicit_invocation: false

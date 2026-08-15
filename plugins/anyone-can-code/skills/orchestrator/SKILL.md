@@ -38,6 +38,7 @@ Do **not** keep re-routing every sentence after the path is clear.
 - Vague product ask: classify, blocking questions only, checklist, one plan line.
 - Bridge before rebuild. Missing route → ACC fallback. Obey `response_contract`. Keep `workflow_owner: acc` unless handoff.
 - Route: onboard, clarify, plan, execute, verify, resume, learn, settings, usage, update. Legacy memory → `$update`. Imports → `$setup` confirm.
+- Optional multi-view (correctness/safety/honesty): `$council` — **not** a ship gate; still `$verify`. `$bridge` stays for other plugins.
 - State via `scripts/canonical_state.py` only.
 
 ## Rules

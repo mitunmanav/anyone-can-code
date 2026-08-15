@@ -30,6 +30,7 @@ EXPECTED = {
     "readable": "ACC clear",
     "govern": "ACC scope",
     "bridge": "ACC plugins",
+    "council": "ACC council",
     "skeptic": "ACC skeptic",
     "parallel-fix": "ACC parallel fix",
     "roster": "ACC roster",
