@@ -269,6 +269,71 @@ def assess_token_burn(
     }
 
 
+def assess_usage_limit_handoff(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Plain handoff guidance when usage/rate limit is high or hit."""
+    rate = assess_rate_limit(
+        snapshot.get("primary_used_percent"),
+        snapshot.get("secondary_used_percent"),
+    )
+    reached = bool(str(snapshot.get("rate_limit_reached_type") or "").strip())
+    needs_handoff = bool(rate.get("hard_90")) or reached
+    warn_handoff = bool(rate.get("warn_70")) and not needs_handoff
+    user_line = ""
+    if needs_handoff:
+        user_line = (
+            "This chat is almost out of usage. Your progress is saved. "
+            "Open a new chat and type $handoff to continue where you left off."
+        )
+    elif warn_handoff:
+        user_line = (
+            "Usage is getting high. If this chat stops, open a new chat and "
+            "type $handoff to pick up your work."
+        )
+    return {
+        "needs_handoff": needs_handoff,
+        "warn_handoff": warn_handoff,
+        "rate": rate,
+        "user_line": user_line,
+    }
+
+
+def save_progress_if_limit(
+    repo_root: Path | str,
+    workflow: dict[str, Any],
+    *,
+    summary: str = "",
+    session_id: str = "",
+    snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Force portable handoff when usage limit is hit. Best-effort, never raises."""
+    root = Path(repo_root).resolve()
+    snap = snapshot if snapshot is not None else read_latest_snapshot(session_id=session_id or None)
+    info = assess_usage_limit_handoff(snap)
+    if not info["needs_handoff"]:
+        return {"saved": False, "reason": "no_limit", "handoff": info}
+    try:
+        import portable_handoff  # type: ignore
+
+        limit_note = "Usage limit hit — progress saved for you."
+        merged = f"{limit_note} {summary}".strip()
+        write_result = portable_handoff.write_portable_handoff(
+            root,
+            workflow,
+            tool_left="codex",
+            session_id=session_id,
+            summary=merged,
+            open_question="Continue in a new chat. Type $handoff to resume.",
+            skip_if_empty=False,
+        )
+        return {
+            "saved": bool(write_result.get("written")),
+            "path": write_result.get("path", ""),
+            "handoff": info,
+        }
+    except Exception as exc:
+        return {"saved": False, "reason": str(exc), "handoff": info}
+
+
 def build_guard_lines(
     snapshot: dict[str, Any] | None = None,
     *,
@@ -287,6 +352,9 @@ def build_guard_lines(
     )
     if rate.get("user_line"):
         lines.append(f"RATE LIMIT: {rate['user_line']}")
+    handoff = assess_usage_limit_handoff(snap)
+    if handoff.get("user_line"):
+        lines.append(f"USAGE LIMIT: {handoff['user_line']}")
     burn = assess_token_burn(
         session_total_tokens=int(snap.get("session_total_tokens") or 0),
         last_fresh_input_tokens=int(snap.get("last_fresh_input_tokens") or 0),

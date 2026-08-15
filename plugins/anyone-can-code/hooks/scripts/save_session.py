@@ -301,6 +301,20 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
         pass  # mirror is a convenience; canonical state already committed
     write_session_snapshot(repo_root, summary, workflow)
     write_resume_artifacts(repo_root, payload, summary, workflow)
+    try:
+        scripts = Path(__file__).resolve().parents[2] / "scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import rate_limit_guard as _rate_limit_guard  # type: ignore
+
+        _rate_limit_guard.save_progress_if_limit(
+            repo_root,
+            workflow,
+            summary=summary,
+            session_id=str(payload.get("session_id") or ""),
+        )
+    except Exception:
+        pass
     state.append_jsonl(
         state.ensure_project_layout(repo_root)["state"] / "turn-ledger.jsonl",
         {

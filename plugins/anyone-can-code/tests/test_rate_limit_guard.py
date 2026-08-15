@@ -89,3 +89,75 @@ def test_build_guard_lines_quiet_when_low(tmp_path):
     _write_rollout(sessions / "rollout-low.jsonl", used=5.0)
     lines = rlg.build_guard_lines(rlg.read_latest_snapshot([sessions]))
     assert lines == []
+
+
+def test_usage_limit_handoff_hard_at_90():
+    snap = {"primary_used_percent": 92.0, "secondary_used_percent": 5.0}
+    info = rlg.assess_usage_limit_handoff(snap)
+    assert info["needs_handoff"] is True
+    assert "$handoff" in info["user_line"].lower()
+
+
+def test_usage_limit_handoff_when_reached_type_set():
+    snap = {
+        "primary_used_percent": 50.0,
+        "secondary_used_percent": 5.0,
+        "rate_limit_reached_type": "primary",
+    }
+    info = rlg.assess_usage_limit_handoff(snap)
+    assert info["needs_handoff"] is True
+    assert "$handoff" in info["user_line"].lower()
+
+
+def test_usage_limit_handoff_warn_only_at_70():
+    snap = {"primary_used_percent": 72.0, "secondary_used_percent": 5.0}
+    info = rlg.assess_usage_limit_handoff(snap)
+    assert info["needs_handoff"] is False
+    assert info["warn_handoff"] is True
+    assert "$handoff" in info["user_line"].lower()
+
+
+def test_build_guard_lines_includes_handoff_hint_when_hard(tmp_path):
+    sessions = tmp_path / "sessions"
+    _write_rollout(sessions / "rollout-hard.jsonl", used=95.0)
+    snap = rlg.read_latest_snapshot([sessions])
+    lines = rlg.build_guard_lines(snap)
+    assert any("handoff" in line.lower() for line in lines)
+
+
+def test_save_progress_if_limit_writes_handoff(tmp_path):
+    import portable_handoff
+
+    workflow = {
+        "active_goal": "Finish login page",
+        "next_step": "Wire submit button",
+        "phase": "build",
+    }
+    snap = {"primary_used_percent": 95.0, "secondary_used_percent": 0.0}
+    result = rlg.save_progress_if_limit(
+        tmp_path,
+        workflow,
+        summary="Built the form layout.",
+        session_id="sess-123",
+        snapshot=snap,
+    )
+    assert result["saved"] is True
+    assert portable_handoff.portable_path(tmp_path).is_file()
+    text = portable_handoff.read_portable_handoff(tmp_path)
+    assert "Finish login page" in text
+    assert "$handoff" in text.lower() or "handoff" in text.lower()
+
+
+def test_save_progress_if_limit_skips_when_ok(tmp_path):
+    import portable_handoff
+
+    snap = {"primary_used_percent": 20.0, "secondary_used_percent": 0.0}
+    result = rlg.save_progress_if_limit(
+        tmp_path,
+        {"active_goal": "x"},
+        summary="",
+        session_id="",
+        snapshot=snap,
+    )
+    assert result["saved"] is False
+    assert not portable_handoff.portable_path(tmp_path).is_file()
