@@ -273,6 +273,26 @@ def record_bash_result(repo_root: Path, payload: dict, lower_response: str) -> N
     state.record_command_result(repo_root, command, exit_code)
 
 
+def maybe_auto_lint_context(repo_root: Path, payload: dict) -> str:
+    """Soft PostToolUse hint when pref auto_lint=true and tool was an edit.
+
+    Never raises into fail-closed. Never deny. Empty string = no inject.
+    """
+    try:
+        import auto_lint as _auto_lint
+
+        prefs = state.read_preferences(repo_root)
+        if not _auto_lint.pref_enabled(prefs):
+            return ""
+        tool_name = str(payload.get("tool_name") or "")
+        if not _auto_lint.is_edit_like_tool(tool_name):
+            return ""
+        tools = _auto_lint.detect_tools(repo_root)
+        return _auto_lint.format_post_edit_hint(tools)
+    except Exception:
+        return ""
+
+
 def handle_payload(payload: dict, repo_root: Path) -> dict:
     hook_event = payload.get("hook_event_name", "")
     if hook_event == "PostToolUse":
@@ -320,6 +340,16 @@ def handle_payload(payload: dict, repo_root: Path) -> dict:
                         "additionalContext": f"Silent failure detected: {detail}",
                     }
                 }
+        # Opt-in soft hint only (pref auto_lint). Never deny / never fail-closed.
+        auto_hint = maybe_auto_lint_context(repo_root, payload)
+        if auto_hint:
+            log_signal(repo_root, "auto_lint_hint", auto_hint[:200], payload)
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PostToolUse",
+                    "additionalContext": auto_hint,
+                }
+            }
         return {}
     if hook_event == "PermissionRequest":
         log_tool_call(repo_root, payload)

@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC auto lint"
+  short_description: "Detect and run pytest/ruff/eslint after edits"
+  default_prompt: "Use $auto-lint after code edits: detect pytest/ruff/eslint if present, run them, fix failures before done."
+
+policy:
+  allow_implicit_invocation: false
