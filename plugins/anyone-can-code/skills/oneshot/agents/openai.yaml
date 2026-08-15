@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC strong run"
+  short_description: "One focused goal: plan → TDD → verify → proof"
+  default_prompt: "Use $oneshot (strong run) for one focused goal: clarify if needed, write PLAN.md, TDD build, fresh $verify evidence, status card. No done without verify this turn."
+
+policy:
+  allow_implicit_invocation: false
