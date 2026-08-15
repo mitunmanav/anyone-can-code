@@ -3,7 +3,7 @@ from pathlib import Path
 
 SKILLS_ROOT = Path(__file__).resolve().parents[1] / "skills"
 
-EXPLICIT_ONLY = {"orchestrator", "govern", "bridge", "memory-hygiene", "bite-plan", "cost-guard", "rule-suggest", "checkpoint", "oneshot"}
+EXPLICIT_ONLY = {"orchestrator", "govern", "bridge", "memory-hygiene", "bite-plan", "cost-guard", "rule-suggest", "checkpoint", "oneshot", "roster"}
 IMPLICIT_OK = {"learn", "verify", "plan", "fix", "resume", "clarify", "capture"}
 
 

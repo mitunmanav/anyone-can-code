@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC roster"
+  short_description: "Suggest explorer/worker/reviewer subagent prompts"
+  default_prompt: "Use $roster to suggest Codex subagent roles (explorer, worker, reviewer) as paste-ready spawn prompts only — do not write agent TOML."
+
+policy:
+  allow_implicit_invocation: false

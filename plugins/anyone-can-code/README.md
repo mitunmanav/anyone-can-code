@@ -98,6 +98,7 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 | ACC settings | `$settings` | Preferences |
 | ACC update | `$update` | After a plugin upgrade |
 | ACC handoff | `$handoff` | Pass work to a later session |
+| ACC roster | `$roster` | Named subagent roster for parallel work |
 | ACC strong run | `$oneshot` | One-shot checklist before a big run |
 | ACC checkpoint | `$checkpoint` | File checkpoints (ACC files, not a shadow git) |
 | ACC rule suggest | `$rule-suggest` | Suggest a durable rule when the same fix repeats |
