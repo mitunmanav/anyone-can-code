@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC cost guard"
+  short_description: "Soft tips: Luna vs Terra vs Sol (user picks model)"
+  default_prompt: "Use $cost-guard for soft cheap vs strong model tips. ACC cannot force Codex model picker — user switches in UI or CLI."
+
+policy:
+  allow_implicit_invocation: false

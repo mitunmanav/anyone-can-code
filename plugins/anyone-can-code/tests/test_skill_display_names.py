@@ -30,6 +30,7 @@ EXPECTED = {
     "readable": "ACC clear",
     "govern": "ACC scope",
     "bridge": "ACC plugins",
+    "cost-guard": "ACC cost guard",
     "bite-plan": "ACC bite plan",
     "memory-hygiene": "ACC memory hygiene",
 }

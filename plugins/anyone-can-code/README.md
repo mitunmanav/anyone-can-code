@@ -98,6 +98,7 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 | ACC settings | `$settings` | Preferences |
 | ACC update | `$update` | After a plugin upgrade |
 | ACC handoff | `$handoff` | Pass work to a later session |
+| ACC cost guard | `$cost-guard` | Soft Luna/Terra/Sol tips (you pick the model) |
 | ACC bite plan | `$bite-plan` | 2–5 min checkbox steps |
 | ACC memory hygiene | `$memory-hygiene` | Age notes, flag secrets, block full-chat dumps |
 
