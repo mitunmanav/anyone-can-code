@@ -59,6 +59,8 @@ DEFAULT_PREFERENCES = {
     "learning_preference": "enabled",
     "research_preference": "local-first",
     "approval_preference": "ask-for-secrets-paid-login-destructive-product",
+    "approval_mode": "ask",
+    "approval_allowlist": [],
     "plugin_routing": "automatic",
     "browser_preference": "ask",
     "learn_mode": "trigger-auto",

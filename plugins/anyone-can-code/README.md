@@ -98,6 +98,7 @@ Type these in the Codex chat (or pick the short **ACC …** name in the app). Yo
 | ACC settings | `$settings` | Preferences |
 | ACC update | `$update` | After a plugin upgrade |
 | ACC handoff | `$handoff` | Pass work to a later session |
+| ACC approval mode | `$approval-mode` | ACC soft allow grades (not Codex /permissions) |
 | ACC repo map | `$repo-map` | Ranked repo map sample; thin SessionStart inject |
 | ACC tool budget | `$tool-budget` | Soft tool-call budget warn (never deny) |
 | ACC auto lint | `$auto-lint` | Soft after-edit lint/test hint (opt-in) |

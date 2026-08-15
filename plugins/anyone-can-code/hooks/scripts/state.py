@@ -89,6 +89,9 @@ DEFAULT_PREFERENCES = {
     "import_sources": [],
     "import_scope": "ask",
     "production_repo_caution": True,
+    # ACC soft approval grade (off|ask|allowlist|strict). Not Codex host APIs.
+    "approval_mode": "ask",
+    "approval_allowlist": [],
 }
 
 

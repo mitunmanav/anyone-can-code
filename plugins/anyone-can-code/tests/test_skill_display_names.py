@@ -30,6 +30,7 @@ EXPECTED = {
     "readable": "ACC clear",
     "govern": "ACC scope",
     "bridge": "ACC plugins",
+    "approval-mode": "ACC approval mode",
     "repo-map": "ACC repo map",
     "tool-budget": "ACC tool budget",
     "auto-lint": "ACC auto lint",

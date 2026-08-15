@@ -26,6 +26,7 @@ Reply rule:
 - import sources: explicit selected paths only
 - import scope: `ask`, `project`, `user`, or `shared`
 - production-repo caution: enabled or disabled
+- approval grade: `off`, `ask`, `allowlist`, `strict` (use `$approval-mode`; ACC soft layer only — Codex `/permissions` stays host)
 
 ## Storage
 

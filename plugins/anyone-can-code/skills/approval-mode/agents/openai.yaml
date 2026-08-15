@@ -1,0 +1,7 @@
+interface:
+  display_name: "ACC approval mode"
+  short_description: "Set ACC approval grade off/ask/allowlist/strict"
+  default_prompt: "Use $approval-mode to show or set ACC approval grade (off|ask|allowlist|strict). Host Codex /permissions stay separate."
+
+policy:
+  allow_implicit_invocation: false

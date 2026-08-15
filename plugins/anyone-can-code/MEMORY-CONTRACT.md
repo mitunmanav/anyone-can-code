@@ -218,6 +218,8 @@ Required settings:
 - `import_sources`
 - `import_scope`
 - `production_repo_caution`
+- `approval_mode` (`off` | `ask` | `allowlist` | `strict`) — ACC soft PermissionRequest layer only; not Codex host `/permissions`
+- `approval_allowlist` (string list; used when `approval_mode` is `allowlist`)
 
 Default values:
 
@@ -228,7 +230,9 @@ Default values:
   "viewer_mode": "none",
   "import_sources": [],
   "import_scope": "ask",
-  "production_repo_caution": true
+  "production_repo_caution": true,
+  "approval_mode": "ask",
+  "approval_allowlist": []
 }
 ```
 
